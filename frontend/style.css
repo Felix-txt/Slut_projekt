@@ -1,0 +1,12 @@
+.topbar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+.bigname{
+    text-align: center;
+    background-color: gray;
+    width: 25%;
+    border-radius: 15px;
+}

@@ -1,5 +1,8 @@
 const express = require(`express`);
 const cors = require(`cors`);
+const fs = require(`fs`);
+const path = require(`path`);
+const https = require(`https`);
 require(`dotenv`).config();
 const db = require(`./config/database`);
 
@@ -11,8 +14,39 @@ app.use(express.json());
 app.use(`/api/auth`, require(`./routes/auth`));
 app.use(`/api/games`, require(`./routes/games`));
 app.use(`/api/saves`, require(`./routes/saves`));
+app.use(`/api/skins`, require(`./routes/skins`));
+app.use(`/api/crates`, require(`./routes/crates`));
+app.use(`/api/inventory`, require(`./routes/inventory`));
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`server running on port http://localhost:${PORT}`);
-})
+
+const useHttps = process.env.HTTPS === `true`;
+
+if (useHttps) {
+    const certPath = process.env.SSL_CERT_PATH || `./ssl/cert.pem`;
+    const keyPath = process.env.SSL_KEY_PATH || `./ssl/key.pem`;
+    
+    let httpsServer;
+    
+    if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
+        const httpsOptions = {
+            cert: fs.readFileSync(certPath),
+            key: fs.readFileSync(keyPath)
+        };
+        httpsServer = https.createServer(httpsOptions, app);
+        httpsServer.listen(PORT, () => {
+            console.log(`server running on https://localhost:${PORT}`);
+        });
+        console.log(`HTTPS enabled`);
+    } else {
+        console.log(`SSL certificates not found at ${certPath} and ${keyPath}`);
+        console.log(`Run with HTTPS=true to enable, or generate self-signed certs`);
+        app.listen(PORT, () => {
+            console.log(`server running on http://localhost:${PORT}`);
+        });
+    }
+} else {
+    app.listen(PORT, () => {
+        console.log(`server running on http://localhost:${PORT}`);
+    });
+}

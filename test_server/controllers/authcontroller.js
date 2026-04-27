@@ -16,10 +16,24 @@ const register = async (req, res) => {
 
         const hashedpassword = await bcrypt.hash(password, 10);
 
-        const result = await db.query('INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id', [username, email, hashedpassword]);
-
-        res.status(201).json({message: `user registered successfully`, userID: result.rows[0].id});
-
+        const client = await db.connect();
+        try {
+            await client.query(`BEGIN`);
+            
+            const result = await client.query('INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id', [username, email, hashedpassword]);
+            const userId = result.rows[0].id;
+            
+            await client.query('INSERT INTO user_balance (user_id, balance) VALUES ($1, 100.00)', [userId]);
+            
+            await client.query(`COMMIT`);
+            
+            res.status(201).json({message: `user registered successfully`, userID: userId});
+        } catch (err) {
+            await client.query(`ROLLBACK`);
+            throw err;
+        } finally {
+            client.release();
+        }
     } 
     catch (error) {
         console.error(error);

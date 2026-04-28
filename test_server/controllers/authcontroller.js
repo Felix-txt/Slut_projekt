@@ -4,7 +4,7 @@ const jwt = require(`jsonwebtoken`);
 
 const register = async (req, res) => {
     try {
-        const {username, email, password} = req.body;
+        const {username, email, password, is_admin} = req.body;
         if (!username || !email || !password) {
             return res.status(400).json({message: `please provide username, email and password`});
         }
@@ -20,7 +20,7 @@ const register = async (req, res) => {
         try {
             await client.query(`BEGIN`);
             
-            const result = await client.query('INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id', [username, email, hashedpassword]);
+            const result = await client.query('INSERT INTO users (username, email, password, is_admin) VALUES ($1, $2, $3, $4) RETURNING id', [username, email, hashedpassword, is_admin || false]);
             const userId = result.rows[0].id;
             
             await client.query('INSERT INTO user_balance (user_id, balance) VALUES ($1, 100.00)', [userId]);
@@ -60,9 +60,9 @@ const login = async (req, res) => {
             return res.status(400).json({message: `incorrect password`});
         }
 
-        const token = jwt.sign({userID: user.id}, process.env.JWT_SECRET, {expiresIn: `7d`});
+        const token = jwt.sign({userID: user.id, is_admin: user.is_admin}, process.env.JWT_SECRET, {expiresIn: `7d`});
 
-        res.status(200).json({message: `login successful`, token});
+        res.status(200).json({message: `login successful`, token, is_admin: user.is_admin});
         
     }
     catch (error){

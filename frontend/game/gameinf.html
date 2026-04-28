@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS Clicker Game</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f5f5f5;
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+}
+
+.burger {
+    font-size: 26px;
+    cursor: pointer;
+}
+
+.title {
+    flex: 1;
+    text-align: center;
+    background: #ddd;
+    padding: 10px;
+    border-radius: 15px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.auth {
+    display: flex;
+    gap: 10px;
+}
+
+.auth button {
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.login {
+    background: #5a78a5;
+    color: white;
+}
+
+.signup {
+    background: #ccc;
+}
+
+/* MAIN */
+.container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* LEFT PANEL */
+.left {
+    width: 300px;
+    background: #ddd;
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.left h2 {
+    margin-bottom: 10px;
+}
+
+.left button {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background: #bbb;
+    cursor: pointer;
+}
+
+/* RIGHT PANEL */
+.right {
+    flex: 1;
+}
+
+.slideshow {
+    height: 200px;
+    background: #888;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.text-list {
+    text-align: center;
+}
+
+/* SIDEMENU */
+.sidemenu {
+    position: fixed;
+    top: 0;
+    left: -260px;
+    width: 260px;
+    height: 100%;
+    background: #8b7f7f;
+    padding: 20px;
+    transition: 0.3s;
+}
+
+.sidemenu.active {
+    left: 0;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+}
+
+.icon {
+    width: 40px;
+    height: 40px;
+    background: black;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.menu-item span {
+    background: #ddd;
+    padding: 8px 15px;
+    border-radius: 5px;
+    flex: 1;
+}
+
+/* OVERLAY */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    display: none;
+}
+
+.overlay.active {
+    display: block;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEMENU -->
+<div class="sidemenu" id="menu">
+    <div class="menu-item"><div class="icon"></div><span>Home</span></div>
+    <div class="menu-item"><div class="icon"></div><span>Account</span></div>
+    <div class="menu-item"><div class="icon"></div><span>Download</span></div>
+    <div class="menu-item"><div class="icon"></div><span>Leaderboard</span></div>
+    <div class="menu-item"><div class="icon"></div><span>Game info</span></div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="burger" onclick="toggleMenu()">☰</div>
+    <div class="title">CS-Clicker Game</div>
+    <div class="auth">
+        <button class="login" onclick="goLogin()">LOGIN</button>
+        <button class="signup" onclick="goSignup()">SIGN UP</button>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+    <div class="left">
+        <h2>DOWNLOAD</h2>
+        <h1>TEXT</h1>
+        <h1>TEXT</h1>
+        <button>button</button>
+        <button>button</button>
+        <button>button</button>
+        <button>button</button>
+    </div>
+
+    <div class="right">
+        <div class="slideshow">67</div>
+        <div class="text-list">
+            <p>CS - Clicker Game</p>
+            <p>Ett adhd spel man klickar på click för att få pengar som man sedan kan spela med för att få skins.</p>
+            <p>Du kan uppgradera dina clicks och du kan låsa upp nya lådor som man får skins ifrån.</p>
+            <p>Spelet har inget mål utan det är bara att köra och se hur långt du kan komma och hur många sällsynta skins du kan få.</p>
+            <p>Ha så kul!</p>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleMenu() {
+    document.getElementById("menu").classList.toggle("active");
+    document.getElementById("overlay").classList.toggle("active");
+}
+
+document.getElementById("overlay").addEventListener("click", toggleMenu);
+
+// Placeholder navigation (fix later)
+function goLogin() {
+    alert("Login page kommer senare");
+}
+
+function goSignup() {
+    alert("Signup page kommer senare");
+}
+</script>
+
+</body>
+</html>

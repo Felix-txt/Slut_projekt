@@ -1,12 +1,281 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
-    <link rel="stylesheet" href="style.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <p>romeo cuckmaxxar</p>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS Clicker</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #ececec, #d9d9d9);
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    position: relative;
+}
+
+/* BURGER */
+.burger svg {
+    transition: 0.3s;
+}
+.burger:hover svg {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 6px #4a6cff);
+}
+
+/* TITLE */
+.title {
+    margin: auto;
+    background: #ddd;
+    padding: 10px 30px;
+    border-radius: 20px;
+    font-size: 32px;
+    transition: 0.3s;
+}
+.title:hover {
+    box-shadow: 0 0 15px #4a6cff;
+}
+
+/* MENU */
+.menu {
+    display: none;
+    flex-direction: column;
+    background: #eee;
+    position: absolute;
+    top: 60px;
+    left: 10px;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    animation: fadeIn 0.2s ease;
+}
+.menu a {
+    padding: 10px;
+    text-decoration: none;
+    color: #333;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+.menu a:hover {
+    background: #4a6cff;
+    color: white;
+    transform: translateX(5px);
+}
+.menu.show {
+    display: flex;
+}
+
+.auth {
+    display: flex;
+    gap: 10px;
+}
+
+/* LOGIN */
+.login-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: none;
+    background: #5a6c8f;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.login-btn:hover {
+    background: #6f85b5;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #4a6cff;
+}
+
+/* SIGNUP */
+.signup-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: none;
+    background: #2f4bb2;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.signup-btn:hover {
+    background: #3f5cff;
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #4a6cff;
+}
+
+/* MAIN */
+.container {
+    display: flex;
+    gap: 30px;
+    padding: 30px;
+}
+
+/* LEFT PANEL */
+.left {
+    width: 300px;
+    background: #dcdcdc;
+    padding: 20px;
+    border-radius: 20px;
+    transition: 0.3s;
+}
+.left:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.left h1 {
+    margin: 10px 0;
+}
+
+.left button {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 12px;
+    background: #bbb;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.left button:hover {
+    background: #4a6cff;
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #4a6cff;
+}
+
+/* RIGHT */
+.right {
+    flex: 1;
+}
+
+/* SLIDESHOW */
+.slideshow {
+    height: 220px;
+    background: #888;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-bottom: 20px;
+    transition: 0.3s;
+}
+.slideshow:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px #4a6cff;
+}
+
+.text-list p {
+    text-align: center;
+    margin: 10px 0;
+    transition: 0.2s;
+}
+.text-list p:hover {
+    color: #4a6cff;
+    transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(-10px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+</style>
 </head>
+
 <body>
+
+<div class="header">
+
+    <div class="burger" id="burger">
+        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" viewBox="0 0 15 15">
+            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+        </svg>
+    </div>
+
+    <div class="title">CS-Clicker Game</div>
+
+    <nav class="menu" id="menu">
+        <a href="index.html">Home</a>
+        <a href="account.html">Account</a>
+        <a href="game/patch-download.html">Download</a>
+        <a href="leaderboard.html">Leaderboard</a>
+        <a href="game/gameinf.html">Game info</a>
+        <a href="../admin/panel.html">Admin Panel</a>
+    </nav>
+
+    <div class="auth">
+        <button class="login-btn" onclick="goLogin()">LOGIN</button>
+        <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
+    </div>
+
+</div>
+
+<div class="container">
+
+    <div class="left">
+        <h2>DOWNLOAD</h2>
+        <h1>TEXT</h1>
+        <h1>TEXT</h1>
+
+        <button class="Download-btn" onclick="goPatchdownload()">Download Client</button>
+        <button class="Patchnotes-btn" onclick="goPatchdownload()">Patch Notes</button>
+        <button>Mods</button>
+        <button>Community</button>
+    </div>
+
+    <div class="right">
+        <div class="slideshow">PHOTO SLIDESHOW</div>
+
+        <div class="text-list">
+            <p>Latest Update</p>
+            <p>New Skins</p>
+            <p>Leaderboard Reset</p>
+            <p>Events</p>
+            <p>News</p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+document.getElementById("burger").addEventListener("click", function() {
+    document.getElementById("menu").classList.toggle("show");
+});
+
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById("menu")
+    const burger = document.getElementById("burger")
+
+    if (!menu.contains(event.target) && !burger.contains(event.target)){
+        menu.classList.remove('show');
+    }
+});
+
+function goLogin() {
+    window.location.href = "login-signin.html";
+};
+
+function goSignup() {
+    window.location.href = "login-signin.html";
+};
+
+function goPatchdownload() {
+    window.location.href = "game/patch-download.html";
+};
+</script>
+
 </body>
 </html>

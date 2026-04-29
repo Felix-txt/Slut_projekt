@@ -1,6 +1,6 @@
 const express = require(`express`);
 const router = express.Router();
-const verifyToken = require(`../middleware/auth.js`);
+const { verifyToken } = require(`../middleware/auth.js`);
 const { saveGameData, loadGameData } = require(`../controllers/savescontroller.js`);
 
 

@@ -1,18 +1,269 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
-    <link rel="stylesheet" href="style.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaderboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaderboard</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #ececec, #d9d9d9);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+}
+
+.burger {
+    cursor: pointer;
+    user-select: none;
+}
+
+.burger svg {
+    transition: 0.3s;
+}
+.burger:hover svg {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 6px #4a6cff);
+}
+
+.title {
+    margin: auto;
+    background: #ddd;
+    padding: 10px 30px;
+    border-radius: 20px;
+    font-size: 32px;
+}
+
+.auth {
+    display: flex;
+    gap: 10px;
+}
+
+.auth button {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.login-btn { background: #5a6c8f; color: white; }
+.signup-btn { background: #2f4bb2; color: white; }
+
+.auth button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #4a6cff;
+}
+
+.menu {
+    display: none;
+    flex-direction: column;
+    background: #eee;
+    position: absolute;
+    top: 60px;
+    left: 10px;
+    padding: 12px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    animation: fadeIn 0.2s ease;
+}
+.menu a {
+    padding: 10px;
+    text-decoration: none;
+    color: #333;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+.menu a:hover {
+    background: #4a6cff;
+    color: white;
+    transform: translateX(5px);
+}
+.menu.show {
+    display: flex;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+}
+
+.leaderboard {
+    width: 700px;
+    background: #dcdcdc;
+    border-radius: 20px;
+    padding: 20px;
+    transition: 0.3s;
+}
+
+.leaderboard:hover {
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.lb-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.lb-header h2 {
+    font-weight: normal;
+}
+
+.lb-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.player {
+    display: flex;
+    align-items: center;
+    background: #cfcfcf;
+    padding: 10px;
+    border-radius: 12px;
+    margin: 10px 0;
+    transition: 0.2s;
+}
+
+.player:hover {
+    transform: scale(1.02);
+    background: #bfbfbf;
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+    background: #999;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.info {
+    flex: 1;
+}
+
+.name {
+    height: 15px;
+    width: 60%;
+    background: #555;
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+
+.score {
+    height: 15px;
+    width: 40%;
+    background: #666;
+    border-radius: 10px;
+}
+
+.lb-list::-webkit-scrollbar {
+    width: 8px;
+}
+.lb-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(-10px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+</style>
 </head>
+
 <body>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
+
+<div class="header">
+
+    <div class="burger" id="burger">
+        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-list" viewBox="0 0 15 15">
+            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+        </svg>
+    </div>
+
+    <div class="title">CS-Clicker Game</div>
+
+    <div class="auth">
+        <button class="login-btn" onclick="goLogin()">LOGIN</button>
+        <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
+    </div>
+
+    <nav class="menu" id="menu">
+        <a href="index.html">Home</a>
+        <a href="account.html">Account</a>
+        <a href="game/patch-download.html">Patch & Download</a>
+        <a href="game/gameinf.html">Game info</a>
+        <a href="leaderboard.html">Leaderboard</a>
+    </nav>
+
+</div>
+
+<div class="container">
+    <div class="leaderboard">
+
+        <div class="lb-header">
+            <h2>Leaderboard</h2>
+            <span>⬇</span>
+        </div>
+
+        <div class="lb-list" id="leaderboardList">
+        </div>
+
+    </div>
+</div>
+
+<script>
+document.getElementById("burger").addEventListener("click", function() {
+    document.getElementById("menu").classList.toggle("show");
+});
+
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById("menu")
+    const burger = document.getElementById("burger")
+
+    if (!menu.contains(event.target) && !burger.contains(event.target)){
+        menu.classList.remove('show');
+    }
+});
+
+function goLogin() {
+    window.location.href = "login-signin.html";
+}
+
+function goSignup() {
+    window.location.href = "login-signin.html";
+}
+
+function addPlayer(name, score) {
+    const list = document.getElementById("leaderboardList");
+
+    const player = document.createElement("div");
+    player.classList.add("player");
+
+    player.innerHTML = `
+        <div class="avatar"></div>
+        <div class="info">
+            <div>${name}</div>
+            <div>${score}</div>
+        </div>
+    `;
+
+    list.appendChild(player);
+}
+</script>
+
 </body>
 </html>

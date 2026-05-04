@@ -112,8 +112,36 @@ body {
 
 .container {
     display: flex;
-    gap: 30px;
+    flex-direction: column;
     padding: 30px;
+    gap: 30px;
+}
+
+.hero-section {
+    width: 100%;
+}
+
+.slideshow {
+    height: 340px;
+    background: #888;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: 0.3s;
+    font-size: 2rem;
+    font-weight: bold;
+}
+.slideshow:hover {
+    transform: scale(1.01);
+    box-shadow: 0 0 12px #4a6cff;
+}
+
+.content-boxes {
+    display: flex;
+    gap: 30px;
+    width: 100%;
 }
 
 .left {
@@ -130,6 +158,34 @@ body {
 
 .left h1 {
     margin: 10px 0;
+}
+
+.main-download-btn {
+    width: 100%;
+    padding: 18px 20px;
+    margin: 20px 0 15px 0;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1a3a52 0%, #2c5aa0 50%, #3b7dd6 100%);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(44, 90, 160, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    text-transform: uppercase;
+}
+
+.main-download-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(44, 90, 160, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    background: linear-gradient(135deg, #0f1f33 0%, #1a3a52 50%, #2c5aa0 100%);
+}
+
+.main-download-btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(44, 90, 160, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .left button {
@@ -151,6 +207,14 @@ body {
 
 .right {
     flex: 1;
+    background: #dcdcdc;
+    padding: 20px;
+    border-radius: 20px;
+    transition: 0.3s;
+}
+.right:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
 
 .slideshow {
@@ -177,6 +241,27 @@ body {
 .text-list p:hover {
     color: #4a6cff;
     transform: scale(1.02);
+}
+
+.news-btn {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 12px;
+    background: #bbb;
+    color: #333;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.news-btn:hover {
+    background: #4a6cff;
+    color: white;
+    transform: scale(1.03);
+    box-shadow: 0 0 8px #4a6cff;
 }
 
 @keyframes fadeIn {
@@ -215,26 +300,26 @@ body {
 
 <div class="container">
 
-    <div class="left">
-        <h2>DOWNLOAD</h2>
-        <h1>TEXT</h1>
-        <h1>TEXT</h1>
-
-        <button class="Download-btn" onclick="goPatchdownload()">Download Client</button>
-        <button class="Patchnotes-btn" onclick="goPatchdownload()">Patch Notes</button>
-        <button>Mods</button>
-        <button>Community</button>
+    <div class="hero-section">
+        <div class="slideshow">PHOTO SLIDESHOW</div>
     </div>
 
-    <div class="right">
-        <div class="slideshow">PHOTO SLIDESHOW</div>
+    <div class="content-boxes">
+        <div class="left">
+            <h1>LuCS</h1>
+            <h1>CASE CLICKER</h1>
+            <button class="main-download-btn" onclick="downloadLatestClient()">⬇ DOWNLOAD NOW</button>
 
-        <div class="text-list">
-            <p>Latest Update</p>
-            <p>New Skins</p>
-            <p>Leaderboard Reset</p>
-            <p>Events</p>
-            <p>News</p>
+            <button class="Download-btn" onclick="goPatchdownload()">Patch Notes</button>
+            <button>Leaderboard</button>
+        </div>
+
+        <div class="right">
+            <div class="text-list">
+                <button class="news-btn" onclick="goPatchdownload()">Latest Update</button>
+                <p>Events</p>
+                <button class="news-btn" onclick="goGameInfo()">Contact us</button>
+            </div>
         </div>
     </div>
 
@@ -262,8 +347,19 @@ function goSignup() {
     window.location.href = "login-signin.html#signup";
 };
 
+function downloadLatestClient() {
+    // TODO: Ersätt med faktisk filepath när den finns
+    // Exempel: const filePath = "downloads/LuCS-Clicker-latest.exe";
+    const filePath = "downloads/LuCS-Clicker-latest.exe";
+    window.location.href = filePath;
+};
+
 function goPatchdownload() {
     window.location.href = "game/patch-download.html";
+};
+
+function goGameInfo() {
+    window.location.href = "game/gameinf.html";
 };
 </script>
 

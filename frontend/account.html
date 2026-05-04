@@ -1,12 +1,235 @@
+Här är en enkel HTML/CSS-version:
+
+```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
-    <link rel="stylesheet" href="style.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account</title>
+  <meta charset="UTF-8" />
+  <title>Account</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fff;
+    }
+
+    .page {
+      width: 1090px;
+      height: 780px;
+      border: 3px solid #149cff;
+      position: relative;
+      padding: 50px 95px;
+      box-sizing: border-box;
+    }
+
+    h3 {
+      position: absolute;
+      top: -35px;
+      left: 0;
+      color: #4aa3d8;
+      font-weight: normal;
+    }
+
+    .menu {
+      position: absolute;
+      top: 12px;
+      left: 8px;
+    }
+
+    .menu span {
+      display: block;
+      width: 55px;
+      height: 8px;
+      background: #000;
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+
+    .top-card {
+      background: #ddd;
+      height: 155px;
+      display: flex;
+      align-items: center;
+      gap: 60px;
+      padding: 0 35px;
+    }
+
+    .avatar {
+      width: 105px;
+      height: 105px;
+      border-radius: 50%;
+      background: #aaa;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .avatar::before {
+      content: "";
+      position: absolute;
+      top: 26px;
+      left: 35px;
+      width: 28px;
+      height: 28px;
+      border: 5px solid #000;
+      border-radius: 50%;
+    }
+
+    .avatar::after {
+      content: "";
+      position: absolute;
+      bottom: 24px;
+      left: 27px;
+      width: 45px;
+      height: 30px;
+      border: 5px solid #000;
+      border-bottom: none;
+      border-radius: 45px 45px 0 0;
+    }
+
+    .fields {
+      display: flex;
+      flex-direction: column;
+      gap: 50px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .label {
+      width: 218px;
+      height: 30px;
+      background: #454343;
+      color: white;
+      border-radius: 18px;
+      text-align: center;
+      line-height: 30px;
+      font-size: 24px;
+    }
+
+    button {
+      background: #454343;
+      color: white;
+      border: none;
+      border-radius: 18px;
+      padding: 7px 22px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .warning {
+      margin-top: 7px;
+      width: 253px;
+      background: #ff8585;
+      padding: 6px 18px;
+      box-sizing: border-box;
+      font-size: 15px;
+    }
+
+    .info-card {
+      margin-top: 8px;
+      width: 253px;
+      height: 430px;
+      background: #ddd;
+      padding-top: 20px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .info-card h2 {
+      font-size: 25px;
+      font-weight: normal;
+      margin: 0 0 22px;
+    }
+
+    .info-box {
+      width: 225px;
+      height: 335px;
+      background: #919191;
+      margin: auto;
+      padding-top: 18px;
+      box-sizing: border-box;
+    }
+
+    .line {
+      width: 165px;
+      height: 31px;
+      background: #ddd;
+      margin: 0 auto 21px;
+    }
+
+    .toggle {
+      position: absolute;
+      top: 232px;
+      left: 405px;
+      width: 115px;
+      height: 48px;
+      background: #888;
+      color: white;
+      border-radius: 18px;
+      text-align: center;
+      padding-top: 7px;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+
+    .side-avatar {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 105px;
+      height: 105px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Hej! Romeo här jag är lite bög och jag är väldigt duktig på att chudmaxxa</h1>
+  <div class="page">
+    <h3>Account</h3>
+
+    <div class="menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <div class="top-card">
+      <div class="avatar"></div>
+
+      <div class="fields">
+        <div class="row">
+          <div class="label">USER NAME</div>
+          <button>Change</button>
+        </div>
+
+        <div class="row">
+          <div class="label">MAIL</div>
+          <button>Change</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="warning">Account not synced with game</div>
+
+    <div class="info-card">
+      <h2>Account info</h2>
+      <div class="info-box">
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+      </div>
+    </div>
+
+    <div class="toggle">
+      TOGGLE<br />
+      INVENTORY
+    </div>
+
+    <div class="avatar side-avatar"></div>
+  </div>
 </body>
-</html>  
+</html>
+```

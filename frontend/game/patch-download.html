@@ -1,12 +1,309 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
-    <link rel="stylesheet" href="style.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patch & Download</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #ececec, #d9d9d9);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+}
+
+.burger svg {
+    transition: 0.3s;
+}
+.burger:hover svg {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 6px #4a6cff);
+}
+
+.title {
+    margin: auto;
+    background: #ddd;
+    padding: 10px 30px;
+    border-radius: 20px;
+    font-size: 32px;
+    transition: 0.3s;
+}
+.title:hover {
+    box-shadow: 0 0 15px #4a6cff;
+}
+
+.auth {
+    display: flex;
+    gap: 10px;
+}
+
+.auth button {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.login-btn {
+    background: #5a6c8f;
+    color: white;
+}
+.signup-btn {
+    background: #2f4bb2;
+    color: white;
+}
+
+.auth button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #4a6cff;
+}
+
+.menu {
+    display: none;
+    flex-direction: column;
+    background: #eee;
+    position: absolute;
+    top: 60px;
+    left: 10px;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+.menu a {
+    padding: 10px;
+    text-decoration: none;
+    color: #333;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+.menu a:hover {
+    background: #4a6cff;
+    color: white;
+}
+.menu.show {
+    display: flex;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+}
+
+.patch-box {
+    width: 80%;
+    max-width: 900px;
+    height: 350px;
+    background: #dcdcdc;
+    border-radius: 25px;
+    padding: 25px;
+    overflow-y: auto;
+    transition: 0.3s;
+}
+
+.patch-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.patch-box h2 {
+    margin-bottom: 15px;
+}
+
+.patch-box p {
+    margin: 8px 0;
+    transition: 0.2s;
+}
+.patch-box p:hover {
+    color: #4a6cff;
+}
+
+.download-btn {
+    margin-top: 30px;
+    padding: 20px 70px;
+    font-size: 22px;
+    border-radius: 40px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    position: relative;
+    overflow: hidden;
+
+    background: linear-gradient(270deg, #2f4bb2, #4a6cff, #2f4bb2);
+    background-size: 400% 400%;
+
+    animation: gradientMove 6s ease infinite, pulse 2s infinite;
+
+    transition: 0.3s;
+}
+
+.download-btn::before {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border-radius: 40px;
+    background: linear-gradient(270deg, #4a6cff, #00d4ff, #4a6cff);
+    z-index: -1;
+    filter: blur(15px);
+    opacity: 0.7;
+
+    animation: glowMove 6s linear infinite;
+}
+
+.download-btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.5),
+        transparent
+    );
+    transform: skewX(-20deg);
+
+    animation: shine 3s infinite;
+}
+
+.download-btn:hover {
+    transform: scale(1.12);
+    box-shadow: 0 0 30px #4a6cff;
+}
+
+.download-btn:active {
+    transform: scale(0.95);
+}
+
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes glowMove {
+    0% { background-position: 0%; }
+    100% { background-position: 200%; }
+}
+
+@keyframes shine {
+    0% { left: -100%; }
+    50% { left: 120%; }
+    100% { left: 120%; }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.patch-box::-webkit-scrollbar {
+    width: 8px;
+}
+.patch-box::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+</style>
 </head>
+
 <body>
-    
+
+<div class="header">
+
+    <div class="burger" id="burger">
+        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" viewBox="0 0 15 15">
+            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+        </svg>
+    </div>
+
+    <div class="title">CS-Clicker Game</div>
+
+    <div class="auth">
+        <button class="login-btn" onclick="goLogin()">LOGIN</button>
+        <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
+    </div>
+
+    <nav class="menu" id="menu">
+        <a href="../index.html">Home</a>
+        <a href="../account.html">Account</a>
+        <a href="../leaderboard.html">Leaderboard</a>
+        <a href="gameinf.html">Game info</a>
+    </nav>
+
+</div>
+
+<div class="container">
+
+    <div class="patch-box">
+        <h2>Patch Notes v1.0</h2>
+
+        <p>• Added new clicker mechanics</p>
+        <p>• Improved UI animations</p>
+        <p>• Added skins system</p>
+        <p>• Leaderboard implemented</p>
+        <p>• Bug fixes and performance improvements</p>
+        <p>• Bug fixes and performance improvements</p>
+        <p>• Bug fixes and performance improvements</p>
+        <p>• Bug fixes and performance improvements</p>
+        <p>• Bug fixes and performance improvements</p>
+        <p>• Bug fixes and performance improvements</p>
+        <p>• Bug fixes and performance improvements</p>
+        <p>• Bug fixes and performance improvements</p>
+        <p>• Bug fixes and performance improvements</p>
+        <p>• Bug fixes and performance improvements</p>
+        <p>• Bug fixes and performance improvements</p>
+
+        <p>• More content coming soon...</p>
+    </div>
+
+    <button class="download-btn" onclick="downloadGame()">DOWNLOAD</button>
+
+</div>
+
+<script>
+document.getElementById("burger").addEventListener("click", function() {
+    document.getElementById("menu").classList.toggle("show");
+});
+
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById("menu")
+    const burger = document.getElementById("burger")
+
+    if (!menu.contains(event.target) && !burger.contains(event.target)){
+        menu.classList.remove('show');
+    }
+});
+
+function goLogin() {
+    window.location.href = "login-signin.html";
+}
+
+function goSignup() {
+    window.location.href = "login-signin.html";
+}
+
+function downloadGame() {
+    alert("FELIX FIXA BRUR");
+}
+</script>
+
 </body>
 </html>

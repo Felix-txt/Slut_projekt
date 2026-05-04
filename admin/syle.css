@@ -1,29 +1,36 @@
-.burger{
-    cursor: pointer;
-    user-select: none;
-    font-size: 2em;
+.burger svg{
+    transition: 0.3s;
     
+}
+.burger:hover svg{
+    transition: 0.3s;
+    filter: drop-shadow(0 0 6px #4a6cff;)
 }
 .menu{
     display: none;
     flex-direction: column;
     background: #eee;
     position: absolute;
-    top: 50px;
+    top: 60px;
     left: 10px;
-    padding: 10px;
-    border-radius: 8px;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    animation: fadeIn 0.2s ease;
 }
 .menu a{
-    padding: 8px 0;
+    padding: 10px;
     text-decoration: none;
     color: #333;
-    font-size: clamp(1rem, 1rem + 1.2vw, 1.8rem);
+    border-radius: 8px;
+    transition: 0.2s;
 }
 .menu a:hover{
-    /* avoid large jumps on hover; use subtle highlight */
-    padding: 10px 0;
-    background: rgba(0,0,0,0.04);
+    /* avoid large jumon hover; use subtle highlight */
+    background: #4a6cff;
+    color: white;
+    transform: translateX(5px);
+
 }
 .menu.show{
     display: flex;

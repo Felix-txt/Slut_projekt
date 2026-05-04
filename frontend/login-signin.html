@@ -15,18 +15,18 @@
 <div class="card">
 
     <div class="toggle">
-        <button id="signupBtn" class="active" onclick="showSignup()">SIGN UP</button>
-        <button id="loginBtn" onclick="showLogin()">LOGIN</button>
+        <button id="signupBtn" onclick="showSignup()">SIGN UP</button>
+        <button id="loginBtn" class="active" onclick="showLogin()">LOGIN</button>
     </div>
 
-    <div id="signupForm">
+    <div id="signupForm" class="hidden">
         <input type="email" placeholder="Email address">
         <input type="text" placeholder="Username">
         <input type="password" placeholder="Password">
         <button class="submit">SIGN UP</button>
     </div>
 
-    <div id="loginForm" class="hidden">
+    <div id="loginForm">
         <input type="email" placeholder="Email address">
         <input type="password" placeholder="Password">
         <div class="link">Forgot password?</div>
@@ -40,17 +40,30 @@ function showSignup() {
     document.getElementById("signupForm").classList.remove("hidden");
     document.getElementById("loginForm").classList.add("hidden");
 
-    signupBtn.classList.add("active");
-    loginBtn.classList.remove("active");
+    document.getElementById("signupBtn").classList.add("active");
+    document.getElementById("loginBtn").classList.remove("active");
 }
 
 function showLogin() {
     document.getElementById("loginForm").classList.remove("hidden");
     document.getElementById("signupForm").classList.add("hidden");
 
-    loginBtn.classList.add("active");
-    signupBtn.classList.remove("active");
+    document.getElementById("loginBtn").classList.add("active");
+    document.getElementById("signupBtn").classList.remove("active");
 }
+
+function checkHash() {
+    const hash = window.location.hash;
+    if (hash === '#signup') {
+        showSignup();
+    } else {
+        showLogin();
+    }
+}
+
+// Kontrollera hash på initial load och när den ändras
+document.addEventListener('DOMContentLoaded', checkHash);
+window.addEventListener('hashchange', checkHash);
 </script>
 
 </body>

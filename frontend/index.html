@@ -41,7 +41,7 @@ body {
     transition: 0.3s;
 }
 .title:hover {
-    box-shadow: 0 0 15px #4a6cff;
+    box-shadow: 0 0 8px #4a6cff;
 }
 
 .menu {
@@ -55,6 +55,7 @@ body {
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     animation: fadeIn 0.2s ease;
+    z-index: 1000;
 }
 .menu a {
     padding: 10px;
@@ -89,8 +90,8 @@ body {
 
 .login-btn:hover {
     background: #6f85b5;
-    transform: scale(1.05);
-    box-shadow: 0 0 10px #4a6cff;
+    transform: scale(1.03);
+    box-shadow: 0 0 8px #4a6cff;
 }
 
 .signup-btn {
@@ -105,8 +106,8 @@ body {
 
 .signup-btn:hover {
     background: #3f5cff;
-    transform: scale(1.05);
-    box-shadow: 0 0 15px #4a6cff;
+    transform: scale(1.03);
+    box-shadow: 0 0 8px #4a6cff;
 }
 
 .container {
@@ -123,8 +124,8 @@ body {
     transition: 0.3s;
 }
 .left:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
 
 .left h1 {
@@ -144,8 +145,8 @@ body {
 .left button:hover {
     background: #4a6cff;
     color: white;
-    transform: scale(1.05);
-    box-shadow: 0 0 10px #4a6cff;
+    transform: scale(1.03);
+    box-shadow: 0 0 8px #4a6cff;
 }
 
 .right {
@@ -164,8 +165,8 @@ body {
     transition: 0.3s;
 }
 .slideshow:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 20px #4a6cff;
+    transform: scale(1.01);
+    box-shadow: 0 0 12px #4a6cff;
 }
 
 .text-list p {
@@ -175,7 +176,7 @@ body {
 }
 .text-list p:hover {
     color: #4a6cff;
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 @keyframes fadeIn {
@@ -206,8 +207,8 @@ body {
     </nav>
 
     <div class="auth">
-        <button class="login-btn" onclick="goLogin()">LOGIN</button>
         <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
+        <button class="login-btn" onclick="goLogin()">LOGIN</button>
     </div>
 
 </div>
@@ -254,11 +255,11 @@ document.addEventListener('click', function(event) {
 });
 
 function goLogin() {
-    window.location.href = "login-signin.html";
+    window.location.href = "login-signin.html#login";
 };
 
 function goSignup() {
-    window.location.href = "login-signin.html";
+    window.location.href = "login-signin.html#signup";
 };
 
 function goPatchdownload() {

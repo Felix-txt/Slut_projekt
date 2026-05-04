@@ -43,9 +43,112 @@
     flex-direction: row;
     width: 100%;
     justify-content: space-between;
+    align-items: center;
 }
 .user{
     margin: 10px;
 }
 
 
+
+
+.admin-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.admin-panel {
+  background: #efefef;
+  padding: 14px;
+  border-radius: 8px;
+  max-width: 720px;
+  flex: 1;
+}
+
+.panel-head {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.panel-head-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel-head h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.quick-upload-btn {
+  text-decoration: none;
+  background: linear-gradient(135deg, #1a3a52 0%, #2c5aa0 50%, #3b7dd6 100%);
+  color: #fff;
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: 0 8px 20px rgba(44, 90, 160, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.quick-upload-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(44, 90, 160, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, #0f1f33 0%, #1a3a52 50%, #2c5aa0 100%);
+}
+
+.quick-upload-btn:active {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(44, 90, 160, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.panel-head input {
+  border: 1px solid #ccc;
+  padding: 8px 10px;
+  border-radius: 6px;
+  width: 220px;
+}
+
+.user-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.user-row {
+  background: #d9d9d9;
+  padding: 10px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-row p {
+  margin: 2px 0 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.user-row a {
+  text-decoration: none;
+  background: #222;
+  color: #fff;
+  padding: 7px 10px;
+  border-radius: 5px;
+  font-size: 0.85rem;
+}

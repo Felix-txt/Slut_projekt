@@ -20,26 +20,29 @@
     </div>
 
     <div id="signupForm" class="hidden">
-        <input type="email" placeholder="Email address">
-        <input type="text" placeholder="Username">
-        <input type="password" placeholder="Password">
-        <button class="submit">SIGN UP</button>
+        <input type="email" id="signupEmail" placeholder="Email address">
+        <input type="text" id="signupUsername" placeholder="Username">
+        <input type="password" id="signupPassword" placeholder="Password">
+        <button class="submit" onclick="signup()">SIGN UP</button>
+        <div id="signupMsg"></div>
     </div>
 
     <div id="loginForm">
-        <input type="email" placeholder="Email address">
-        <input type="password" placeholder="Password">
+        <input type="email" id="loginEmail" placeholder="Email address">
+        <input type="password" id="loginPassword" placeholder="Password">
         <div class="link">Forgot password?</div>
-        <button class="submit">LOGIN</button>
+        <button class="submit" onclick="login()">LOGIN</button>
+        <div id="loginMsg"></div>
     </div>
 
 </div>
 
 <script>
+const API = "http://localhost:5000/api";
+
 function showSignup() {
     document.getElementById("signupForm").classList.remove("hidden");
     document.getElementById("loginForm").classList.add("hidden");
-
     document.getElementById("signupBtn").classList.add("active");
     document.getElementById("loginBtn").classList.remove("active");
 }
@@ -47,21 +50,52 @@ function showSignup() {
 function showLogin() {
     document.getElementById("loginForm").classList.remove("hidden");
     document.getElementById("signupForm").classList.add("hidden");
-
     document.getElementById("loginBtn").classList.add("active");
     document.getElementById("signupBtn").classList.remove("active");
 }
 
-function checkHash() {
-    const hash = window.location.hash;
-    if (hash === '#signup') {
-        showSignup();
+async function signup() {
+    const email = document.getElementById("signupEmail").value;
+    const username = document.getElementById("signupUsername").value;
+    const password = document.getElementById("signupPassword").value;
+    const msg = document.getElementById("signupMsg");
+    const res = await fetch(`${API}/auth/register`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({email, username, password})
+    });
+    const data = await res.json();
+    if (data.ok) {
+        window.location.href = "index.html";
     } else {
-        showLogin();
+        msg.textContent = data.message || "Error";
     }
 }
 
-// Kontrollera hash på initial load och när den ändras
+async function login() {
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+    const msg = document.getElementById("loginMsg");
+    const res = await fetch(`${API}/auth/login`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({email, password})
+    });
+    const data = await res.json();
+    if (data.token) {
+        localStorage.setItem("token", data.token);
+        window.location.href = "index.html";
+    } else {
+        msg.textContent = data.message || "Login failed";
+    }
+}
+
+function checkHash() {
+    const hash = window.location.hash;
+    if (hash === '#signup') showSignup();
+    else showLogin();
+}
+
 document.addEventListener('DOMContentLoaded', checkHash);
 window.addEventListener('hashchange', checkHash);
 </script>

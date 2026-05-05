@@ -268,6 +268,26 @@ body {
     from {opacity: 0; transform: translateY(-10px);}
     to {opacity: 1; transform: translateY(0);}
 }
+
+.user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #5a6c8f;
+    cursor: pointer;
+    overflow: hidden;
+    transition: 0.3s;
+}
+.user-icon:hover {
+    box-shadow: 0 0 8px #4a6cff;
+    transform: scale(1.05);
+}
+.user-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 </style>
 </head>
 
@@ -292,9 +312,13 @@ body {
         <a href="../admin/panel.html">Admin Panel</a>
     </nav>
 
-    <div class="auth">
+    <div class="auth" id="authButtons">
         <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
         <button class="login-btn" onclick="goLogin()">LOGIN</button>
+    </div>
+    <div class="user-icon" id="userIcon" style="display:none;">
+        <img id="profilePic" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z'/%3E%3C/svg%3E" onclick="goAccount()">
+        <input type="file" id="picUpload" accept="image/*" style="display:none" onchange="changeProfilePic(event)">
     </div>
 
 </div>
@@ -327,6 +351,9 @@ body {
 </div>
 
 <script>
+
+const API = "http://localhost:5000/api";
+
 document.getElementById("burger").addEventListener("click", function() {
     document.getElementById("menu").classList.toggle("show");
 });
@@ -340,11 +367,32 @@ document.addEventListener('click', function(event) {
     }
 });
 
-function goLogin() {
-    window.location.href = "login-signin.html#login";
+function checkAuth(){ // kollar om anvä'ndaren är logged in eller inte
+    const token = localStorage.getItem("token");
+    if (token){
+        document.getElementById("authButtons").style.display = "none";
+        document.getElementById("userIcon").style.display = "block";
+        const savePic = localStorage.getItem("profilePicture");
+        if (savePic) document.getElementById("userIcon").src = savePic;
+    }
+}
+
+function changeprofile(event){
+    const file = event.target.files[0];
+    if (file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById("userIcon").src = e.target.result;
+        localStorage.setItem("profilePicture", e.target.result);
+    }
+    reader.readAsDataURL(file);
+}
+
+function goLogin() { // om man klickar på login går den till login sidan direkt
+    window.location.href = "login-signin.html#login"; 
 };
 
-function goSignup() {
+function goSignup() { // om man klickar på signup går den till signup siddan direkt
     window.location.href = "login-signin.html#signup";
 };
 
@@ -362,6 +410,8 @@ function goPatchdownload() {
 function goGameInfo() {
     window.location.href = "game/gameinf.html";
 };
+
+checkAuth();// kollar auth status när sidan laddas
 </script>
 
 </body>

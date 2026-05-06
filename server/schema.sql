@@ -96,9 +96,23 @@ CREATE TABLE IF NOT EXISTS crate_opens (
     opened_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Full game cloud saves. The game owns this JSON shape.
+CREATE TABLE IF NOT EXISTS saves (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    game_id VARCHAR(100) NOT NULL,
+    save_data JSONB NOT NULL,
+    version INTEGER NOT NULL DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, game_id)
+);
+
 -- ============================================================================
 -- INDEXES
 -- ============================================================================
 CREATE INDEX IF NOT EXISTS idx_user_inventory_user ON user_inventory(user_id);
 CREATE INDEX IF NOT EXISTS idx_crate_skins_crate ON crate_skins(crate_id);
 CREATE INDEX IF NOT EXISTS idx_crate_opens_user ON crate_opens(user_id);
+CREATE INDEX IF NOT EXISTS idx_saves_user_game ON saves(user_id, game_id);
+CREATE INDEX IF NOT EXISTS idx_saves_save_data_gin ON saves USING GIN (save_data);

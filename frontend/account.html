@@ -1,12 +1,599 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
-    <link rel="stylesheet" href="style.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS Clicker - Account</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #ececec, #d9d9d9);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    position: relative;
+}
+
+.burger {
+    cursor: pointer;
+}
+
+.burger svg,
+.title,
+button,
+.slot,
+.avatar {
+    transition: 0.3s;
+}
+
+.burger:hover svg,
+button:hover,
+.avatar:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 6px #4a6cff);
+}
+
+.title {
+    margin: auto;
+    background: #ddd;
+    padding: 10px 30px;
+    border-radius: 20px;
+    font-size: 32px;
+}
+
+.title:hover {
+    box-shadow: 0 0 8px #4a6cff;
+}
+
+.menu {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    left: 10px;
+    background: #eee;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+.menu.show {
+    display: flex;
+}
+
+.menu a {
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+.menu a:hover {
+    background: #4a6cff;
+    color: white;
+}
+
+.auth {
+    display: flex;
+    gap: 10px;
+}
+
+.auth button,
+.change-btn,
+.toggle-btn,
+.modal button {
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.signup-btn {
+    background: #2f4bb2;
+    padding: 8px 16px;
+    border-radius: 20px;
+}
+
+.login-btn {
+    background: #5a6c8f;
+    padding: 8px 16px;
+    border-radius: 20px;
+}
+
+.account-chip {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #5a6c8f;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.user-icon img,
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.account-name {
+    max-width: 120px;
+    font-size: 13px;
+    font-weight: bold;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.account-page {
+    padding: 30px;
+}
+
+.profile-box {
+    background: #d9d9d9;
+    min-height: 205px;
+    display: flex;
+    gap: 80px;
+    padding: 0;
+}
+
+.avatar {
+    width: 138px;
+    height: 138px;
+    border-radius: 50%;
+    background: #a6a2a2;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+}
+
+.avatar img {
+    display: none;
+}
+
+.avatar.has-pic img {
+    display: block;
+}
+
+.avatar.has-pic::before,
+.avatar.has-pic::after {
+    display: none;
+}
+
+.avatar::before {
+    content: "";
+    position: absolute;
+    top: 34px;
+    left: 48px;
+    width: 35px;
+    height: 35px;
+    border: 6px solid #000;
+    border-radius: 50%;
+}
+
+.avatar::after {
+    content: "";
+    position: absolute;
+    top: 76px;
+    left: 37px;
+    width: 55px;
+    height: 42px;
+    border: 6px solid #000;
+    border-bottom: none;
+    border-radius: 50px 50px 0 0;
+}
+
+.profile-info {
+    margin-top: 11px;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 67px;
+}
+
+.pill {
+    width: 288px;
+    height: 40px;
+    background: #4a4747;
+    color: white;
+    border-radius: 28px;
+    text-align: center;
+    line-height: 40px;
+    font-size: 30px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.change-btn {
+    width: 126px;
+    height: 40px;
+    background: #4a4747;
+    border-radius: 22px;
+    font-size: 20px;
+}
+
+.main-area {
+    display: flex;
+    gap: 74px;
+    margin-top: 10px;
+}
+
+.warning {
+    width: 334px;
+    height: 38px;
+    background: #ff8585;
+    line-height: 38px;
+    text-align: center;
+    font-size: 21px;
+    cursor: pointer;
+}
+
+.card {
+    width: 334px;
+    height: 537px;
+    background: #d9d9d9;
+    margin-top: 9px;
+    padding-top: 28px;
+}
+
+.card h1 {
+    text-align: center;
+    font-size: 32px;
+    font-weight: normal;
+    margin-bottom: 29px;
+}
+
+.info-box {
+    width: 298px;
+    height: 441px;
+    margin: auto;
+    background: #929292;
+    padding-top: 24px;
+}
+
+.info-row {
+    width: 219px;
+    height: 41px;
+    background: #d9d9d9;
+    margin: 0 auto 27px;
+    padding: 0 12px;
+    line-height: 41px;
+    font-size: 18px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.inventory-area {
+    padding-top: 22px;
+}
+
+.toggle-btn {
+    width: 150px;
+    height: 64px;
+    background: #868686;
+    border-radius: 22px;
+    font-size: 21px;
+}
+
+.inventory {
+    display: none;
+    width: 360px;
+    margin-top: 16px;
+    background: #d9d9d9;
+    border: 12px solid #929292;
+    padding: 18px;
+}
+
+.inventory.show {
+    display: block;
+}
+
+.inventory h2 {
+    text-align: center;
+    font-weight: normal;
+    margin-bottom: 15px;
+}
+
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.slot {
+    height: 55px;
+    background: #eee;
+    border: 3px solid #929292;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+
+.slot:hover,
+.slot.selected {
+    background: #4a6cff;
+    color: white;
+}
+
+.modal-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-bg.show {
+    display: flex;
+}
+
+.modal {
+    width: 360px;
+    background: #d9d9d9;
+    border: 8px solid #929292;
+    padding: 22px;
+}
+
+.modal h2 {
+    margin-bottom: 15px;
+    font-weight: normal;
+}
+
+.modal input {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 15px;
+    padding: 5px 10px;
+    font-size: 18px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal button {
+    background: #4a4747;
+    padding: 9px 15px;
+    border-radius: 15px;
+}
+
+@media (max-width: 800px) {
+    .profile-box,
+    .main-area {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .row {
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .pill {
+        width: 210px;
+        font-size: 22px;
+    }
+}
+</style>
 </head>
+
 <body>
-    <h1>Hej! Romeo här jag är lite bög och jag är väldigt duktig på att chudmaxxa</h1>
+
+<div class="header">
+    <div class="burger" id="burger">
+        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" viewBox="0 0 15 15">
+            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+        </svg>
+    </div>
+
+    <div class="title">CS-Clicker Account</div>
+
+    <nav class="menu" id="menu">
+        <a href="index.html">Home</a>
+        <a href="account.html">Account</a>
+        <a href="game/patch-download.html">Patch & Download</a>
+        <a href="game/gameinf.html">Game info</a>
+        <a href="leaderboard.html">Leaderboard</a>
+        <a href="../admin/panel.html">Admin Panel</a>
+    </nav>
+
+    <div class="auth" id="authButtons">
+        <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
+        <button class="login-btn" onclick="goLogin()">LOGIN</button>
+    </div>
+
+    <div class="account-chip" id="accountChip">
+        <div class="user-icon" onclick="goAccount()">
+            <img id="smallPic" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z'/%3E%3C/svg%3E">
+        </div>
+        <div class="account-name" id="accountName"></div>
+    </div>
+</div>
+
+<div class="account-page">
+    <section class="profile-box">
+        <label class="avatar" id="avatar" for="picUpload">
+            <img id="bigPic">
+            <input type="file" id="picUpload" accept="image/*" style="display:none" onchange="changePic(event)">
+        </label>
+
+        <div class="profile-info">
+            <div class="row">
+                <div class="pill" id="usernameText">USER NAME</div>
+                <button class="change-btn" onclick="openEdit('username')">Change</button>
+            </div>
+
+            <div class="row">
+                <div class="pill" id="emailText">MAIL</div>
+                <button class="change-btn" onclick="openEdit('email')">Change</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="main-area">
+        <div>
+            <div class="warning" id="warning" onclick="syncGame()">Account not synced with game</div>
+
+            <section class="card">
+                <h1>Account info</h1>
+                <div class="info-box">
+                    <div class="info-row" id="infoName"></div>
+                    <div class="info-row" id="infoMail"></div>
+                    <div class="info-row">Level: 1</div>
+                    <div class="info-row">Coins: 0</div>
+                    <div class="info-row" id="infoSync">Not synced</div>
+                </div>
+            </section>
+        </div>
+
+        <div class="inventory-area">
+            <button class="toggle-btn" onclick="toggleInventory()">TOGGLE<br>INVENTORY</button>
+
+            <section class="inventory" id="inventory">
+                <h2>Inventory</h2>
+                <div class="inventory-grid">
+                    <div class="slot">1</div>
+                    <div class="slot">2</div>
+                    <div class="slot">3</div>
+                    <div class="slot">4</div>
+                    <div class="slot">5</div>
+                    <div class="slot">6</div>
+                    <div class="slot">7</div>
+                    <div class="slot">8</div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<div class="modal-bg" id="modalBg">
+    <form class="modal" onsubmit="saveEdit(event)">
+        <h2 id="modalTitle">Change</h2>
+        <input id="editInput" type="text">
+        <div class="modal-actions">
+            <button type="button" onclick="closeEdit()">Cancel</button>
+            <button type="submit">Save</button>
+        </div>
+    </form>
+</div>
+
+<script>
+let editing = "";
+
+burger.onclick = function() {
+    menu.classList.toggle("show");
+};
+
+function updatePage() {
+    let username = localStorage.getItem("username") || "USER NAME";
+    let email = localStorage.getItem("email") || "MAIL";
+    let pic = localStorage.getItem("profilePicture");
+    let synced = localStorage.getItem("gameSynced") === "true";
+
+    usernameText.textContent = username;
+    emailText.textContent = email;
+    accountName.textContent = username;
+    infoName.textContent = "Name: " + username;
+    infoMail.textContent = "Mail: " + email;
+    infoSync.textContent = synced ? "Synced" : "Not synced";
+    warning.style.display = synced ? "none" : "block";
+
+    if (localStorage.getItem("token")) {
+        authButtons.style.display = "none";
+        accountChip.style.display = "flex";
+    }
+
+    if (pic) {
+        bigPic.src = pic;
+        smallPic.src = pic;
+        avatar.classList.add("has-pic");
+    }
+}
+
+function openEdit(field) {
+    editing = field;
+    modalTitle.textContent = field === "username" ? "Change user name" : "Change mail";
+    editInput.value = localStorage.getItem(field) || "";
+    modalBg.classList.add("show");
+}
+
+function closeEdit() {
+    modalBg.classList.remove("show");
+}
+
+function saveEdit(event) {
+    event.preventDefault();
+    localStorage.setItem(editing, editInput.value);
+    closeEdit();
+    updatePage();
+}
+
+function changePic(event) {
+    let file = event.target.files[0];
+    if (!file) return;
+
+    let reader = new FileReader();
+    reader.onload = function() {
+        localStorage.setItem("profilePicture", reader.result);
+        updatePage();
+    };
+    reader.readAsDataURL(file);
+}
+
+function syncGame() {
+    localStorage.setItem("gameSynced", "true");
+    updatePage();
+}
+
+function toggleInventory() {
+    inventory.classList.toggle("show");
+}
+
+document.querySelectorAll(".slot").forEach(function(slot) {
+    slot.onclick = function() {
+        slot.classList.toggle("selected");
+    };
+});
+
+function goLogin() {
+    window.location.href = "login-signin.html#login";
+}
+
+function goSignup() {
+    window.location.href = "login-signin.html#signup";
+}
+
+function goAccount() {
+    window.location.href = "account.html";
+}
+
+updatePage();
+</script>
+
 </body>
-</html>  
+</html>

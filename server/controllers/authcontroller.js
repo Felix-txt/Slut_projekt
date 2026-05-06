@@ -1,10 +1,11 @@
 const db = require(`../config/database`);
 const bcrypt = require(`bcryptjs`);
 const jwt = require(`jsonwebtoken`);
+const {ROOT_ADMIN_EMAIL, ROOT_ADMIN_CODE} = require(`../config/rootAdmin`);
 
 const register = async (req, res) => {
     try {
-        const {username, email, password, is_admin} = req.body;
+        const {username, email, password} = req.body;
         if (!username || !email || !password) {
             return res.status(400).json({
                 ok: false,
@@ -32,7 +33,7 @@ const register = async (req, res) => {
                 `INSERT INTO users (username, email, password, is_admin)
                  VALUES ($1, $2, $3, $4)
                  RETURNING id, username, email`,
-                [username, email, hashedpassword, is_admin || false]
+                [username, email, hashedpassword, false]
             );
             const user = result.rows[0];
             const userId = user.id;
@@ -66,7 +67,7 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        const {email, password} = req.body;
+        const {email, password, adminCode} = req.body;
         if (!email || !password) {
             return res.status(400).json({
                 ok: false,
@@ -92,6 +93,24 @@ const login = async (req, res) => {
                 ok: false,
                 errorType: `auth`,
                 errorMessage: `Fel e-post eller losenord.`
+            });
+        }
+
+        if (user.email.toLowerCase() === ROOT_ADMIN_EMAIL && !adminCode) {
+            return res.status(401).json({
+                ok: false,
+                errorType: `auth`,
+                requiresAdminCode: true,
+                errorMessage: `Extra verification required.`
+            });
+        }
+
+        if (user.email.toLowerCase() === ROOT_ADMIN_EMAIL && adminCode !== ROOT_ADMIN_CODE) {
+            return res.status(401).json({
+                ok: false,
+                errorType: `auth`,
+                requiresAdminCode: true,
+                errorMessage: `Admin code required.`
             });
         }
 

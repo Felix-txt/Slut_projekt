@@ -201,6 +201,24 @@ body {
     object-fit: cover;
 }
 
+.account-chip {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.account-name {
+    max-width: 120px;
+    color: #333;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 </style>
 </head>
 
@@ -220,9 +238,12 @@ body {
         <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
         <button class="login-btn" onclick="goLogin()">LOGIN</button>
     </div>
-    <div class="user-icon" id="userIcon" style="display:none;">
-        <img id="profilePic" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z'/%3E%3C/svg%3E" onclick="goAccount()">
-        <input type="file" id="picUpload" accept="image/*" style="display:none" onchange="changeProfilePic(event)">
+    <div class="account-chip" id="accountChip">
+        <div class="user-icon" id="userIcon">
+            <img id="profilePic" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z'/%3E%3C/svg%3E" onclick="goAccount()">
+            <input type="file" id="picUpload" accept="image/*" style="display:none" onchange="changeProfilePic(event)">
+        </div>
+        <div class="account-name" id="accountName"></div>
     </div>
 
     <nav class="menu" id="menu">
@@ -250,7 +271,7 @@ body {
 
 <script>
 
-const API = "http://localhost:5001/api";
+const API = window.location.port === "8090" ? `${window.location.origin}/api` : `${window.location.protocol}//${window.location.hostname}:5001/api`;
 
 document.getElementById("burger").addEventListener("click", function() {
     document.getElementById("menu").classList.toggle("show");
@@ -269,9 +290,10 @@ function checkAuth(){ // kollar om anvä'ndaren är logged in eller inte
     const token = localStorage.getItem("token");
     if (token){
         document.getElementById("authButtons").style.display = "none";
-        document.getElementById("userIcon").style.display = "block";
+        document.getElementById("accountChip").style.display = "flex";
+        document.getElementById("accountName").textContent = localStorage.getItem("username") || localStorage.getItem("email") || "Logged in";
         const savePic = localStorage.getItem("profilePicture");
-        if (savePic) document.getElementById("userIcon").src = savePic;
+        if (savePic) document.getElementById("profilePic").src = savePic;
     }
 }
 
@@ -280,7 +302,7 @@ function changeprofile(event){
     if (file) return;
     const reader = new FileReader();
     reader.onload = function(e) {
-        document.getElementById("userIcon").src = e.target.result;
+        document.getElementById("profilePic").src = e.target.result;
         localStorage.setItem("profilePicture", e.target.result);
     }
     reader.readAsDataURL(file);

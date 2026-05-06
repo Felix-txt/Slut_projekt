@@ -5,6 +5,7 @@ const path = require(`path`);
 const https = require(`https`);
 require(`dotenv`).config();
 const db = require(`./config/database`);
+const seedRootAdmin = require(`./config/seedRootAdmin`);
 
 const app = express();
 
@@ -35,19 +36,22 @@ if (useHttps) {
             key: fs.readFileSync(keyPath)
         };
         httpsServer = https.createServer(httpsOptions, app);
-        httpsServer.listen(PORT, () => {
+        httpsServer.listen(PORT, async () => {
+            await seedRootAdmin().catch((error) => console.error(`root admin seed failed`, error));
             console.log(`server running on https://localhost:${PORT}`);
         });
         console.log(`HTTPS enabled`);
     } else {
         console.log(`SSL certificates not found at ${certPath} and ${keyPath}`);
         console.log(`Run with HTTPS=true to enable, or generate self-signed certs`);
-        app.listen(PORT, () => {
+        app.listen(PORT, async () => {
+            await seedRootAdmin().catch((error) => console.error(`root admin seed failed`, error));
             console.log(`server running on http://localhost:${PORT}`);
         });
     }
 } else {
-    app.listen(PORT, () => {
+    app.listen(PORT, async () => {
+        await seedRootAdmin().catch((error) => console.error(`root admin seed failed`, error));
         console.log(`server running on http://localhost:${PORT}`);
     });
 }

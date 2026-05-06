@@ -127,6 +127,9 @@
   margin: 0;
   display: grid;
   gap: 8px;
+  max-height: 408px;
+  overflow-y: auto;
+  padding-right: 6px;
 }
 
 .user-row {
@@ -136,6 +139,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-height: 74px;
 }
 
 .user-row p {
@@ -151,4 +155,24 @@
   padding: 7px 10px;
   border-radius: 5px;
   font-size: 0.85rem;
+}
+
+.user-row-muted {
+  color: #555;
+}
+
+.admin-badge {
+  display: inline-block;
+  margin-left: 6px;
+  background: #2f4bb2;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.admin-access-message {
+  margin: 8px 0 14px;
+  color: #333;
 }

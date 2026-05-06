@@ -17,6 +17,7 @@ app.use(`/api/saves`, require(`./routes/saves`));
 app.use(`/api/skins`, require(`./routes/skins`));
 app.use(`/api/crates`, require(`./routes/crates`));
 app.use(`/api/inventory`, require(`./routes/inventory`));
+app.use(`/api/admin`, require(`./routes/admin`));
 
 const PORT = process.env.PORT || 5000;
 

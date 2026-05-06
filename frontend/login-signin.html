@@ -38,7 +38,7 @@
 </div>
 
 <script>
-const API = "http://localhost:5000/api";
+const API = "http://localhost:5001/api";
 
 function showSignup() {
     document.getElementById("signupForm").classList.remove("hidden");
@@ -59,16 +59,36 @@ async function signup() {
     const username = document.getElementById("signupUsername").value;
     const password = document.getElementById("signupPassword").value;
     const msg = document.getElementById("signupMsg");
-    const res = await fetch(`${API}/auth/register`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({email, username, password})
-    });
-    const data = await res.json();
-    if (data.ok) {
-        window.location.href = "index.html";
-    } else {
-        msg.textContent = data.message || "Error";
+    msg.textContent = "";
+
+    try {
+        const res = await fetch(`${API}/auth/register`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({email, username, password})
+        });
+        const data = await res.json();
+
+        if (!data.ok) {
+            msg.textContent = data.errorMessage || "Could not create account";
+            return;
+        }
+
+        const loginRes = await fetch(`${API}/auth/login`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({email, password})
+        });
+        const loginData = await loginRes.json();
+
+        if (loginData.token) {
+            localStorage.setItem("token", loginData.token);
+            window.location.href = "index.html";
+        } else {
+            msg.textContent = loginData.errorMessage || "Account created, but login failed";
+        }
+    } catch (error) {
+        msg.textContent = "Could not connect to server";
     }
 }
 
@@ -76,17 +96,24 @@ async function login() {
     const email = document.getElementById("loginEmail").value;
     const password = document.getElementById("loginPassword").value;
     const msg = document.getElementById("loginMsg");
-    const res = await fetch(`${API}/auth/login`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({email, password})
-    });
-    const data = await res.json();
-    if (data.token) {
-        localStorage.setItem("token", data.token);
-        window.location.href = "index.html";
-    } else {
-        msg.textContent = data.message || "Login failed";
+    msg.textContent = "";
+
+    try {
+        const res = await fetch(`${API}/auth/login`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({email, password})
+        });
+        const data = await res.json();
+
+        if (data.token) {
+            localStorage.setItem("token", data.token);
+            window.location.href = "index.html";
+        } else {
+            msg.textContent = data.errorMessage || "Login failed";
+        }
+    } catch (error) {
+        msg.textContent = "Could not connect to server";
     }
 }
 

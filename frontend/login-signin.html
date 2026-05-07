@@ -41,8 +41,7 @@
 </div>
 
 <script>
-const API = window.location.port === "8090" ? `${window.location.origin}/api` : `${window.location.protocol}//${window.location.hostname}:5001/api`;
-
+const API = "http://localhost:5000"
 function showSignup() {
     document.getElementById("signupForm").classList.remove("hidden");
     document.getElementById("loginForm").classList.add("hidden");

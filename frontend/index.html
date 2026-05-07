@@ -399,7 +399,7 @@ body {
 
 <script>
 
-const API = window.location.port === "8090" ? `${window.location.origin}/api` : `${window.location.protocol}//${window.location.hostname}:5001/api`;
+const API = "http://localhost:5000";
 
 document.getElementById("burger").addEventListener("click", function() {
     document.getElementById("menu").classList.toggle("show");
@@ -425,15 +425,19 @@ function checkAuth(){ // kollar om anvä'ndaren är logged in eller inte
     }
 }
 
-function changeprofile(event){
+function changeProfilePic(event){
     const file = event.target.files[0];
-    if (file) return;
+    if (!file) return;
     const reader = new FileReader();
     reader.onload = function(e) {
         document.getElementById("profilePic").src = e.target.result;
         localStorage.setItem("profilePicture", e.target.result);
     }
     reader.readAsDataURL(file);
+}
+
+function goAccount() {
+    window.location.href = "account.html";
 }
 
 function goLogin() { // om man klickar på login går den till login sidan direkt

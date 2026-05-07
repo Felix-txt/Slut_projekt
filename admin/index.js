@@ -1,4 +1,4 @@
-const API = window.location.port === "8090" ? `${window.location.origin}/api` : `${window.location.protocol}//${window.location.hostname}:5001/api`;
+const API = "http://localhost:5000/api";
 const ROOT_ADMIN_EMAIL = "admin@test.local";
 let users = [];
 let search;

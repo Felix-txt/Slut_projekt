@@ -19,6 +19,7 @@ app.use(`/api/skins`, require(`./routes/skins`));
 app.use(`/api/crates`, require(`./routes/crates`));
 app.use(`/api/inventory`, require(`./routes/inventory`));
 app.use(`/api/admin`, require(`./routes/admin`));
+app.use(`/api/users`, require(`./routes/users`));
 
 const PORT = process.env.PORT || 5000;
 
@@ -44,13 +45,21 @@ if (useHttps) {
     } else {
         console.log(`SSL certificates not found at ${certPath} and ${keyPath}`);
         console.log(`Run with HTTPS=true to enable, or generate self-signed certs`);
-        app.listen(PORT, async () => {
+        app.listen(PORT, async (err) => {
+            if (err) {
+                console.error(`server failed to start on port ${PORT}:`, err.message);
+                return;
+            }
             await seedRootAdmin().catch((error) => console.error(`root admin seed failed`, error));
             console.log(`server running on http://localhost:${PORT}`);
         });
     }
 } else {
-    app.listen(PORT, async () => {
+    app.listen(PORT, async (err) => {
+        if (err) {
+            console.error(`server failed to start on port ${PORT}:`, err.message);
+            return;
+        }
         await seedRootAdmin().catch((error) => console.error(`root admin seed failed`, error));
         console.log(`server running on http://localhost:${PORT}`);
     });

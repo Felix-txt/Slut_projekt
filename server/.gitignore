@@ -1,0 +1,4 @@
+.pgdata/
+postgres-local.log
+.pgpass.tmp
+node_modules/

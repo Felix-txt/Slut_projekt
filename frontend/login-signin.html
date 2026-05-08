@@ -41,8 +41,7 @@
 </div>
 
 <script>
-const API = window.location.port === "8090" ? `${window.location.origin}/api` : `${window.location.protocol}//${window.location.hostname}:5001/api`;
-
+const API = "http://localhost:5000/api"
 function showSignup() {
     document.getElementById("signupForm").classList.remove("hidden");
     document.getElementById("loginForm").classList.add("hidden");
@@ -89,6 +88,7 @@ async function signup() {
             localStorage.setItem("username", loginData.username || "");
             localStorage.setItem("email", loginData.email || "");
             localStorage.setItem("isAdmin", loginData.is_admin ? "true" : "false");
+            localStorage.setItem("profilePicture", loginData.profile_picture || "");
             window.location.href = "index.html";
         } else {
             msg.textContent = loginData.errorMessage || "Account created, but login failed";
@@ -119,6 +119,7 @@ async function login() {
             localStorage.setItem("username", data.username || "");
             localStorage.setItem("email", data.email || "");
             localStorage.setItem("isAdmin", data.is_admin ? "true" : "false");
+            localStorage.setItem("profilePicture", data.profile_picture || "");
             window.location.href = "index.html";
         } else if (data.requiresAdminCode) {
             adminCodeWrap.classList.remove("hidden");

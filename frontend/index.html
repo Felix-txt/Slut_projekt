@@ -175,6 +175,10 @@ body {
     transition: all 0.3s ease;
     box-shadow: 0 8px 20px rgba(44, 90, 160, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     text-transform: uppercase;
+
+    animation: gradientMove 6s ease infinite, pulse 2s infinite;
+
+    transition: 0.3s;
 }
 
 .main-download-btn:hover {
@@ -306,6 +310,28 @@ body {
     white-space: nowrap;
 }
 
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes glowMove {
+    0% { background-position: 0%; }
+    100% { background-position: 200%; }
+}
+
+@keyframes shine {
+    0% { left: -100%; }
+    50% { left: 120%; }
+    100% { left: 120%; }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
 </style>
 </head>
 
@@ -322,12 +348,11 @@ body {
     <div class="title">CS-Clicker Game</div>
 
     <nav class="menu" id="menu">
-        <a href="index.html">Home</a>
         <a href="account.html">Account</a>
         <a href="game/patch-download.html">Patch & Download</a>
         <a href="game/gameinf.html">Game info</a>
         <a href="leaderboard.html">Leaderboard</a>
-        <a href="../admin/panel.html">Admin Panel</a>
+        <a href="../admin/panel.html" id="adminLink" style="display:none">Admin Panel</a>
     </nav>
 
     <div class="auth" id="authButtons">
@@ -373,7 +398,7 @@ body {
 
 <script>
 
-const API = window.location.port === "8090" ? `${window.location.origin}/api` : `${window.location.protocol}//${window.location.hostname}:5001/api`;
+const API = "http://localhost:5000/api"; // om ändaras så är orginal: http://localhost:5000/api
 
 document.getElementById("burger").addEventListener("click", function() {
     document.getElementById("menu").classList.toggle("show");
@@ -388,7 +413,7 @@ document.addEventListener('click', function(event) {
     }
 });
 
-function checkAuth(){ // kollar om anvä'ndaren är logged in eller inte
+function checkAuth(){ // kollar om användaren är logged in eller inte och om den är admin eller inte
     const token = localStorage.getItem("token");
     if (token){
         document.getElementById("authButtons").style.display = "none";
@@ -396,18 +421,25 @@ function checkAuth(){ // kollar om anvä'ndaren är logged in eller inte
         document.getElementById("accountName").textContent = localStorage.getItem("username") || localStorage.getItem("email") || "Logged in";
         const savePic = localStorage.getItem("profilePicture");
         if (savePic) document.getElementById("profilePic").src = savePic;
+        if (localStorage.getItem("isAdmin") === "true") {
+            document.getElementById("adminLink").style.display = "block";
+        }
     }
 }
 
-function changeprofile(event){
+function changeProfilePic(event){
     const file = event.target.files[0];
-    if (file) return;
+    if (!file) return;
     const reader = new FileReader();
     reader.onload = function(e) {
         document.getElementById("profilePic").src = e.target.result;
         localStorage.setItem("profilePicture", e.target.result);
     }
     reader.readAsDataURL(file);
+}
+
+function goAccount() {
+    window.location.href = "account.html";
 }
 
 function goLogin() { // om man klickar på login går den till login sidan direkt
@@ -433,7 +465,7 @@ function goGameInfo() {
     window.location.href = "game/gameinf.html";
 };
 
-checkAuth();// kollar auth status när sidan laddas
+checkAuth();// kör auth status när sidan laddas
 </script>
 
 </body>

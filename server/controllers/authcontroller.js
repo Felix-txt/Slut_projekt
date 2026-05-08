@@ -122,7 +122,8 @@ const login = async (req, res) => {
             accountId: user.id,
             email: user.email,
             username: user.username,
-            is_admin: user.is_admin
+            is_admin: user.is_admin,
+            profile_picture: user.profile_picture
         });
         
     }

@@ -116,10 +116,36 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    gap: 12px;
 }
 
 .lb-header h2 {
     font-weight: normal;
+}
+
+.sort-controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.sort-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 8px 10px;
+    background: #bbb;
+    color: #222;
+    cursor: pointer;
+    font-weight: 700;
+    transition: 0.2s;
+}
+
+.sort-btn:hover,
+.sort-btn.active {
+    background: #4a6cff;
+    color: white;
+    box-shadow: 0 0 8px #4a6cff;
 }
 
 .lb-list {
@@ -146,9 +172,14 @@ body {
 .avatar {
     width: 50px;
     height: 50px;
-    background: #999;
+    background: #5a6c8f;
     border-radius: 50%;
     margin-right: 15px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
 }
 
 .info {
@@ -156,18 +187,38 @@ body {
 }
 
 .name {
-    height: 15px;
-    width: 60%;
-    background: #555;
-    border-radius: 10px;
-    margin-bottom: 8px;
+    font-weight: 800;
+    color: #222;
 }
 
 .score {
-    height: 15px;
-    width: 40%;
-    background: #666;
-    border-radius: 10px;
+    font-weight: 800;
+    color: #2f4bb2;
+    white-space: nowrap;
+}
+
+.player-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+}
+
+.stats {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 7px;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.empty-state {
+    background: #cfcfcf;
+    border-radius: 12px;
+    padding: 18px;
+    color: #333;
+    text-align: center;
 }
 
 .lb-list::-webkit-scrollbar {
@@ -260,10 +311,16 @@ body {
 
         <div class="lb-header">
             <h2>Leaderboard</h2>
-            <span>⬇</span>
+            <div class="sort-controls">
+                <button class="sort-btn active" data-sort="money">Money</button>
+                <button class="sort-btn" data-sort="level">Level</button>
+                <button class="sort-btn" data-sort="casesOpened">Cases</button>
+                <button class="sort-btn" data-sort="inventoryCount">Items</button>
+            </div>
         </div>
 
         <div class="lb-list" id="leaderboardList">
+            <div class="empty-state">Loading leaderboard...</div>
         </div>
 
     </div>
@@ -271,7 +328,8 @@ body {
 
 <script>
 
-const API = "http://localhost:5000/api"
+const API = window.location.port === "8090" ? `${window.location.origin}/api` : `${window.location.protocol}//${window.location.hostname}:5001/api`;
+let currentSort = "money";
 
 document.getElementById("burger").addEventListener("click", function() {
     document.getElementById("menu").classList.toggle("show");
@@ -316,23 +374,87 @@ function goSignup() {
     window.location.href = "login-signin.html";
 }
 
-function addPlayer(name, score) {
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function formatNumber(value) {
+    return Number(value || 0).toLocaleString("sv-SE");
+}
+
+function getMainScore(row) {
+    if (currentSort === "level") return `Lvl ${formatNumber(row.level)}`;
+    if (currentSort === "casesOpened") return `${formatNumber(row.totalCasesOpened)} cases`;
+    if (currentSort === "inventoryCount") return `${formatNumber(row.inventoryCount)} items`;
+    return `$${formatNumber(row.money)}`;
+}
+
+function renderLeaderboard(rows) {
     const list = document.getElementById("leaderboardList");
 
-    const player = document.createElement("div");
-    player.classList.add("player");
+    if (!rows.length) {
+        list.innerHTML = `<div class="empty-state">No leaderboard saves yet.</div>`;
+        return;
+    }
 
-    player.innerHTML = `
-        <div class="avatar"></div>
-        <div class="info">
-            <div>${name}</div>
-            <div>${score}</div>
+    list.innerHTML = rows.map((row) => `
+        <div class="player">
+            <div class="avatar">#${escapeHtml(row.rank)}</div>
+            <div class="info">
+                <div class="player-top">
+                    <div class="name">${escapeHtml(row.username)}</div>
+                    <div class="score">${escapeHtml(getMainScore(row))}</div>
+                </div>
+                <div class="stats">
+                    <span>Level ${formatNumber(row.level)}</span>
+                    <span>$${formatNumber(row.money)}</span>
+                    <span>${formatNumber(row.totalCasesOpened)} cases</span>
+                    <span>${formatNumber(row.inventoryCount)} items</span>
+                </div>
+            </div>
         </div>
-    `;
-
-    list.appendChild(player);
+    `).join("");
 }
+
+async function loadLeaderboard(sort = currentSort) {
+    currentSort = sort;
+    const list = document.getElementById("leaderboardList");
+    list.innerHTML = `<div class="empty-state">Loading leaderboard...</div>`;
+
+    try {
+        const res = await fetch(`${API}/leaderboard?sort=${encodeURIComponent(currentSort)}&limit=50`);
+        const data = await res.json();
+
+        if (!data.ok) {
+            list.innerHTML = `<div class="empty-state">${escapeHtml(data.errorMessage || "Could not load leaderboard.")}</div>`;
+            return;
+        }
+
+        renderLeaderboard(data.rows || []);
+    } catch (error) {
+        list.innerHTML = `<div class="empty-state">Could not connect to server.</div>`;
+    }
+}
+
+document.querySelectorAll(".sort-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+        document.querySelectorAll(".sort-btn").forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+        loadLeaderboard(button.dataset.sort);
+    });
+});
+
+function goAccount() {
+    window.location.href = "account.html";
+}
+
 checkAuth();
+loadLeaderboard();
 </script>
 
 </body>

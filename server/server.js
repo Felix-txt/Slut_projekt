@@ -20,8 +20,10 @@ app.use(`/api/crates`, require(`./routes/crates`));
 app.use(`/api/inventory`, require(`./routes/inventory`));
 app.use(`/api/admin`, require(`./routes/admin`));
 app.use(`/api/users`, require(`./routes/users`));
+app.use(`/api/leaderboard`, require(`./routes/leaderboard`));
 
 const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || `0.0.0.0`;
 
 const useHttps = process.env.HTTPS === `true`;
 
@@ -37,30 +39,30 @@ if (useHttps) {
             key: fs.readFileSync(keyPath)
         };
         httpsServer = https.createServer(httpsOptions, app);
-        httpsServer.listen(PORT, async () => {
+        httpsServer.listen(PORT, HOST, async () => {
             await seedRootAdmin().catch((error) => console.error(`root admin seed failed`, error));
-            console.log(`server running on https://localhost:${PORT}`);
+            console.log(`server running on https://${HOST}:${PORT}`);
         });
         console.log(`HTTPS enabled`);
     } else {
         console.log(`SSL certificates not found at ${certPath} and ${keyPath}`);
         console.log(`Run with HTTPS=true to enable, or generate self-signed certs`);
-        app.listen(PORT, async (err) => {
+        app.listen(PORT, HOST, async (err) => {
             if (err) {
                 console.error(`server failed to start on port ${PORT}:`, err.message);
                 return;
             }
             await seedRootAdmin().catch((error) => console.error(`root admin seed failed`, error));
-            console.log(`server running on http://localhost:${PORT}`);
+            console.log(`server running on http://${HOST}:${PORT}`);
         });
     }
 } else {
-    app.listen(PORT, async (err) => {
+    app.listen(PORT, HOST, async (err) => {
         if (err) {
             console.error(`server failed to start on port ${PORT}:`, err.message);
             return;
         }
         await seedRootAdmin().catch((error) => console.error(`root admin seed failed`, error));
-        console.log(`server running on http://localhost:${PORT}`);
+        console.log(`server running on http://${HOST}:${PORT}`);
     });
 }

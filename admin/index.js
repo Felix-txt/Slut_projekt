@@ -1,4 +1,4 @@
-const API = "http://localhost:5000/api";
+const API_CANDIDATES = getApiCandidates();
 const ROOT_ADMIN_EMAIL = "admin@test.local";
 let users = [];
 let search;
@@ -6,6 +6,41 @@ let usersList;
 let usersTableBody;
 let usersCount;
 let currentAdminId;
+
+function getApiCandidates() {
+    const host = window.location.hostname || "localhost";
+    const protocol = window.location.protocol === "file:" ? "http:" : window.location.protocol;
+    const candidates = [];
+
+    if (window.location.protocol !== "file:" && window.location.port === "8090") {
+        candidates.push(`${window.location.origin}/api`);
+    }
+
+    if (window.location.protocol !== "file:" && (window.location.port === "5000" || window.location.port === "5001")) {
+        candidates.push(`${window.location.origin}/api`);
+    }
+
+    candidates.push(`${protocol}//${host}:5001/api`);
+    candidates.push(`${protocol}//${host}:5000/api`);
+
+    return [...new Set(candidates)];
+}
+
+async function apiFetch(path, options = {}) {
+    let lastError = null;
+
+    for (const baseUrl of API_CANDIDATES) {
+        try {
+            const res = await fetch(`${baseUrl}${path}`, options);
+            const text = await res.text();
+            return text ? JSON.parse(text) : {};
+        } catch (error) {
+            lastError = error;
+        }
+    }
+
+    throw lastError || new Error("Could not connect to server");
+}
 
 function getCurrentTokenPayload() {
     const token = localStorage.getItem("token");
@@ -191,12 +226,11 @@ async function loadUsers() {
     }
 
     try {
-        const res = await fetch(`${API}/admin/users`, {
+        const data = await apiFetch("/admin/users", {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
-        const data = await res.json();
 
         if (!data.ok) {
             showUsersError(data.errorMessage || "Could not load users.");
@@ -214,7 +248,7 @@ async function setUserAdminStatus(userId, isAdmin) {
     const token = localStorage.getItem("token");
 
     try {
-        const res = await fetch(`${API}/admin/users/${encodeURIComponent(userId)}/admin`, {
+        const data = await apiFetch(`/admin/users/${encodeURIComponent(userId)}/admin`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -222,7 +256,6 @@ async function setUserAdminStatus(userId, isAdmin) {
             },
             body: JSON.stringify({isAdmin})
         });
-        const data = await res.json();
 
         if (!data.ok) {
             alert(data.errorMessage || "Could not update admin status.");
@@ -246,13 +279,12 @@ async function deleteUser(userId) {
     const token = localStorage.getItem("token");
 
     try {
-        const res = await fetch(`${API}/admin/users/${encodeURIComponent(userId)}`, {
+        const data = await apiFetch(`/admin/users/${encodeURIComponent(userId)}`, {
             method: "DELETE",
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
-        const data = await res.json();
 
         if (!data.ok) {
             alert(data.errorMessage || "Could not delete user.");

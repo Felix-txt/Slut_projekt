@@ -114,7 +114,11 @@ const login = async (req, res) => {
             });
         }
 
-        const token = jwt.sign({userID: user.id, is_admin: user.is_admin}, process.env.JWT_SECRET, {expiresIn: `7d`});
+        const token = jwt.sign(
+            {accountId: user.id, userID: user.id, email: user.email, is_admin: user.is_admin},
+            process.env.JWT_SECRET,
+            {expiresIn: `7d`}
+        );
 
         res.status(200).json({
             ok: true,

@@ -279,7 +279,22 @@ body {
 </div>
 
 <script>
-const API = "http://localhost:5000/api"
+const API = getApiBase();
+
+function getApiBase() {
+    const host = window.location.hostname || "localhost";
+    const protocol = window.location.protocol === "file:" ? "http:" : window.location.protocol;
+
+    if (window.location.protocol !== "file:" && window.location.port === "8090") {
+        return `${window.location.origin}/api`;
+    }
+
+    if (window.location.protocol !== "file:" && (window.location.port === "5000" || window.location.port === "5001")) {
+        return `${window.location.origin}/api`;
+    }
+
+    return `${protocol}//${host}:5001/api`;
+}
 
 document.getElementById("burger").addEventListener("click", function() {
     document.getElementById("menu").classList.toggle("show");

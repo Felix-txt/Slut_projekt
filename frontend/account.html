@@ -233,6 +233,16 @@ button:hover,
     font-size: 20px;
 }
 
+.account-page.view-only .change-btn,
+.account-page.view-only .toggle-btn {
+    display: none;
+}
+
+.account-page.view-only .avatar {
+    cursor: default;
+    pointer-events: none;
+}
+
 .main-area {
     display: flex;
     gap: 74px;
@@ -362,6 +372,19 @@ button:hover,
     color: white;
 }
 
+.slot.empty {
+    grid-column: 1 / -1;
+    cursor: default;
+    color: #555;
+}
+
+.slot.empty:hover {
+    background: #eee;
+    color: #555;
+    transform: none;
+    filter: none;
+}
+
 .modal-bg {
     display: none;
     position: fixed;
@@ -443,6 +466,7 @@ button:hover,
         <a href="game/patch-download.html">Patch & Download</a>
         <a href="game/gameinf.html">Game info</a>
         <a href="leaderboard.html">Leaderboard</a>
+        <a href="account.html" id="accountMenuLink">Account</a>
     </nav>
 
     <div class="auth" id="authButtons">
@@ -458,7 +482,7 @@ button:hover,
     </div>
 </div>
 
-<div class="account-page">
+<div class="account-page" id="accountPage">
     <section class="profile-box">
         <label class="avatar" id="avatar" for="picUpload">
             <img id="bigPic">
@@ -486,9 +510,10 @@ button:hover,
                 <h1>Account info</h1>
                 <div class="info-box">
                     <div class="info-row" id="infoName"></div>
+                    <div class="info-row" id="infoId"></div>
                     <div class="info-row" id="infoMail"></div>
-                    <div class="info-row">Level: 1</div>
-                    <div class="info-row">Coins: 0</div>
+                    <div class="info-row" id="infoLevel">Level: 0</div>
+                    <div class="info-row" id="infoCoins">Coins: 0</div>
                     <div class="info-row" id="infoSync">Not synced</div>
                 </div>
             </section>
@@ -501,11 +526,11 @@ button:hover,
                 <h2>Inventory</h2>
                 <div class="filters">
                     <button class="filter-btn active" data-filter="all">All</button>
-                    <button class="filter-btn" data-filter="skins">Skins</button>
-                    <button class="filter-btn" data-filter="crates">Crates</button>
-                    <button class="filter-btn" data-filter="weapons">Weapons</button>
+                    <button class="filter-btn" data-filter="skin">Skins</button>
+                    <button class="filter-btn" data-filter="crate">Crates</button>
+                    <button class="filter-btn" data-filter="weapon">Weapons</button>
                 </div>
-                <div class="inventory-grid">
+                <div class="inventory-grid" id="inventoryGrid">
                     <div class="slot" data-type="skin">1</div>
                     <div class="slot" data-type="crate">2</div>
                     <div class="slot" data-type="weapon">3</div>
@@ -532,138 +557,479 @@ button:hover,
 </div>
 
 <script>
-const API = "http://localhost:5000/api"
-let editing = "";
+const DEFAULT_PROFILE_PIC = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z'/%3E%3C/svg%3E";
+const GAME_ID = "case-clicker";
+const API_CANDIDATES = getApiCandidates();
 
-burger.onclick = function() {
-    menu.classList.toggle("show");
+let editing = "";
+let viewer = null;
+let activeProfile = null;
+let canEdit = false;
+let activeStats = {level: 0, money: 0, inventoryCount: 0, totalCasesOpened: 0};
+
+const els = {
+    burger: document.getElementById("burger"),
+    menu: document.getElementById("menu"),
+    accountPage: document.getElementById("accountPage"),
+    authButtons: document.getElementById("authButtons"),
+    accountChip: document.getElementById("accountChip"),
+    accountName: document.getElementById("accountName"),
+    accountMenuLink: document.getElementById("accountMenuLink"),
+    avatar: document.getElementById("avatar"),
+    picUpload: document.getElementById("picUpload"),
+    bigPic: document.getElementById("bigPic"),
+    smallPic: document.getElementById("smallPic"),
+    usernameText: document.getElementById("usernameText"),
+    emailText: document.getElementById("emailText"),
+    infoName: document.getElementById("infoName"),
+    infoId: document.getElementById("infoId"),
+    infoMail: document.getElementById("infoMail"),
+    infoLevel: document.getElementById("infoLevel"),
+    infoCoins: document.getElementById("infoCoins"),
+    infoSync: document.getElementById("infoSync"),
+    warning: document.getElementById("warning"),
+    inventory: document.getElementById("inventory"),
+    inventoryGrid: document.getElementById("inventoryGrid"),
+    modalBg: document.getElementById("modalBg"),
+    modalTitle: document.getElementById("modalTitle"),
+    editInput: document.getElementById("editInput")
 };
-document.addEventListener('click', function(event) {
-    if (!menu.contains(event.target) && !burger.contains(event.target)){
-        menu.classList.remove('show');
+
+els.burger.onclick = function() {
+    els.menu.classList.toggle("show");
+};
+
+document.addEventListener("click", function(event) {
+    if (!els.menu.contains(event.target) && !els.burger.contains(event.target)){
+        els.menu.classList.remove("show");
     }
 });
-function updatePage() {
-    let username = localStorage.getItem("username") || "USER NAME";
-    let email = localStorage.getItem("email") || "MAIL";
-    let pic = localStorage.getItem("profilePicture");
-    let synced = localStorage.getItem("gameSynced") === "true";
 
-    usernameText.textContent = username;
-    emailText.textContent = email;
-    accountName.textContent = username;
-    infoName.textContent = "Name: " + username;
-    infoMail.textContent = "Mail: " + email;
-    infoSync.textContent = synced ? "Synced" : "Not synced";
-    warning.style.display = synced ? "none" : "block";
+function getApiCandidates() {
+    const host = window.location.hostname || "localhost";
+    const protocol = window.location.protocol === "file:" ? "http:" : window.location.protocol;
+    const candidates = [];
 
-    if (localStorage.getItem("token")) {
-        authButtons.style.display = "none";
-        accountChip.style.display = "flex";
+    if (window.location.protocol !== "file:" && window.location.port === "8090") {
+        candidates.push(`${window.location.origin}/api`);
     }
 
-    if (pic) {
-        bigPic.src = pic;
-        smallPic.src = pic;
-        avatar.classList.add("has-pic");
+    if (window.location.protocol !== "file:" && (window.location.port === "5000" || window.location.port === "5001")) {
+        candidates.push(`${window.location.origin}/api`);
+    }
+
+    candidates.push(`${protocol}//${host}:5001/api`);
+    candidates.push(`${protocol}//${host}:5000/api`);
+
+    return [...new Set(candidates)];
+}
+
+async function apiFetch(path, options = {}) {
+    let lastError = null;
+
+    for (const baseUrl of API_CANDIDATES) {
+        try {
+            const res = await fetch(`${baseUrl}${path}`, options);
+            const text = await res.text();
+            const data = text ? JSON.parse(text) : {};
+
+            if (!res.ok) {
+                const error = new Error(data.errorMessage || "Request failed");
+                error.status = res.status;
+                error.data = data;
+                throw error;
+            }
+
+            return data;
+        } catch (error) {
+            lastError = error;
+            if (error.status) throw error;
+        }
+    }
+
+    throw lastError || new Error("Could not connect to server");
+}
+
+function getToken() {
+    return localStorage.getItem("token");
+}
+
+function authHeaders() {
+    return {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getToken()}`
+    };
+}
+
+function requestedAccountId() {
+    const id = Number(new URLSearchParams(window.location.search).get("id"));
+    return Number.isInteger(id) && id > 0 ? id : null;
+}
+
+function syncKey(accountId) {
+    return `gameSynced:${accountId}`;
+}
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function formatNumber(value) {
+    return Number(value || 0).toLocaleString("sv-SE");
+}
+
+function persistSessionUser(user) {
+    localStorage.setItem("accountId", user.id);
+    localStorage.setItem("username", user.username || "");
+    localStorage.setItem("email", user.email || "");
+    localStorage.setItem("isAdmin", user.is_admin ? "true" : "false");
+    localStorage.setItem("profilePicture", user.profile_picture || "");
+}
+
+function clearSessionUser() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("accountId");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    localStorage.removeItem("isAdmin");
+    localStorage.removeItem("profilePicture");
+}
+
+async function loadViewer() {
+    if (!getToken()) return null;
+
+    try {
+        const data = await apiFetch("/users/me", {
+            headers: authHeaders()
+        });
+        return data.user;
+    } catch (error) {
+        if (error.status === 401 || error.status === 404) {
+            clearSessionUser();
+            return null;
+        }
+        throw error;
+    }
+}
+
+async function loadPublicProfile(accountId) {
+    const data = await apiFetch(`/users/${encodeURIComponent(accountId)}`);
+    return data.user;
+}
+
+function renderHeader() {
+    if (!viewer) {
+        els.authButtons.style.display = "flex";
+        els.accountChip.style.display = "none";
+        return;
+    }
+
+    els.authButtons.style.display = "none";
+    els.accountChip.style.display = "flex";
+    els.accountName.textContent = viewer.username || viewer.email || "Logged in";
+    els.smallPic.src = viewer.profile_picture || DEFAULT_PROFILE_PIC;
+    els.accountMenuLink.href = `account.html?id=${encodeURIComponent(viewer.id)}`;
+}
+
+function renderEditMode() {
+    els.accountPage.classList.toggle("view-only", !canEdit);
+    document.querySelectorAll(".change-btn").forEach((button) => {
+        button.disabled = !canEdit;
+    });
+
+    els.picUpload.disabled = !canEdit;
+    if (canEdit) {
+        els.avatar.setAttribute("for", "picUpload");
+    } else {
+        els.avatar.removeAttribute("for");
+    }
+}
+
+function renderProfile(profile) {
+    const username = profile?.username || "USER NAME";
+    const email = canEdit ? profile?.email || "MAIL" : "Private";
+    const picture = profile?.profile_picture || "";
+
+    document.title = canEdit ? "CS Clicker - Your Account" : `CS Clicker - ${username}`;
+    els.usernameText.textContent = username;
+    els.emailText.textContent = email;
+    els.infoName.textContent = `Name: ${username}`;
+    els.infoId.textContent = `ID: ${profile?.id || "Unknown"}`;
+    els.infoMail.textContent = `Mail: ${email}`;
+
+    if (picture) {
+        els.bigPic.src = picture;
+        if (canEdit || !viewer) {
+            els.smallPic.src = picture;
+        }
+        els.avatar.classList.add("has-pic");
+    } else {
+        els.bigPic.removeAttribute("src");
+        if (canEdit || !viewer) {
+            els.smallPic.src = DEFAULT_PROFILE_PIC;
+        }
+        els.avatar.classList.remove("has-pic");
+    }
+
+    renderStats(profile?.stats || activeStats);
+    updateSyncState();
+}
+
+function renderStats(stats) {
+    activeStats = {
+        level: Number(stats?.level || 0),
+        money: Number(stats?.money || 0),
+        inventoryCount: Number(stats?.inventoryCount || 0),
+        totalCasesOpened: Number(stats?.totalCasesOpened || 0)
+    };
+
+    els.infoLevel.textContent = `Level: ${formatNumber(activeStats.level)}`;
+    els.infoCoins.textContent = `Coins: ${formatNumber(activeStats.money)}`;
+}
+
+function updateSyncState() {
+    if (!activeProfile || !canEdit) {
+        els.warning.style.display = "none";
+        els.infoSync.textContent = "View only";
+        return;
+    }
+
+    const synced = localStorage.getItem(syncKey(activeProfile.id)) === "true";
+    els.infoSync.textContent = synced ? "Synced" : "Not synced";
+    els.warning.style.display = synced ? "none" : "block";
+}
+
+async function loadOwnerStats() {
+    const stats = {level: 0, money: 0, inventoryCount: 0, totalCasesOpened: 0};
+
+    try {
+        const save = await apiFetch(`/saves/load/${encodeURIComponent(GAME_ID)}`, {
+            headers: authHeaders()
+        });
+        const snapshot = save.snapshot || {};
+        stats.level = Number(snapshot.level || 0);
+        stats.money = Number(snapshot.money || 0);
+        stats.inventoryCount = Number(snapshot.inventoryCount || 0);
+        stats.totalCasesOpened = Number(snapshot.stats?.totalCasesOpened || 0);
+    } catch (error) {}
+
+    try {
+        const balance = await apiFetch("/inventory/balance", {
+            headers: authHeaders()
+        });
+        if (balance.balance !== undefined) {
+            stats.money = Number(balance.balance);
+        }
+    } catch (error) {}
+
+    renderStats(stats);
+}
+
+function inventoryType(item) {
+    if (item.crate_id) return "crate";
+    if (item.weapon_type) return "weapon";
+    return "skin";
+}
+
+function inventoryLabel(item, index) {
+    return item.name || item.display_name || `Item ${index + 1}`;
+}
+
+function attachSlotHandlers() {
+    document.querySelectorAll(".slot").forEach(function(slot) {
+        slot.onclick = function() {
+            if (!slot.classList.contains("empty")) {
+                slot.classList.toggle("selected");
+            }
+        };
+    });
+}
+
+function applyInventoryFilter(filter) {
+    document.querySelectorAll(".slot").forEach(slot => {
+        slot.style.display = filter === "all" || slot.dataset.type === filter ? "grid" : "none";
+    });
+}
+
+function renderInventory(items) {
+    if (!items.length) {
+        els.inventoryGrid.innerHTML = `<div class="slot empty">Empty</div>`;
+        attachSlotHandlers();
+        return;
+    }
+
+    els.inventoryGrid.innerHTML = items.map((item, index) => {
+        const type = inventoryType(item);
+        const label = inventoryLabel(item, index);
+        return `<div class="slot" data-type="${escapeHtml(type)}" title="${escapeHtml(label)}">${escapeHtml(label)}</div>`;
+    }).join("");
+
+    const activeFilter = document.querySelector(".filter-btn.active")?.dataset.filter || "all";
+    applyInventoryFilter(activeFilter);
+    attachSlotHandlers();
+}
+
+async function loadInventory() {
+    if (!canEdit) {
+        els.inventory.classList.remove("show");
+        els.inventoryGrid.innerHTML = "";
+        return;
+    }
+
+    try {
+        const data = await apiFetch("/inventory", {
+            headers: authHeaders()
+        });
+        renderInventory(data.inventory || []);
+    } catch (error) {
+        els.inventoryGrid.innerHTML = `<div class="slot empty">Could not load inventory</div>`;
+    }
+}
+
+function renderError(message) {
+    els.accountPage.classList.add("view-only");
+    els.usernameText.textContent = message;
+    els.emailText.textContent = "Unavailable";
+    els.infoName.textContent = message;
+    els.infoId.textContent = "ID: Unknown";
+    els.infoMail.textContent = "Mail: Unavailable";
+    renderStats({});
+    els.warning.style.display = "none";
+    els.infoSync.textContent = "Unavailable";
+}
+
+async function initAccountPage() {
+    const accountId = requestedAccountId();
+
+    try {
+        viewer = await loadViewer();
+        renderHeader();
+
+        if (!viewer && !accountId) {
+            window.location.href = "login-signin.html#login";
+            return;
+        }
+
+        const profileId = accountId || viewer.id;
+        canEdit = Boolean(viewer && Number(viewer.id) === Number(profileId));
+        activeProfile = canEdit ? viewer : await loadPublicProfile(profileId);
+
+        if (canEdit) {
+            persistSessionUser(viewer);
+        }
+
+        renderEditMode();
+        renderProfile(activeProfile);
+
+        if (canEdit) {
+            await loadOwnerStats();
+        }
+
+        await loadInventory();
+    } catch (error) {
+        renderHeader();
+        renderEditMode();
+        renderError(error.message || "Could not load account");
     }
 }
 
 function openEdit(field) {
+    if (!canEdit || !activeProfile) return;
+
     editing = field;
-    modalTitle.textContent = field === "username" ? "Change user name" : "Change mail";
-    editInput.value = localStorage.getItem(field) || "";
-    modalBg.classList.add("show");
+    els.modalTitle.textContent = field === "username" ? "Change user name" : "Change mail";
+    els.editInput.type = field === "email" ? "email" : "text";
+    els.editInput.value = activeProfile[field] || "";
+    els.modalBg.classList.add("show");
 }
 
 function closeEdit() {
-    modalBg.classList.remove("show");
+    els.modalBg.classList.remove("show");
 }
 
 async function saveEdit(event) {
     event.preventDefault();
-    const token = localStorage.getItem("token");
-    if(!token) return;
+
+    if (!canEdit || !activeProfile) {
+        alert("You can only edit your own account.");
+        return;
+    }
+
+    const value = els.editInput.value.trim();
+    if (!value) return;
+
     const body = {};
-    body[editing] = editInput.value;
+    body[editing] = value;
+
     try{
-        const res = await fetch(`${API}/users/update`, {
+        const data = await apiFetch("/users/update", {
             method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-            },
+            headers: authHeaders(),
             body: JSON.stringify(body)
         });
-        const data = await res.json();
-        if (data.ok) {
-            localStorage.setItem(editing, editInput.value);
-            closeEdit();
-            updatePage();
-        } else {
-            alert(data.errorMessage || "Update failed");
-        }
+
+        activeProfile = {...activeProfile, ...data.user};
+        viewer = {...viewer, ...data.user};
+        persistSessionUser(viewer);
+        closeEdit();
+        renderHeader();
+        renderProfile(activeProfile);
     }
     catch(error){
-        alert("could not connect to server");
+        alert(error.message || "Update failed");
     }
-    
 }
 
 async function changePic(event) {
-    let file = event.target.files[0];
+    if (!canEdit || !activeProfile) return;
+
+    const file = event.target.files[0];
     if (!file) return;
-    let reader = new FileReader();
+
+    const reader = new FileReader();
     reader.onload = async function() {
-        const token = localStorage.getItem("token");
-        if (!token) return;
         try {
-            const res = await fetch(`${API}/users/update`, {
+            const data = await apiFetch("/users/update", {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
+                headers: authHeaders(),
                 body: JSON.stringify({profile_picture: reader.result})
             });
-            const data = await res.json();
-            if (data.ok) {
-                localStorage.setItem("profilePicture", reader.result);
-                updatePage();
-            }
-        } catch {}
+
+            activeProfile = {...activeProfile, ...data.user};
+            viewer = {...viewer, ...data.user};
+            persistSessionUser(viewer);
+            renderHeader();
+            renderProfile(activeProfile);
+        } catch (error) {
+            alert(error.message || "Could not update picture");
+        }
     };
     reader.readAsDataURL(file);
 }
 
 function syncGame() {
-    localStorage.setItem("gameSynced", "true");
-    updatePage();
+    if (!canEdit || !activeProfile) return;
+    localStorage.setItem(syncKey(activeProfile.id), "true");
+    updateSyncState();
 }
 
 function toggleInventory() {
-    inventory.classList.toggle("show");
+    if (canEdit) {
+        els.inventory.classList.toggle("show");
+    }
 }
 
 document.querySelectorAll(".filter-btn").forEach(btn => {
     btn.addEventListener("click", function() {
         document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
         this.classList.add("active");
-        const filter = this.dataset.filter;
-        document.querySelectorAll(".slot").forEach(slot => {
-            if (filter === "all" || slot.dataset.type === filter) {
-                slot.style.display = "grid";
-            } else {
-                slot.style.display = "none";
-            }
-        });
+        applyInventoryFilter(this.dataset.filter);
     });
-});
-
-document.querySelectorAll(".slot").forEach(function(slot) {
-    slot.onclick = function() {
-        slot.classList.toggle("selected");
-    };
 });
 
 function goLogin() {
@@ -675,10 +1041,14 @@ function goSignup() {
 }
 
 function goAccount() {
-    window.location.href = "account.html";
+    if (viewer) {
+        window.location.href = `account.html?id=${encodeURIComponent(viewer.id)}`;
+        return;
+    }
+    window.location.href = "login-signin.html#login";
 }
 
-updatePage();
+initAccountPage();
 </script>
 
 </body>

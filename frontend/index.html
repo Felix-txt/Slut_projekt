@@ -398,7 +398,22 @@ body {
 
 <script>
 
-const API = "http://localhost:5000/api"; // om ändaras så är orginal: http://localhost:5000/api
+const API = getApiBase();
+
+function getApiBase() {
+    const host = window.location.hostname || "localhost";
+    const protocol = window.location.protocol === "file:" ? "http:" : window.location.protocol;
+
+    if (window.location.protocol !== "file:" && window.location.port === "8090") {
+        return `${window.location.origin}/api`;
+    }
+
+    if (window.location.protocol !== "file:" && (window.location.port === "5000" || window.location.port === "5001")) {
+        return `${window.location.origin}/api`;
+    }
+
+    return `${protocol}//${host}:5001/api`;
+}
 
 document.getElementById("burger").addEventListener("click", function() {
     document.getElementById("menu").classList.toggle("show");
@@ -439,7 +454,8 @@ function changeProfilePic(event){
 }
 
 function goAccount() {
-    window.location.href = "account.html";
+    const accountId = localStorage.getItem("accountId");
+    window.location.href = accountId ? `account.html?id=${encodeURIComponent(accountId)}` : "account.html";
 }
 
 function goLogin() { // om man klickar på login går den till login sidan direkt

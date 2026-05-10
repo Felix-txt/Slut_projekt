@@ -82,9 +82,22 @@ function showAdminAccessMessage(message) {
 
 function renderAccountName() {
     const accountName = document.getElementById("accountName");
-    if (!accountName) return;
+    const accountId = localStorage.getItem("accountId") || currentAdminId;
+    const ownProfileUrl = accountId ? accountProfileUrl(accountId) : "../frontend/account.html";
 
-    accountName.textContent = localStorage.getItem("username") || localStorage.getItem("email") || "Logged in";
+    if (accountName) {
+        accountName.textContent = localStorage.getItem("username") || localStorage.getItem("email") || "Logged in";
+    }
+
+    const userIcon = document.getElementById("userIcon");
+    if (userIcon) {
+        userIcon.href = ownProfileUrl;
+    }
+
+    const accountMenuLink = document.querySelector('.menu a[href="../frontend/account.html"]');
+    if (accountMenuLink) {
+        accountMenuLink.href = ownProfileUrl;
+    }
 }
 
 function clearSessionUser() {
@@ -127,6 +140,10 @@ function escapeHtml(value) {
         .replace(/'/g, "&#039;");
 }
 
+function accountProfileUrl(userId) {
+    return `../frontend/account.html?id=${encodeURIComponent(userId)}`;
+}
+
 function renderUsers() {
     const q = ((search && search.value) || "").toLowerCase().trim();
     const filteredUsers = users.filter((user) => {
@@ -157,7 +174,7 @@ function renderUsersList(filteredUsers) {
                 <p>${escapeHtml(user.email)}</p>
                 <p>Balance: ${Number(user.balance).toFixed(2)}</p>
             </div>
-            <a href="user-profile.html?id=${encodeURIComponent(user.id)}">Profil</a>
+            <a href="${accountProfileUrl(user.id)}">Profil</a>
         </li>
     `).join("");
 }
@@ -182,7 +199,7 @@ function renderUsersTable(filteredUsers) {
             <td>${formatDate(user.createdAt)}</td>
             <td>
                 <div class="table-actions">
-                    <a class="table-action" href="user-profile.html?id=${encodeURIComponent(user.id)}">Profil</a>
+                    <a class="table-action" href="${accountProfileUrl(user.id)}">Profil</a>
                     <button class="table-action table-action-secondary" type="button" data-action="toggle-admin" data-user-id="${escapeHtml(user.id)}" ${isProtectedUser(user) ? "disabled" : ""}>
                         ${user.isAdmin ? "Demote" : "Promote"}
                     </button>
@@ -361,11 +378,11 @@ function initAdminPanel() {
     usersTableBody = document.getElementById("usersTableBody");
     usersCount = document.getElementById("usersCount");
 
-    renderAccountName();
-
     if (!guardAdminPage()) {
         return;
     }
+
+    renderAccountName();
 
     if (search) {
         search.addEventListener("input", renderUsers);

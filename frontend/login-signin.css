@@ -86,6 +86,26 @@ input:focus {
     box-shadow: 0 0 12px #4a6cff;
 }
 
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    margin: 2px 0 10px;
+    color: #333;
+    cursor: pointer;
+    font-size: 14px;
+    user-select: none;
+}
+
+.remember-me input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: #2f4bb2;
+    cursor: pointer;
+}
+
 .submit {
     width: 100%;
     padding: 16px;

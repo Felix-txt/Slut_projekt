@@ -57,6 +57,17 @@ function proxyApi(req, res) {
     req.pipe(proxyReq);
 }
 
+function resolveStaticPath(urlPath) {
+    const safePath = path.normalize(decodeURIComponent(urlPath)).replace(/^(\.\.[/\\])+/, "");
+    const relativePath = safePath === path.sep ? "frontend/index.html" : safePath.replace(/^[/\\]/, "");
+    const candidates = [
+        path.resolve(ROOT, relativePath),
+        path.resolve(ROOT, "frontend", relativePath)
+    ];
+
+    return candidates.find((candidate) => candidate.startsWith(ROOT) && fs.existsSync(candidate));
+}
+
 const server = http.createServer((req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
 
@@ -65,13 +76,11 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    const safePath = path.normalize(decodeURIComponent(url.pathname)).replace(/^(\.\.[/\\])+/, "");
-    const requestedPath = path.join(ROOT, safePath === path.sep ? "frontend/index.html" : safePath);
-    const resolvedPath = path.resolve(requestedPath);
+    const resolvedPath = resolveStaticPath(url.pathname);
 
-    if (!resolvedPath.startsWith(ROOT)) {
-        res.writeHead(403, {"Content-Type": "text/plain; charset=utf-8"});
-        res.end("Forbidden");
+    if (!resolvedPath) {
+        res.writeHead(404, {"Content-Type": "text/plain; charset=utf-8"});
+        res.end("Not found");
         return;
     }
 

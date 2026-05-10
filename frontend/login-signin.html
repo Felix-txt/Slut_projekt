@@ -33,6 +33,10 @@
         <div id="adminCodeWrap" class="hidden">
             <input type="password" id="adminCode" placeholder="Extra verification code">
         </div>
+        <label class="remember-me">
+            <input type="checkbox" id="rememberMe">
+            <span>Remember me</span>
+        </label>
         <div class="link">Forgot password?</div>
         <button class="submit" onclick="login()">LOGIN</button>
         <div id="loginMsg"></div>
@@ -87,6 +91,25 @@ function saveSession(data) {
     localStorage.setItem("email", data.email || "");
     localStorage.setItem("isAdmin", data.is_admin ? "true" : "false");
     localStorage.setItem("profilePicture", data.profile_picture || "");
+}
+
+function loadRememberedLogin() {
+    const savedEmail = localStorage.getItem("rememberedEmail") || "";
+    const rememberMe = document.getElementById("rememberMe");
+    const loginEmail = document.getElementById("loginEmail");
+
+    if (savedEmail) {
+        loginEmail.value = savedEmail;
+        rememberMe.checked = true;
+    }
+}
+
+function saveRememberedLogin(email) {
+    if (document.getElementById("rememberMe").checked) {
+        localStorage.setItem("rememberedEmail", email);
+    } else {
+        localStorage.removeItem("rememberedEmail");
+    }
 }
 
 function showSignup() {
@@ -156,6 +179,7 @@ async function login() {
 
         if (data.token) {
             saveSession(data);
+            saveRememberedLogin(email);
             window.location.href = `account.html?id=${encodeURIComponent(data.accountId)}`;
         } else if (data.requiresAdminCode) {
             adminCodeWrap.classList.remove("hidden");
@@ -175,7 +199,10 @@ function checkHash() {
     else showLogin();
 }
 
-document.addEventListener('DOMContentLoaded', checkHash);
+document.addEventListener('DOMContentLoaded', function() {
+    loadRememberedLogin();
+    checkHash();
+});
 window.addEventListener('hashchange', checkHash);
 </script>
 

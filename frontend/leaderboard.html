@@ -270,6 +270,16 @@ body {
     white-space: nowrap;
 }
 
+.logout-btn {
+    border: none;
+    background: #4a4747;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
 </style>
 </head>
 
@@ -295,6 +305,7 @@ body {
             <input type="file" id="picUpload" accept="image/*" style="display:none" onchange="changeProfilePic(event)">
         </div>
         <div class="account-name" id="accountName"></div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
 
     <nav class="menu" id="menu">
@@ -388,6 +399,22 @@ function checkAuth(){ // kollar om anvä'ndaren är logged in eller inte
         const savePic = localStorage.getItem("profilePicture");
         if (savePic) document.getElementById("profilePic").src = savePic;
     }
+}
+
+function clearSessionUser() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("accountId");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    localStorage.removeItem("isAdmin");
+    localStorage.removeItem("profilePicture");
+}
+
+function logout() {
+    clearSessionUser();
+    document.getElementById("authButtons").style.display = "flex";
+    document.getElementById("accountChip").style.display = "none";
+    window.location.href = "login-signin.html#login";
 }
 
 function changeprofile(event){
@@ -484,7 +511,8 @@ document.querySelectorAll(".sort-btn").forEach((button) => {
 });
 
 function goAccount() {
-    window.location.href = "account.html";
+    const accountId = localStorage.getItem("accountId");
+    window.location.href = accountId ? `account.html?id=${encodeURIComponent(accountId)}` : "account.html";
 }
 
 checkAuth();

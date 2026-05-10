@@ -1,0 +1,253 @@
+LAN setup for CS Clicker website/backend + game sync
+====================================================
+
+Goal
+----
+Host the website and backend on one PC on the local network, so other PCs and the game EXE can use:
+
+http://192.168.1.126:8090
+
+Important idea
+--------------
+The game does NOT talk directly to port 5001 when used from another PC.
+The game talks to:
+
+http://192.168.1.126:8090/api/...
+
+share-server.js receives those /api requests and proxies them to the backend on the host PC:
+
+192.168.1.126:8090/api -> 127.0.0.1:5001/api
+
+This means only port 8090 needs to be reachable from other computers.
+
+
+Install requirements on host PC
+-------------------------------
+Install:
+- Node.js 20 or newer
+- npm
+- PostgreSQL 15 or newer
+- Git, if cloning the repo
+
+Optional:
+- Docker Desktop, only if using docker-compose instead of local PostgreSQL
+
+
+Backend setup
+-------------
+Open PowerShell in the repo root:
+
+cd C:\Users\nathaniel.engstrom\Documents\GitHub\Slut_projekt
+
+Install backend packages:
+
+cd server
+npm install
+
+Create server\.env if missing:
+
+DB_HOST=localhost
+DB_USER=gameuser
+DB_PASSWORD=your_password_here
+DB_NAME=game_db
+DB_PORT=5432
+PORT=5001
+JWT_SECRET=make_a_long_random_secret
+ROOT_ADMIN_EMAIL=admin@test.local
+ROOT_ADMIN_USERNAME=admin
+ROOT_ADMIN_PASSWORD=your_admin_password
+ROOT_ADMIN_CODE=your_private_admin_code
+
+If this PC uses PostgreSQL on another port, set DB_PORT to that port.
+On Nathaniel's current PC, local dev has used DB_PORT=55432.
+
+
+Database setup
+--------------
+Create database/user:
+
+psql -U postgres
+
+Then run:
+
+CREATE USER gameuser WITH PASSWORD 'your_password_here';
+CREATE DATABASE game_db OWNER gameuser;
+\q
+
+Import schema:
+
+cd C:\Users\nathaniel.engstrom\Documents\GitHub\Slut_projekt\server
+psql -U gameuser -d game_db -f .\schema.sql
+
+
+Start backend API
+-----------------
+From:
+
+C:\Users\nathaniel.engstrom\Documents\GitHub\Slut_projekt\server
+
+Run:
+
+$env:PORT="5001"; npm start
+
+Expected output:
+
+server running on http://0.0.0.0:5001
+
+
+Start LAN web/share server
+--------------------------
+Open a SECOND PowerShell window in repo root:
+
+cd C:\Users\nathaniel.engstrom\Documents\GitHub\Slut_projekt
+node .\share-server.js
+
+Expected output:
+
+share server running on http://localhost:8090
+
+Other PCs should open:
+
+http://192.168.1.126:8090/frontend/login-signin.html
+
+
+Firewall
+--------
+Allow inbound TCP port 8090 on the host PC.
+
+PowerShell as Administrator:
+
+New-NetFirewallRule -DisplayName "CS Clicker LAN Web 8090" -Direction Inbound -Protocol TCP -LocalPort 8090 -Action Allow
+
+Port 5001 does not need to be open to other PCs if they use port 8090.
+
+
+Game EXE config
+---------------
+The game config currently points to:
+
+http://192.168.1.126:8090
+
+File in game repo:
+
+C:\Users\nathaniel.engstrom\Documents\GitHub\gambling-game-with-love-eng\slutprojekt\services\account_api_config.lua
+
+Current expected config:
+
+return {
+    enabled = true,
+    baseUrl = "http://192.168.1.126:8090",
+    baseUrls = {
+        "http://192.168.1.126:8090",
+        "http://localhost:5001",
+        "http://localhost:5000"
+    },
+    gameId = "case-clicker"
+}
+
+If the host PC has another IP, replace 192.168.1.126 with the host PC IP and rebuild/repackage the EXE.
+
+
+Verify from host PC
+-------------------
+Backend direct:
+
+Invoke-WebRequest -UseBasicParsing http://localhost:5001/api/leaderboard
+
+Share server through proxy:
+
+Invoke-WebRequest -UseBasicParsing http://localhost:8090/api/leaderboard
+
+Expected:
+
+HTTP 200 and JSON starting with {"ok":true,...}
+
+
+Verify from another PC on LAN
+-----------------------------
+Open browser:
+
+http://192.168.1.126:8090/api/leaderboard
+
+Expected:
+
+JSON starting with {"ok":true,...}
+
+Then open:
+
+http://192.168.1.126:8090/frontend/login-signin.html
+
+
+How game sync works
+-------------------
+The game logs in:
+
+POST /api/auth/login
+
+The backend returns a JWT token.
+
+The game saves cloud snapshot:
+
+POST /api/saves/save
+
+Payload includes:
+
+{
+  "gameId": "case-clicker",
+  "snapshot": {
+    "name": "Player",
+    "money": 1234,
+    "level": 10,
+    "xp": 100,
+    "totalXP": 100,
+    "inventory": [],
+    "inventoryCount": 0,
+    "stats": {},
+    "savedAt": 1716807200
+  }
+}
+
+Backend stores the save by the JWT account id, so clients cannot choose another user's save id.
+
+The account page loads the same cloud snapshot from:
+
+GET /api/saves/load/case-clicker
+
+Then it displays snapshot.inventory.
+
+
+Important limitation
+--------------------
+This setup is for LAN/local network.
+If deployed publicly on the internet, do NOT use 192.168.1.126 or localhost in the game/web clients.
+Use a real domain or public IP, ideally HTTPS.
+
+
+Common problems
+---------------
+1. Browser cannot open 192.168.1.126:8090
+   - share-server.js is not running.
+   - Host PC IP is different.
+   - Windows Firewall blocks port 8090.
+
+2. /api/leaderboard returns Backend is not reachable
+   - share-server.js is running, but backend on 5001 is not running.
+   - Start backend with PORT=5001.
+
+3. Game login fails from another PC
+   - The EXE was built before account_api_config.lua pointed to 192.168.1.126:8090.
+   - Rebuild/repackage the EXE.
+   - Check that curl.exe exists on the client PC.
+
+4. Website works on host but not on another PC
+   - Use ipconfig on host PC and confirm IPv4 address is 192.168.1.126.
+   - Allow inbound firewall port 8090.
+   - Make sure both PCs are on same network.
+
+5. Inventory does not update on account page
+   - Start/restart the game after latest sync changes.
+   - Log in inside the game.
+   - Change inventory.
+   - Wait up to 30 seconds for autosave/cloud sync, or close game normally to trigger final sync.
+   - Refresh account page.
+

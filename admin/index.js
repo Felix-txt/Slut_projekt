@@ -87,6 +87,20 @@ function renderAccountName() {
     accountName.textContent = localStorage.getItem("username") || localStorage.getItem("email") || "Logged in";
 }
 
+function clearSessionUser() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("accountId");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    localStorage.removeItem("isAdmin");
+    localStorage.removeItem("profilePicture");
+}
+
+function logout() {
+    clearSessionUser();
+    window.location.href = "../frontend/login-signin.html#login";
+}
+
 function guardAdminPage() {
     const token = localStorage.getItem("token");
     if (!token) {

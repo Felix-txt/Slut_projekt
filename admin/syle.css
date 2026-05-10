@@ -64,6 +64,16 @@
   white-space: nowrap;
 }
 
+.logout-btn {
+  border: none;
+  background: #4a4747;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
 
 
 

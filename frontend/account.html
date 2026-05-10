@@ -142,6 +142,16 @@ button:hover,
     text-overflow: ellipsis;
 }
 
+.logout-btn {
+    border: none;
+    background: #4a4747;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
 .account-page {
     padding: 30px;
 }
@@ -326,7 +336,15 @@ button:hover,
 .inventory h2 {
     text-align: center;
     font-weight: normal;
-    margin-bottom: 15px;
+    margin-bottom: 6px;
+}
+
+.inventory-meta {
+    min-height: 20px;
+    margin-bottom: 14px;
+    text-align: center;
+    color: #444;
+    font-size: 14px;
 }
 
 .filters {
@@ -353,17 +371,21 @@ button:hover,
 
 .inventory-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
 }
 
 .slot {
-    height: 55px;
+    min-height: 118px;
     background: #eee;
     border: 3px solid #929292;
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px;
     cursor: pointer;
+    overflow: hidden;
 }
 
 .slot:hover,
@@ -372,10 +394,42 @@ button:hover,
     color: white;
 }
 
+.slot-image {
+    width: 100%;
+    height: 48px;
+    object-fit: contain;
+    flex: 0 0 auto;
+}
+
+.slot-name {
+    width: 100%;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.slot-meta {
+    width: 100%;
+    color: #555;
+    font-size: 12px;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.slot:hover .slot-meta,
+.slot.selected .slot-meta {
+    color: white;
+}
+
 .slot.empty {
     grid-column: 1 / -1;
+    min-height: 70px;
     cursor: default;
     color: #555;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .slot.empty:hover {
@@ -479,6 +533,7 @@ button:hover,
             <img id="smallPic" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z'/%3E%3C/svg%3E">
         </div>
         <div class="account-name" id="accountName"></div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
 </div>
 
@@ -524,22 +579,14 @@ button:hover,
 
             <section class="inventory" id="inventory">
                 <h2>Inventory</h2>
+                <div class="inventory-meta" id="inventoryMeta"></div>
                 <div class="filters">
                     <button class="filter-btn active" data-filter="all">All</button>
                     <button class="filter-btn" data-filter="skin">Skins</button>
-                    <button class="filter-btn" data-filter="crate">Crates</button>
-                    <button class="filter-btn" data-filter="weapon">Weapons</button>
+                    <button class="filter-btn" data-filter="case">Cases</button>
+                    <button class="filter-btn" data-filter="key">Keys</button>
                 </div>
-                <div class="inventory-grid" id="inventoryGrid">
-                    <div class="slot" data-type="skin">1</div>
-                    <div class="slot" data-type="crate">2</div>
-                    <div class="slot" data-type="weapon">3</div>
-                    <div class="slot" data-type="skin">4</div>
-                    <div class="slot" data-type="crate">5</div>
-                    <div class="slot" data-type="weapon">6</div>
-                    <div class="slot" data-type="skin">7</div>
-                    <div class="slot" data-type="crate">8</div>
-                </div>
+                <div class="inventory-grid" id="inventoryGrid"></div>
             </section>
         </div>
     </div>
@@ -589,6 +636,7 @@ const els = {
     infoSync: document.getElementById("infoSync"),
     warning: document.getElementById("warning"),
     inventory: document.getElementById("inventory"),
+    inventoryMeta: document.getElementById("inventoryMeta"),
     inventoryGrid: document.getElementById("inventoryGrid"),
     modalBg: document.getElementById("modalBg"),
     modalTitle: document.getElementById("modalTitle"),
@@ -680,7 +728,8 @@ function escapeHtml(value) {
 }
 
 function formatNumber(value) {
-    return Number(value || 0).toLocaleString("sv-SE");
+    const number = Number(value || 0);
+    return Number.isFinite(number) ? number.toLocaleString("sv-SE") : String(value);
 }
 
 function persistSessionUser(user) {
@@ -698,6 +747,15 @@ function clearSessionUser() {
     localStorage.removeItem("email");
     localStorage.removeItem("isAdmin");
     localStorage.removeItem("profilePicture");
+}
+
+function logout() {
+    clearSessionUser();
+    viewer = null;
+    activeProfile = null;
+    canEdit = false;
+    renderHeader();
+    window.location.href = "login-signin.html#login";
 }
 
 async function loadViewer() {
@@ -804,40 +862,147 @@ function updateSyncState() {
     els.warning.style.display = synced ? "none" : "block";
 }
 
-async function loadOwnerStats() {
-    const stats = {level: 0, money: 0, inventoryCount: 0, totalCasesOpened: 0};
-
+async function loadOwnerSnapshot() {
     try {
         const save = await apiFetch(`/saves/load/${encodeURIComponent(GAME_ID)}`, {
             headers: authHeaders()
         });
-        const snapshot = save.snapshot || {};
-        stats.level = Number(snapshot.level || 0);
-        stats.money = Number(snapshot.money || 0);
-        stats.inventoryCount = Number(snapshot.inventoryCount || 0);
-        stats.totalCasesOpened = Number(snapshot.stats?.totalCasesOpened || 0);
-    } catch (error) {}
+        const snapshot = save.snapshot || null;
+        const items = normalizeInventory(snapshot);
 
-    try {
-        const balance = await apiFetch("/inventory/balance", {
-            headers: authHeaders()
+        renderStats(statsFromSnapshot(snapshot, items));
+        renderInventory(items, {
+            emptyMessage: snapshot ? "Inventory is empty in your latest game save." : "No cloud save found yet.",
+            updatedAt: save.updatedAt || snapshot?.savedAt,
+            declaredCount: Number(snapshot?.inventoryCount ?? items.length)
         });
-        if (balance.balance !== undefined) {
-            stats.money = Number(balance.balance);
-        }
-    } catch (error) {}
+    } catch (error) {
+        renderStats({});
+        renderInventory([], {
+            emptyMessage: "Could not load game inventory from cloud save."
+        });
+    }
+}
 
-    renderStats(stats);
+function statsFromSnapshot(snapshot, items) {
+    if (!snapshot) {
+        return {level: 0, money: 0, inventoryCount: 0, totalCasesOpened: 0};
+    }
+
+    return {
+        level: Number(snapshot.level || 0),
+        money: Number(snapshot.money || snapshot.coins || snapshot.balance || 0),
+        inventoryCount: Number(snapshot.inventoryCount ?? items.length),
+        totalCasesOpened: Number(snapshot.stats?.totalCasesOpened || snapshot.totalCasesOpened || 0)
+    };
+}
+
+function normalizeInventory(snapshot) {
+    if (!snapshot) return [];
+
+    const rawInventory = snapshot.inventory || snapshot.items || snapshot.skins || [];
+
+    if (Array.isArray(rawInventory)) {
+        return rawInventory;
+    }
+
+    if (rawInventory && typeof rawInventory === "object") {
+        return Object.entries(rawInventory).map(([key, value]) => {
+            if (value && typeof value === "object" && !Array.isArray(value)) {
+                return {
+                    id: value.id || key,
+                    ...value,
+                    name: value.name || value.displayName || value.display_name || key
+                };
+            }
+
+            return {
+                id: key,
+                name: key,
+                count: value
+            };
+        });
+    }
+
+    return [];
+}
+
+function pickFirst(item, keys) {
+    if (!item || typeof item !== "object") return "";
+
+    for (const key of keys) {
+        if (item[key] !== undefined && item[key] !== null && item[key] !== "") {
+            return item[key];
+        }
+    }
+
+    return "";
 }
 
 function inventoryType(item) {
-    if (item.crate_id) return "crate";
-    if (item.weapon_type) return "weapon";
+    if (!item || typeof item !== "object") return "skin";
+
+    const explicitType = String(pickFirst(item, ["type", "itemType", "item_type", "category", "class"]) || "").toLowerCase();
+    const name = String(pickFirst(item, ["name", "displayName", "display_name"]) || "").toLowerCase();
+
+    if (explicitType.includes("key") || name.includes(" key")) return "key";
+    if (item.crate_id || explicitType.includes("crate") || explicitType.includes("case") || name.includes(" case")) return "case";
+    if (explicitType.includes("weapon")) return "weapon";
+    if (explicitType.includes("skin")) return "skin";
+
     return "skin";
 }
 
 function inventoryLabel(item, index) {
-    return item.name || item.display_name || `Item ${index + 1}`;
+    if (typeof item === "string") return item;
+    if (typeof item === "number") return `Item ${index + 1}`;
+
+    return pickFirst(item, [
+        "name",
+        "displayName",
+        "display_name",
+        "skinName",
+        "skin_name",
+        "itemName",
+        "item_name",
+        "weaponName",
+        "weapon_name"
+    ]) || `Item ${index + 1}`;
+}
+
+function inventoryImage(item) {
+    return pickFirst(item, [
+        "image",
+        "imageUrl",
+        "image_url",
+        "icon",
+        "iconUrl",
+        "icon_url",
+        "thumbnail",
+        "thumbnailUrl",
+        "thumbnail_url"
+    ]);
+}
+
+function inventoryMeta(item) {
+    if (!item || typeof item !== "object") return "";
+
+    const parts = [];
+    const rarity = pickFirst(item, ["rarity", "quality", "tier"]);
+    const weapon = pickFirst(item, ["weapon", "weaponType", "weapon_type"]);
+    const wear = pickFirst(item, ["wear", "float", "floatValue", "float_value"]);
+    const price = pickFirst(item, ["price", "value", "marketValue", "market_value", "min_price"]);
+    const count = pickFirst(item, ["count", "amount", "quantity", "qty"]);
+
+    if (rarity) parts.push(rarity);
+    if (weapon) parts.push(weapon);
+    if (wear) parts.push(`Wear ${wear}`);
+    if (price) parts.push(`Value ${formatNumber(price)}`);
+    if (count && Number(count) > 1) parts.push(`x${count}`);
+    if (item.stattrak || item.is_stattrak) parts.push("StatTrak");
+    if (item.souvenir || item.is_souvenir) parts.push("Souvenir");
+
+    return parts.join(" | ");
 }
 
 function attachSlotHandlers() {
@@ -852,13 +1017,25 @@ function attachSlotHandlers() {
 
 function applyInventoryFilter(filter) {
     document.querySelectorAll(".slot").forEach(slot => {
-        slot.style.display = filter === "all" || slot.dataset.type === filter ? "grid" : "none";
+        if (slot.classList.contains("empty")) {
+            slot.style.display = "flex";
+            return;
+        }
+
+        slot.style.display = filter === "all" || slot.dataset.type === filter ? "flex" : "none";
     });
 }
 
-function renderInventory(items) {
+function renderInventory(items, options = {}) {
+    const updatedAt = options.updatedAt ? formatSaveTime(options.updatedAt) : "";
+    const displayCount = Number.isFinite(options.declaredCount) ? options.declaredCount : items.length;
+
+    els.inventoryMeta.textContent = updatedAt
+        ? `${formatNumber(displayCount)} items from latest game save, updated ${updatedAt}`
+        : `${formatNumber(displayCount)} items from latest game save`;
+
     if (!items.length) {
-        els.inventoryGrid.innerHTML = `<div class="slot empty">Empty</div>`;
+        els.inventoryGrid.innerHTML = `<div class="slot empty">${escapeHtml(options.emptyMessage || "Inventory is empty.")}</div>`;
         attachSlotHandlers();
         return;
     }
@@ -866,7 +1043,16 @@ function renderInventory(items) {
     els.inventoryGrid.innerHTML = items.map((item, index) => {
         const type = inventoryType(item);
         const label = inventoryLabel(item, index);
-        return `<div class="slot" data-type="${escapeHtml(type)}" title="${escapeHtml(label)}">${escapeHtml(label)}</div>`;
+        const image = inventoryImage(item);
+        const meta = inventoryMeta(item);
+
+        return `
+            <div class="slot" data-type="${escapeHtml(type)}" title="${escapeHtml(label)}">
+                ${image ? `<img class="slot-image" src="${escapeHtml(image)}" alt="">` : ""}
+                <div class="slot-name">${escapeHtml(label)}</div>
+                <div class="slot-meta">${escapeHtml(meta || type)}</div>
+            </div>
+        `;
     }).join("");
 
     const activeFilter = document.querySelector(".filter-btn.active")?.dataset.filter || "all";
@@ -877,18 +1063,27 @@ function renderInventory(items) {
 async function loadInventory() {
     if (!canEdit) {
         els.inventory.classList.remove("show");
+        els.inventoryMeta.textContent = "";
         els.inventoryGrid.innerHTML = "";
         return;
     }
 
-    try {
-        const data = await apiFetch("/inventory", {
-            headers: authHeaders()
-        });
-        renderInventory(data.inventory || []);
-    } catch (error) {
-        els.inventoryGrid.innerHTML = `<div class="slot empty">Could not load inventory</div>`;
-    }
+    await loadOwnerSnapshot();
+}
+
+function formatSaveTime(value) {
+    if (!value) return "";
+
+    const date = typeof value === "number" || /^\d+$/.test(String(value))
+        ? new Date(Number(value) * 1000)
+        : new Date(value);
+
+    if (Number.isNaN(date.getTime())) return "";
+
+    return date.toLocaleString("sv-SE", {
+        dateStyle: "short",
+        timeStyle: "short"
+    });
 }
 
 function renderError(message) {
@@ -925,10 +1120,6 @@ async function initAccountPage() {
 
         renderEditMode();
         renderProfile(activeProfile);
-
-        if (canEdit) {
-            await loadOwnerStats();
-        }
 
         await loadInventory();
     } catch (error) {

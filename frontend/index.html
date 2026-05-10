@@ -310,6 +310,16 @@ body {
     white-space: nowrap;
 }
 
+.logout-btn {
+    border: none;
+    background: #4a4747;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
 @keyframes gradientMove {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -365,6 +375,7 @@ body {
             <input type="file" id="picUpload" accept="image/*" style="display:none" onchange="changeProfilePic(event)">
         </div>
         <div class="account-name" id="accountName"></div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
 
 </div>
@@ -440,6 +451,24 @@ function checkAuth(){ // kollar om användaren är logged in eller inte och om d
             document.getElementById("adminLink").style.display = "block";
         }
     }
+}
+
+function clearSessionUser() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("accountId");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    localStorage.removeItem("isAdmin");
+    localStorage.removeItem("profilePicture");
+}
+
+function logout() {
+    clearSessionUser();
+    document.getElementById("authButtons").style.display = "flex";
+    document.getElementById("accountChip").style.display = "none";
+    const adminLink = document.getElementById("adminLink");
+    if (adminLink) adminLink.style.display = "none";
+    window.location.href = "login-signin.html#login";
 }
 
 function changeProfilePic(event){

@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parent
 SERVER_DIR = ROOT / "server"
 PGDATA = SERVER_DIR / ".pgdata"
 BACKEND_PORT = int(os.environ.get("PORT", "5001"))
-FRONTEND_PORT = int(os.environ.get("FRONTEND_PORT", "8080"))
+FRONTEND_PORT = int(os.environ.get("FRONTEND_PORT", "8085"))
 DB_PORT = os.environ.get("DB_PORT", "55432")
 
 

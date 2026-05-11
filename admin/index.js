@@ -12,7 +12,7 @@ function getApiCandidates() {
     const protocol = window.location.protocol === "file:" ? "http:" : window.location.protocol;
     const candidates = [];
 
-    if (window.location.protocol !== "file:" && window.location.port === "8090") {
+    if (window.location.protocol !== "file:" && window.location.port === "8085") {
         candidates.push(`${window.location.origin}/api`);
     }
 
@@ -171,7 +171,7 @@ function renderUsersList(filteredUsers) {
             <div>
                 <strong>${escapeHtml(user.username)}${getUserRoleBadges(user)}</strong>
                 <p>${escapeHtml(user.email)}</p>
-                <p>Balance: ${Number(user.balance).toFixed(2)}</p>
+                <p>Level: ${formatWholeNumber(user.level)}</p>
             </div>
             <a href="${accountProfileUrl(user.id)}">Profil</a>
         </li>
@@ -194,7 +194,7 @@ function renderUsersTable(filteredUsers) {
             </td>
             <td>${escapeHtml(user.email)}</td>
             <td>${getUserRoleBadges(user) || `<span class="user-badge">User</span>`}</td>
-            <td>${Number(user.balance).toFixed(2)}</td>
+            <td>${formatWholeNumber(user.level)}</td>
             <td>${formatDate(user.createdAt)}</td>
             <td>
                 <div class="table-actions">
@@ -244,6 +244,11 @@ function formatDate(value) {
     if (Number.isNaN(date.getTime())) return "-";
 
     return date.toLocaleDateString("sv-SE");
+}
+
+function formatWholeNumber(value) {
+    const number = Number(value || 0);
+    return Number.isFinite(number) ? number.toLocaleString("sv-SE") : "-";
 }
 
 async function loadUsers() {

@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = __dirname;
-const PORT = Number(process.env.SHARE_PORT || 8090);
+const PORT = Number(process.env.SHARE_PORT || 8085);
 const API_TARGET = {
     hostname: "127.0.0.1",
     port: 5001

@@ -6,225 +6,451 @@
 <title>Patch & Download</title>
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
 }
 
-body {
-    background: linear-gradient(135deg, #ececec, #d9d9d9);
+body{
+    background:linear-gradient(135deg,#ececec,#d9d9d9);
+    overflow-x:hidden;
 }
 
-.header {
-    display: flex;
-    align-items: center;
-    padding: 15px;
+.page-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0);
+    pointer-events:none;
+    transition:0.4s;
+    z-index:5;
 }
 
-.burger svg {
-    transition: 0.3s;
-}
-.burger:hover svg {
-    transform: scale(1.1);
-    filter: drop-shadow(0 0 6px #4a6cff);
+.page-overlay.active{
+    background:rgba(0,0,0,0.45);
 }
 
-.title {
-    margin: auto;
-    background: #ddd;
-    padding: 10px 30px;
-    border-radius: 20px;
-    font-size: 32px;
-    transition: 0.3s;
-}
-.title:hover {
-    box-shadow: 0 0 15px #4a6cff;
+.header{
+    display:flex;
+    align-items:center;
+    padding:15px;
+    position:relative;
+    z-index:100;
 }
 
-.auth {
-    display: flex;
-    gap: 10px;
+.burger{
+    cursor:pointer;
 }
 
-.auth button {
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: none;
-    cursor: pointer;
-    transition: 0.3s;
+.burger svg{
+    transition:0.3s;
 }
 
-.login-btn {
-    background: #5a6c8f;
-    color: white;
-}
-.signup-btn {
-    background: #2f4bb2;
-    color: white;
+.burger:hover svg{
+    transform:scale(1.1);
+    filter:drop-shadow(0 0 6px #4a6cff);
 }
 
-.auth button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 10px #4a6cff;
+.title{
+    margin:auto;
+    background:#ddd;
+    padding:10px 30px;
+    border-radius:20px;
+    font-size:32px;
+    transition:0.3s;
 }
 
-.menu {
-    display: none;
-    flex-direction: column;
-    background: #eee;
-    position: absolute;
-    top: 60px;
-    left: 10px;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-.menu a {
-    padding: 10px;
-    text-decoration: none;
-    color: #333;
-    border-radius: 8px;
-    transition: 0.2s;
-}
-.menu a:hover {
-    background: #4a6cff;
-    color: white;
-}
-.menu.show {
-    display: flex;
+.title:hover{
+    box-shadow:0 0 8px #4a6cff;
 }
 
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px;
+.menu{
+    display:none;
+    flex-direction:column;
+    background:#eee;
+    position:absolute;
+    top:60px;
+    left:10px;
+    padding:15px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    animation:fadeIn 0.2s ease;
+    z-index:1000;
 }
 
-.patch-box {
-    width: 80%;
-    max-width: 900px;
-    height: 350px;
-    background: #dcdcdc;
-    border-radius: 25px;
-    padding: 25px;
-    overflow-y: auto;
-    transition: 0.3s;
+.menu a{
+    padding:10px;
+    text-decoration:none;
+    color:#333;
+    border-radius:8px;
+    transition:0.2s;
 }
 
-.patch-box:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+.menu a:hover{
+    background:#4a6cff;
+    color:white;
+    transform:translateX(5px);
 }
 
-.patch-box h2 {
-    margin-bottom: 15px;
+.menu.show{
+    display:flex;
 }
 
-.patch-box p {
-    margin: 8px 0;
-    transition: 0.2s;
-}
-.patch-box p:hover {
-    color: #4a6cff;
+.auth{
+    display:flex;
+    gap:10px;
 }
 
-.download-btn {
-    margin-top: 30px;
-    padding: 20px 70px;
-    font-size: 22px;
-    border-radius: 40px;
-    border: none;
-    cursor: pointer;
-    color: white;
-    font-weight: bold;
-    position: relative;
-    overflow: hidden;
-
-    background: linear-gradient(270deg, #2f4bb2, #4a6cff, #2f4bb2);
-    background-size: 400% 400%;
-
-    animation: gradientMove 6s ease infinite, pulse 2s infinite;
-
-    transition: 0.3s;
+.account-chip{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
 }
 
-.download-btn::before {
-    content: "";
-    position: absolute;
-    inset: -5px;
-    border-radius: 40px;
-    background: linear-gradient(270deg, #4a6cff, #00d4ff, #4a6cff);
-    z-index: -1;
-    filter: blur(15px);
-    opacity: 0.7;
-
-    animation: glowMove 6s linear infinite;
+.user-icon{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:#5a6c8f;
+    cursor:pointer;
 }
 
-.download-btn::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(
-        120deg,
-        transparent,
-        rgba(255,255,255,0.5),
-        transparent
+.account-name{
+    max-width:120px;
+    font-size:13px;
+    font-weight:bold;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+
+.logout-btn{
+    border:none;
+    background:#4a4747;
+    color:white;
+    padding:5px 10px;
+    border-radius:12px;
+    cursor:pointer;
+    font-size:12px;
+}
+
+.login-btn,
+.signup-btn{
+    padding:8px 16px;
+    border-radius:20px;
+    border:none;
+    color:white;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.login-btn{
+    background:#5a6c8f;
+}
+
+.signup-btn{
+    background:#2f4bb2;
+}
+
+.login-btn:hover,
+.signup-btn:hover{
+    transform:scale(1.03);
+    box-shadow:0 0 8px #4a6cff;
+}
+
+.container{
+    padding:30px;
+}
+
+.hero{
+    background:#10131f;
+    border-radius:24px;
+    min-height:520px;
+    position:relative;
+    overflow:hidden;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    box-shadow:0 18px 36px rgba(12,16,28,0.22);
+}
+
+
+.hero::before{
+    content:"";
+    position:absolute;
+
+    width:1000px;
+    height:1000px;
+
+    background:
+    radial-gradient(circle,
+    rgba(74,108,255,0.28) 0%,
+    transparent 70%);
+
+    animation:rotateGlow 18s linear infinite;
+}
+
+
+.hero-content{
+    position:relative;
+    z-index:2;
+    text-align:center;
+    color:white;
+    margin-bottom:50px;
+}
+
+.hero-content h1{
+    font-size:5rem;
+    margin-bottom:12px;
+
+    text-shadow:
+    0 0 15px rgba(74,108,255,0.8),
+    0 0 35px rgba(74,108,255,0.5);
+}
+
+.hero-content p{
+    font-size:1.15rem;
+    opacity:0.92;
+}
+
+
+.download-btn{
+    position:relative;
+    z-index:20;
+
+    padding:28px 95px;
+
+    border:none;
+    border-radius:999px;
+
+    font-size:1.4rem;
+    font-weight:900;
+    letter-spacing:1px;
+
+    color:white;
+    cursor:pointer;
+
+    overflow:hidden;
+
+    background:
+    linear-gradient(
+        135deg,
+        #120d0d 0%,
+        #24140c 10%,
+        #3a2416 20%,
+        #5a3418 35%,
+        #7f4a1f 50%,
+        #5f3112 65%,
+        #2b140a 82%,
+        #111 100%
     );
-    transform: skewX(-20deg);
 
-    animation: shine 3s infinite;
+    background-size:400% 400%;
+
+    animation:
+    colaFlow 7s linear infinite,
+    pulse 2s infinite;
+
+    transition:
+    transform 0.25s,
+    box-shadow 0.25s;
 }
 
-.download-btn:hover {
-    transform: scale(1.12);
-    box-shadow: 0 0 30px #4a6cff;
+.download-btn::before{
+    content:"";
+
+    position:absolute;
+    inset:0;
+
+    background:
+    repeating-linear-gradient(
+        120deg,
+        rgba(255,255,255,0.05) 0px,
+        rgba(255,255,255,0.05) 2px,
+        transparent 2px,
+        transparent 8px
+    );
+
+    mix-blend-mode:overlay;
+
+    animation:textureMove 5s linear infinite;
 }
 
-.download-btn:active {
-    transform: scale(0.95);
+.download-btn::after{
+    content:"";
+
+    position:absolute;
+    inset:-20px;
+
+    border-radius:999px;
+
+    background:
+    radial-gradient(circle,
+    rgba(0, 123, 255, 0.75) 0%,
+    rgb(0, 136, 255) 25%,
+    rgba(0, 47, 255, 0.35) 55%,
+    transparent 75%);
+
+    filter:blur(25px);
+
+    opacity:0.7;
+
+    z-index:-1;
+
+    transition:0.4s;
 }
 
+.download-btn:hover{
+    transform:scale(1.12);
 
-@keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-@keyframes glowMove {
-    0% { background-position: 0%; }
-    100% { background-position: 200%; }
+    box-shadow:
+    0 0 25px #4a6cff,
+    0 0 50px #4a6cff,
+    0 0 80px #4a6cff;
 }
 
-@keyframes shine {
-    0% { left: -100%; }
-    50% { left: 120%; }
-    100% { left: 120%; }
+.download-btn:hover::after{
+    opacity:1;
+    filter:blur(45px);
+    transform:scale(1.5);
 }
 
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+.download-btn:active{
+    transform:scale(0.96);
 }
 
-.patch-box::-webkit-scrollbar {
-    width: 8px;
+.patch-section{
+    margin-top:35px;
+
+    background:#dcdcdc;
+
+    border-radius:20px;
+
+    padding:30px;
+
+    box-shadow:0 10px 20px rgba(0,0,0,0.08);
 }
-.patch-box::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
+
+.patch-section h2{
+    margin-bottom:25px;
+    font-size:2rem;
 }
+
+.patch-note{
+    background:#cfcfcf;
+
+    padding:18px;
+
+    border-radius:16px;
+
+    margin-bottom:18px;
+
+    transition:0.25s;
+}
+
+.patch-note:hover{
+    transform:translateX(6px);
+    background:#c4c4c4;
+    box-shadow:0 0 10px rgba(74,108,255,0.25);
+}
+
+.patch-note h3{
+    margin-bottom:8px;
+    color:#2f4bb2;
+}
+
+::-webkit-scrollbar{
+    width:10px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#888;
+    border-radius:10px;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(-10px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+@keyframes rotateGlow{
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+@keyframes colaFlow{
+
+    0%{
+        background-position:0% 50%;
+    }
+
+    50%{
+        background-position:100% 50%;
+    }
+
+    100%{
+        background-position:0% 50%;
+    }
+}
+
+@keyframes textureMove{
+
+    0%{
+        transform:translateX(-40px);
+    }
+
+    100%{
+        transform:translateX(40px);
+    }
+}
+
+@keyframes pulse{
+
+    0%,100%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.04);
+    }
+}
+
+@media(max-width:900px){
+
+    .hero-content h1{
+        font-size:3rem;
+    }
+
+    .download-btn{
+        padding:22px 45px;
+        font-size:1.1rem;
+    }
+}
+
 </style>
 </head>
 
 <body>
+
+<div class="page-overlay" id="pageOverlay"></div>
 
 <div class="header">
 
@@ -236,50 +462,86 @@ body {
 
     <div class="title">CS-Clicker Game</div>
 
-    <div class="auth">
-        <button class="login-btn" onclick="goLogin()">LOGIN</button>
-        <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
-    </div>
-
     <nav class="menu" id="menu">
         <a href="../index.html">Home</a>
         <a href="../account.html">Account</a>
-        <a href="../leaderboard.html">Leaderboard</a>
+        <a href="patch-download.html">Patch & Download</a>
         <a href="gameinf.html">Game info</a>
+        <a href="../leaderboard.html">Leaderboard</a>
     </nav>
+
+    <div class="auth" id="authButtons">
+        <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
+        <button class="login-btn" onclick="goLogin()">LOGIN</button>
+    </div>
+
+    <div class="account-chip" id="accountChip">
+        <div class="user-icon" onclick="goAccount()"></div>
+        <div class="account-name" id="accountName"></div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
 
 </div>
 
 <div class="container">
 
-    <div class="patch-box">
-        <h2>Patch Notes v1.0</h2>
+    <section class="hero">
 
-        <p>• Added new clicker mechanics</p>
-        <p>• Improved UI animations</p>
-        <p>• Added skins system</p>
-        <p>• Leaderboard implemented</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
+        <div class="hero-content">
+            <h1>PATCH 1.2</h1>
 
-        <p>• More content coming soon...</p>
-    </div>
+            <p>
+                Massive improvements, smoother gameplay and upgraded visuals.
+            </p>
+        </div>
 
-    <button class="download-btn" onclick="downloadGame()">DOWNLOAD</button>
+        <button
+            class="download-btn"
+            id="downloadBtn"
+            onclick="downloadClient()"
+        >
+            ⬇ DOWNLOAD NOW
+        </button>
+
+    </section>
+
+    <section class="patch-section">
+
+        <h2>Patch Notes</h2>
+
+        <div class="patch-note">
+            <h3>UI Improvements</h3>
+            <p>
+                Redesigned interface with modern animations and smoother interactions.
+            </p>
+        </div>
+
+        <div class="patch-note">
+            <h3>Case Opening Effects</h3>
+            <p>
+                Added improved reward animations and better sound syncing.
+            </p>
+        </div>
+
+        <div class="patch-note">
+            <h3>Performance Update</h3>
+            <p>
+                Increased FPS stability and reduced loading times.
+            </p>
+        </div>
+
+        <div class="patch-note">
+            <h3>Inventory Changes</h3>
+            <p>
+                Inventory system is now prepared for future sorting and trading systems.
+            </p>
+        </div>
+
+    </section>
 
 </div>
 
 <script>
-const API = getApiBase();
 
 function getApiBase() {
     const host = window.location.hostname || "localhost";
@@ -296,30 +558,133 @@ function getApiBase() {
     return `${protocol}//${host}:5001/api`;
 }
 
-document.getElementById("burger").addEventListener("click", function() {
+document.getElementById("burger").addEventListener("click", function(){
     document.getElementById("menu").classList.toggle("show");
 });
 
-document.addEventListener('click', function(event) {
-    const menu = document.getElementById("menu")
-    const burger = document.getElementById("burger")
+document.addEventListener("click", function(event){
 
-    if (!menu.contains(event.target) && !burger.contains(event.target)){
-        menu.classList.remove('show');
+    const menu = document.getElementById("menu");
+    const burger = document.getElementById("burger");
+
+    if(!menu.contains(event.target) && !burger.contains(event.target)){
+        menu.classList.remove("show");
     }
 });
 
-function goLogin() {
-    window.location.href = "login-signin.html";
+const downloadBtn = document.getElementById("downloadBtn");
+const overlay = document.getElementById("pageOverlay");
+
+downloadBtn.addEventListener("mouseenter", () => {
+    overlay.classList.add("active");
+});
+
+downloadBtn.addEventListener("mouseleave", () => {
+    overlay.classList.remove("active");
+});
+
+function goLogin(){
+    window.location.href = "../login-signin.html#login";
 }
 
-function goSignup() {
-    window.location.href = "login-signin.html";
+function goSignup(){
+    window.location.href = "../login-signin.html#signup";
 }
 
-function downloadGame() {
-    alert("FELIX FIXA BRUR");
+function getStoredSessionUser() {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+
+    const storedAdmin = localStorage.getItem("isAdmin");
+    const user = {
+        token,
+        isAdmin: storedAdmin === "true",
+        username: localStorage.getItem("username") || "",
+        email: localStorage.getItem("email") || "",
+        accountId: localStorage.getItem("accountId") || ""
+    };
+
+    if (storedAdmin === "true" || storedAdmin === "false") {
+        return user;
+    }
+
+    try {
+        const payload = token.split(".")[1];
+        const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+        const json = decodeURIComponent(atob(base64).split("").map((char) => {
+            return `%${(`00${char.charCodeAt(0).toString(16)}`).slice(-2)}`;
+        }).join(""));
+        const parsed = JSON.parse(json);
+
+        user.isAdmin = parsed.is_admin === true;
+        user.accountId = user.accountId || parsed.accountId || parsed.userID || "";
+        user.email = user.email || parsed.email || "";
+        localStorage.setItem("isAdmin", user.isAdmin ? "true" : "false");
+    } catch (error) {
+        return user;
+    }
+
+    return user;
 }
+
+function renderBurgerMenu(user) {
+    const menu = document.getElementById("menu");
+    const accountHref = user?.accountId ? `../account.html?id=${encodeURIComponent(user.accountId)}` : "../account.html";
+    const links = [
+        `<a href="../index.html">Home</a>`,
+        `<a href="${accountHref}">Account</a>`,
+        `<a href="patch-download.html">Patch & Download</a>`,
+        `<a href="gameinf.html">Game info</a>`,
+        `<a href="../leaderboard.html">Leaderboard</a>`
+    ];
+
+    if (user?.isAdmin) {
+        links.push(`<a href="../../admin/panel.html">Admin Panel</a>`);
+    }
+
+    menu.innerHTML = links.join("");
+}
+
+function checkAuth() {
+    const user = getStoredSessionUser();
+    renderBurgerMenu(user);
+
+    if (!user) {
+        document.getElementById("authButtons").style.display = "flex";
+        document.getElementById("accountChip").style.display = "none";
+        return;
+    }
+
+    document.getElementById("authButtons").style.display = "none";
+    document.getElementById("accountChip").style.display = "flex";
+    document.getElementById("accountName").textContent = user.username || user.email || "Logged in";
+}
+
+function clearSessionUser() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("accountId");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    localStorage.removeItem("isAdmin");
+}
+
+function logout() {
+    clearSessionUser();
+    checkAuth();
+    window.location.href = "../login-signin.html#login";
+}
+
+function goAccount() {
+    const accountId = localStorage.getItem("accountId");
+    window.location.href = accountId ? `../account.html?id=${encodeURIComponent(accountId)}` : "../account.html";
+}
+
+function downloadClient(){
+    window.location.href = "../downloads/LuCS-Clicker-latest.exe";
+}
+
+checkAuth();
+
 </script>
 
 </body>

@@ -1,5 +1,6 @@
 const db = require(`../config/database`);
 const {ROOT_ADMIN_EMAIL} = require(`../config/rootAdmin`);
+const PUBLIC_GAME_ID = `case-clicker`;
 
 const getUsers = async (req, res) => {
     try {
@@ -10,10 +11,12 @@ const getUsers = async (req, res) => {
                 u.email,
                 u.is_admin,
                 u.created_at,
-                COALESCE(b.balance, 0) AS balance
+                COALESCE((s.save_data->>'level')::numeric, 0) AS level
              FROM users u
-             LEFT JOIN user_balance b ON b.user_id = u.id
+             LEFT JOIN saves s ON s.user_id = u.id AND s.game_id = $1
              ORDER BY u.created_at DESC, u.id DESC`
+            ,
+            [PUBLIC_GAME_ID]
         );
 
         res.json({
@@ -24,7 +27,7 @@ const getUsers = async (req, res) => {
                 email: user.email,
                 isAdmin: user.is_admin,
                 createdAt: user.created_at,
-                balance: Number(user.balance)
+                level: Number(user.level || 0)
             }))
         });
     } catch (error) {

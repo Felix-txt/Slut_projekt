@@ -557,7 +557,7 @@ function getApiBase() {
     const host = window.location.hostname || "localhost";
     const protocol = window.location.protocol === "file:" ? "http:" : window.location.protocol;
 
-    if (window.location.protocol !== "file:" && window.location.port === "8090") {
+    if (window.location.protocol !== "file:" && window.location.port === "8085") {
         return `${window.location.origin}/api`;
     }
 
@@ -614,6 +614,72 @@ function showSlide(index) {
     });
 }
 
+function getStoredSessionUser() {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+
+    const fallbackUser = {
+        token,
+        isAdmin: false,
+        username: localStorage.getItem("username") || "",
+        email: localStorage.getItem("email") || "",
+        accountId: localStorage.getItem("accountId") || ""
+    };
+
+    const storedAdmin = localStorage.getItem("isAdmin");
+    if (storedAdmin === "true" || storedAdmin === "false") {
+        return {
+            ...fallbackUser,
+            isAdmin: storedAdmin === "true"
+        };
+    }
+
+    try {
+        const payload = token.split(".")[1];
+        const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+        const json = decodeURIComponent(atob(base64).split("").map((char) => {
+            return `%${(`00${char.charCodeAt(0).toString(16)}`).slice(-2)}`;
+        }).join(""));
+        const parsed = JSON.parse(json);
+        const isAdmin = parsed.is_admin === true;
+
+        localStorage.setItem("isAdmin", isAdmin ? "true" : "false");
+
+        return {
+            ...fallbackUser,
+            isAdmin,
+            accountId: fallbackUser.accountId || parsed.accountId || parsed.userID || ""
+        };
+    } catch (error) {
+        return fallbackUser;
+    }
+}
+
+function renderBurgerMenu(user) {
+    const menu = document.getElementById("menu");
+    if (!menu) return;
+
+    const links = [
+        `<a href="game/patch-download.html">Patch & Download</a>`,
+        `<a href="game/gameinf.html">Game info</a>`,
+        `<a href="leaderboard.html">Leaderboard</a>`
+    ];
+
+    if (user) {
+        const accountHref = user.accountId ? `account.html?id=${encodeURIComponent(user.accountId)}` : "account.html";
+        links.unshift(`<a href="${accountHref}">Account</a>`);
+    } else {
+        links.unshift(`<a href="login-signin.html#login">Login</a>`);
+        links.unshift(`<a href="login-signin.html#signup">Sign up</a>`);
+    }
+
+    if (user?.isAdmin) {
+        links.push(`<a href="../admin/panel.html" id="adminLink">Admin Panel</a>`);
+    }
+
+    menu.innerHTML = links.join("");
+}
+
 function startSlideshow() {
     if (slideInterval || SLIDES.length < 2) return;
     slideInterval = window.setInterval(() => {
@@ -643,15 +709,18 @@ document.addEventListener('click', function(event) {
 });
 
 function checkAuth(){ // kollar om användaren är logged in eller inte och om den är admin eller inte
-    const token = localStorage.getItem("token");
-    if (token){
-        document.getElementById("authButtons").style.display = "none";
-        document.getElementById("accountChip").style.display = "flex";
-        document.getElementById("accountName").textContent = localStorage.getItem("username") || localStorage.getItem("email") || "Logged in";
-        if (localStorage.getItem("isAdmin") === "true") {
-            document.getElementById("adminLink").style.display = "block";
-        }
+    const user = getStoredSessionUser();
+    renderBurgerMenu(user);
+
+    if (!user) {
+        document.getElementById("authButtons").style.display = "flex";
+        document.getElementById("accountChip").style.display = "none";
+        return;
     }
+
+    document.getElementById("authButtons").style.display = "none";
+    document.getElementById("accountChip").style.display = "flex";
+    document.getElementById("accountName").textContent = user.username || user.email || "Logged in";
 }
 
 function clearSessionUser() {
@@ -664,10 +733,9 @@ function clearSessionUser() {
 
 function logout() {
     clearSessionUser();
+    renderBurgerMenu(null);
     document.getElementById("authButtons").style.display = "flex";
     document.getElementById("accountChip").style.display = "none";
-    const adminLink = document.getElementById("adminLink");
-    if (adminLink) adminLink.style.display = "none";
     window.location.href = "login-signin.html#login";
 }
 

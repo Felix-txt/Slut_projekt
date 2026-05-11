@@ -19,7 +19,7 @@ function buildResetUrl(req, token) {
 
     const protocol = req.protocol || `http`;
     const host = req.get(`host`) || `localhost:5000`;
-    return `${protocol}://${host.replace(/:\d+$/, `:8090`)}/login-signin.html#reset=${encodeURIComponent(token)}`;
+    return `${protocol}://${host.replace(/:\d+$/, `:8085`)}/login-signin.html#reset=${encodeURIComponent(token)}`;
 }
 
 async function sendPasswordResetEmail(email, resetUrl) {

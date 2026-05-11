@@ -69,7 +69,7 @@ function getApiCandidates() {
     const protocol = window.location.protocol === "file:" ? "http:" : window.location.protocol;
     const candidates = [];
 
-    if (window.location.protocol !== "file:" && window.location.port === "8090") {
+    if (window.location.protocol !== "file:" && window.location.port === "8085") {
         candidates.push(`${window.location.origin}/api`);
     }
 

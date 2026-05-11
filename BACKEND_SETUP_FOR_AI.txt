@@ -82,15 +82,15 @@ Frontend startup
 ----------------
 The frontend is static files. From repo root:
 
-py -m http.server 8080
+py -m http.server 8085
 
 Open:
 
-http://localhost:8080/frontend/login-signin.html
+http://localhost:8085/frontend/login-signin.html
 
 Expected normal local ports
 ---------------------------
-- Frontend: http://localhost:8080
+- Frontend: http://localhost:8085
 - Backend API: http://localhost:5000
 - PostgreSQL: localhost:5432
 
@@ -114,7 +114,7 @@ If this happens on another PC
 Check listeners:
 
 PowerShell:
-Get-NetTCPConnection -State Listen | Where-Object { $_.LocalPort -in 5000,5001,5432,55432,8080,8090 }
+Get-NetTCPConnection -State Listen | Where-Object { $_.LocalPort -in 5000,5001,5432,55432,8085 }
 
 Check process names:
 

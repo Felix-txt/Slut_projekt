@@ -748,11 +748,6 @@ button:hover,
 
 <div class="account-page" id="accountPage">
     <section class="profile-box">
-        <label class="avatar" id="avatar" for="picUpload">
-            <img id="bigPic">
-            <input type="file" id="picUpload" accept="image/*" style="display:none" onchange="changePic(event)">
-        </label>
-
         <div class="profile-info">
             <div class="row">
                 <div class="pill" id="usernameText">USER NAME</div>
@@ -819,62 +814,6 @@ button:hover,
 </div>
 
 <script>
-const DEFAULT_PROFILE_PIC = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z'/%3E%3C/svg%3E";
-const GAME_ID = "case-clicker";
-const API_CANDIDATES = getApiCandidates();
-
-let editing = "";
-let viewer = null;
-let activeProfile = null;
-let canEdit = false;
-let activeStats = {level: 0, money: 0, inventoryCount: 0, totalCasesOpened: 0};
-let activeInventoryItems = [];
-let lastInventoryOptions = {};
-let selectedInventoryIndex = -1;
-let activeSort = "value";
-
-const els = {
-    burger: document.getElementById("burger"),
-    menu: document.getElementById("menu"),
-    accountPage: document.getElementById("accountPage"),
-    authButtons: document.getElementById("authButtons"),
-    accountChip: document.getElementById("accountChip"),
-    accountName: document.getElementById("accountName"),
-    accountMenuLink: document.getElementById("accountMenuLink"),
-    avatar: document.getElementById("avatar"),
-    picUpload: document.getElementById("picUpload"),
-    bigPic: document.getElementById("bigPic"),
-    smallPic: document.getElementById("smallPic"),
-    usernameText: document.getElementById("usernameText"),
-    emailText: document.getElementById("emailText"),
-    infoName: document.getElementById("infoName"),
-    infoId: document.getElementById("infoId"),
-    infoMail: document.getElementById("infoMail"),
-    infoLevel: document.getElementById("infoLevel"),
-    infoCoins: document.getElementById("infoCoins"),
-    infoSync: document.getElementById("infoSync"),
-    warning: document.getElementById("warning"),
-    inventoryToggle: document.getElementById("inventoryToggle"),
-    inventory: document.getElementById("inventory"),
-    inventoryTitle: document.getElementById("inventoryTitle"),
-    inventoryMeta: document.getElementById("inventoryMeta"),
-    inventoryGrid: document.getElementById("inventoryGrid"),
-    itemDetails: document.getElementById("itemDetails"),
-    modalBg: document.getElementById("modalBg"),
-    modalTitle: document.getElementById("modalTitle"),
-    editInput: document.getElementById("editInput")
-};
-
-els.burger.onclick = function() {
-    els.menu.classList.toggle("show");
-};
-
-document.addEventListener("click", function(event) {
-    if (!els.menu.contains(event.target) && !els.burger.contains(event.target)){
-        els.menu.classList.remove("show");
-    }
-});
-
 function getApiCandidates() {
     const host = window.location.hostname || "localhost";
     const protocol = window.location.protocol === "file:" ? "http:" : window.location.protocol;
@@ -959,7 +898,6 @@ function persistSessionUser(user) {
     localStorage.setItem("username", user.username || "");
     localStorage.setItem("email", user.email || "");
     localStorage.setItem("isAdmin", user.is_admin ? "true" : "false");
-    localStorage.setItem("profilePicture", user.profile_picture || "");
 }
 
 function clearSessionUser() {
@@ -968,7 +906,6 @@ function clearSessionUser() {
     localStorage.removeItem("username");
     localStorage.removeItem("email");
     localStorage.removeItem("isAdmin");
-    localStorage.removeItem("profilePicture");
 }
 
 function logout() {
@@ -1012,7 +949,6 @@ function renderHeader() {
     els.authButtons.style.display = "none";
     els.accountChip.style.display = "flex";
     els.accountName.textContent = viewer.username || viewer.email || "Logged in";
-    els.smallPic.src = viewer.profile_picture || DEFAULT_PROFILE_PIC;
     els.accountMenuLink.href = `account.html?id=${encodeURIComponent(viewer.id)}`;
 }
 
@@ -1021,19 +957,11 @@ function renderEditMode() {
     document.querySelectorAll(".change-btn").forEach((button) => {
         button.disabled = !canEdit;
     });
-
-    els.picUpload.disabled = !canEdit;
-    if (canEdit) {
-        els.avatar.setAttribute("for", "picUpload");
-    } else {
-        els.avatar.removeAttribute("for");
-    }
 }
 
 function renderProfile(profile) {
     const username = profile?.username || "USER NAME";
     const email = canEdit ? profile?.email || "MAIL" : "Private";
-    const picture = profile?.profile_picture || "";
 
     document.title = canEdit ? "CS Clicker - Your Account" : `CS Clicker - ${username}`;
     els.inventoryTitle.textContent = `${username}'s Inventory`;
@@ -1042,20 +970,6 @@ function renderProfile(profile) {
     els.infoName.textContent = `Name: ${username}`;
     els.infoId.textContent = `ID: ${profile?.id || "Unknown"}`;
     els.infoMail.textContent = `Mail: ${email}`;
-
-    if (picture) {
-        els.bigPic.src = picture;
-        if (canEdit || !viewer) {
-            els.smallPic.src = picture;
-        }
-        els.avatar.classList.add("has-pic");
-    } else {
-        els.bigPic.removeAttribute("src");
-        if (canEdit || !viewer) {
-            els.smallPic.src = DEFAULT_PROFILE_PIC;
-        }
-        els.avatar.classList.remove("has-pic");
-    }
 
     renderStats(profile?.stats || activeStats);
     updateSyncState();
@@ -1481,33 +1395,6 @@ async function saveEdit(event) {
     catch(error){
         alert(error.message || "Update failed");
     }
-}
-
-async function changePic(event) {
-    if (!canEdit || !activeProfile) return;
-
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = async function() {
-        try {
-            const data = await apiFetch("/users/update", {
-                method: "PUT",
-                headers: authHeaders(),
-                body: JSON.stringify({profile_picture: reader.result})
-            });
-
-            activeProfile = {...activeProfile, ...data.user};
-            viewer = {...viewer, ...data.user};
-            persistSessionUser(viewer);
-            renderHeader();
-            renderProfile(activeProfile);
-        } catch (error) {
-            alert(error.message || "Could not update picture");
-        }
-    };
-    reader.readAsDataURL(file);
 }
 
 function syncGame() {

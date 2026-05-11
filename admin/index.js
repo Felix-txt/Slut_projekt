@@ -106,7 +106,6 @@ function clearSessionUser() {
     localStorage.removeItem("username");
     localStorage.removeItem("email");
     localStorage.removeItem("isAdmin");
-    localStorage.removeItem("profilePicture");
 }
 
 function logout() {

@@ -336,40 +336,14 @@ body {
 
 <script>
 
-const API_CANDIDATES = getApiCandidates();
+const API = "http://100.126.153.254:5000/api";
 let currentSort = "money";
 
-function getApiCandidates() {
-    const host = window.location.hostname || "localhost";
-    const protocol = window.location.protocol === "file:" ? "http:" : window.location.protocol;
-    const candidates = [];
-
-    if (window.location.protocol !== "file:" && window.location.port === "8085") {
-        candidates.push(`${window.location.origin}/api`);
-    }
-
-    if (window.location.protocol !== "file:" && (window.location.port === "5000" || window.location.port === "5001")) {
-        candidates.push(`${window.location.origin}/api`);
-    }
-
-    candidates.push(`${protocol}//${host}:5001/api`);
-    candidates.push(`${protocol}//${host}:5000/api`);
-
-    return [...new Set(candidates)];
-}
-
 async function apiFetch(path, options = {}) {
-    let lastError = null;
-
-    for (const baseUrl of API_CANDIDATES) {
-        try {
-            const res = await fetch(`${baseUrl}${path}`, options);
-            const text = await res.text();
-            return text ? JSON.parse(text) : {};
-        } catch (error) {
-            lastError = error;
-        }
-    }
+    const res = await fetch(`${API}${path}`, options);
+    const text = await res.text();
+    return text ? JSON.parse(text) : {};
+}
 
     throw lastError || new Error("Could not connect to server");
 }

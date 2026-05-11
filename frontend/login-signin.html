@@ -62,53 +62,12 @@
 </div>
 
 <script>
-const API_CANDIDATES = getApiCandidates();
-
-function getApiCandidates() {
-    const host = window.location.hostname || "localhost";
-    const protocol = window.location.protocol === "file:" ? "http:" : window.location.protocol;
-    const candidates = [];
-
-    if (window.location.protocol !== "file:" && window.location.port === "8085") {
-        candidates.push(`${window.location.origin}/api`);
-    }
-
-    if (window.location.protocol !== "file:" && (window.location.port === "5000" || window.location.port === "5001")) {
-        candidates.push(`${window.location.origin}/api`);
-    }
-
-    candidates.push(`${protocol}//${host}:5001/api`);
-    candidates.push(`${protocol}//${host}:5000/api`);
-
-    return [...new Set(candidates)];
-}
+const API = "http://100.126.153.254:5000/api";
 
 async function apiFetch(path, options = {}) {
-    let lastError = null;
-
-    for (const baseUrl of API_CANDIDATES) {
-        try {
-            const res = await fetch(`${baseUrl}${path}`, options);
-            const text = await res.text();
-            let data = {};
-
-            try {
-                data = text ? JSON.parse(text) : {};
-            } catch (parseError) {
-                data = {
-                    ok: false,
-                    errorType: "server",
-                    errorMessage: res.ok ? "Invalid server response" : `Server returned ${res.status}`
-                };
-            }
-
-            return data;
-        } catch (error) {
-            lastError = error;
-        }
-    }
-
-    throw lastError || new Error("Could not connect to server");
+    const res = await fetch(`${API}${path}`, options);
+    const text = await res.text();
+    return text ? JSON.parse(text) : {};
 }
 
 function saveSession(data) {

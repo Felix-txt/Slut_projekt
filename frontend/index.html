@@ -506,7 +506,7 @@ body {
 
 <script>
 
-const API = getApiBase();
+const API = "http://100.126.153.254:5000/api";
 const SLIDES = [
     {
         src: "assets/slideshow/Recovered_ScreenClip_2026-05-11_11-39-24.png",
@@ -552,21 +552,6 @@ const SLIDES = [
 
 let activeSlideIndex = 0;
 let slideInterval = null;
-
-function getApiBase() {
-    const host = window.location.hostname || "localhost";
-    const protocol = window.location.protocol === "file:" ? "http:" : window.location.protocol;
-
-    if (window.location.protocol !== "file:" && window.location.port === "8085") {
-        return `${window.location.origin}/api`;
-    }
-
-    if (window.location.protocol !== "file:" && (window.location.port === "5000" || window.location.port === "5001")) {
-        return `${window.location.origin}/api`;
-    }
-
-    return `${protocol}//${host}:5001/api`;
-}
 
 function renderSlideshow() {
     const track = document.getElementById("slideTrack");
@@ -777,7 +762,7 @@ document.getElementById("slideNext").addEventListener("click", function() {
     restartSlideshow();
 });
 startSlideshow();
-checkAuth();// kÃ¶r auth status nÃ¤r sidan laddas
+checkAuth();// kör auth status när sidan laddas
 </script>
 
 </body>

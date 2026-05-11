@@ -47,11 +47,21 @@
                         <!-- Formulär för filuppladdning -->
                         <form id="uploadForm" enctype="multipart/form-data">
                             <div class="mb-3">
-                                <label for="fileInput" class="form-label">Select File</label>
+                                <label for="fileInput" class="form-label">Välj Fil</label>
                                 <input type="file" class="form-control" id="fileInput" name="file" required>
-                                <div class="form-text">Choose a file to upload to the server.</div>
+                                <div class="form-text">Välj en fil att ladda upp till servern.</div>
                             </div>
-                            <button type="submit" class="btn btn-primary">Upload</button>
+                            <div class="mb-3">
+                                <label for="patchNotes" class="form-label">Patch Notes</label>
+                                <textarea class="form-control" id="patchNotes" name="patchNotes" rows="4" placeholder="Skriv patch notes här..."></textarea>
+                                <div class="form-text">Beskriv ändringar eller nyheter i denna patch.</div>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="publishCheck" name="publish">
+                                <label class="form-check-label" for="publishCheck">Publicera efter uppladdning</label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Ladda Upp</button>
+                            <button type="button" class="btn btn-success ms-2" id="publishBtn">Publicera</button>
                         </form>
                         <!-- Område för statusmeddelanden -->
                         <div id="statusMessage" class="mt-3" style="display: none;"></div>
@@ -111,64 +121,131 @@
             statusDiv.style.display = 'block';
             setTimeout(() => {
                 statusDiv.style.display = 'none';
-            }, 5000); // Hide after 5 seconds
+            }, 5000); // Dölj efter 5 sekunder
         }
+
+        // Variabel för att lagra den uppladdade filens URL
+        let uploadedFileUrl = null;
 
         // Händelselyssnare för formulärskickning
         document.getElementById('uploadForm').addEventListener('submit', async function(event) {
-            event.preventDefault(); // Prevent default form submission
+            event.preventDefault(); // Förhindra standard formulärskickning
 
             const fileInput = document.getElementById('fileInput');
             const file = fileInput.files[0];
+            const patchNotes = document.getElementById('patchNotes').value;
+            const publish = document.getElementById('publishCheck').checked;
 
             if (!file) {
-                showStatusMessage('Please select a file to upload.', 'warning');
+                showStatusMessage('Välj en fil att ladda upp.', 'warning');
                 return;
             }
 
-            // Create FormData object to send the file
+            // Skapa FormData-objekt för att skicka filen
             const formData = new FormData();
             formData.append('file', file);
+            if (patchNotes) {
+                formData.append('patchNotes', patchNotes);
+            }
+            if (publish) {
+                formData.append('publish', 'true');
+            }
 
             // Hämta autentiseringstoken
             const token = localStorage.getItem('token');
             if (!token) {
-                showStatusMessage('You must be logged in to upload files.', 'danger');
+                showStatusMessage('Du måste vara inloggad för att ladda upp filer.', 'danger');
                 return;
             }
 
             try {
                 // Visa laddningsmeddelande
-                showStatusMessage('Uploading file...', 'info');
+                showStatusMessage('Laddar upp fil...', 'info');
 
                 // Gör API-förfrågan till uppladdningsendpoint
                 // Antar att backend har en endpoint som /api/admin/upload
                 const response = await apiFetch('/admin/upload', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${token}` // Include auth token
+                        'Authorization': `Bearer ${token}` // Inkludera auth-token
                     },
-                    body: formData // Send the file data
+                    body: formData // Skicka fildata
                 });
 
                 if (response.ok) {
                     // Framgång: visa framgångsmeddelande och fil-URL om tillhandahållen
-                    const message = response.downloadUrl ? `File uploaded successfully! Download URL: ${response.downloadUrl}` : 'File uploaded successfully!';
+                    const message = response.downloadUrl ? `Fil uppladdad framgångsrikt! Nedladdnings-URL: ${response.downloadUrl}` : 'Fil uppladdad framgångsrikt!';
                     showStatusMessage(message, 'success');
-                    fileInput.value = ''; // Clear the file input
+                    fileInput.value = ''; // Rensa fil-input
+                    document.getElementById('patchNotes').value = ''; // Rensa patch notes
+                    document.getElementById('publishCheck').checked = false; // Återställ checkbox
+                    uploadedFileUrl = response.downloadUrl || null; // Lagra URL för senare användning
+                    document.getElementById('publishBtn').disabled = !uploadedFileUrl; // Aktivera publish-knapp om URL finns
                 } else {
                     // Fel: visa felmeddelande
-                    showStatusMessage(`Upload failed: ${response.errorMessage || 'Unknown error'}`, 'danger');
+                    showStatusMessage(`Uppladdning misslyckades: ${response.errorMessage || 'Okänt fel'}`, 'danger');
                 }
             } catch (error) {
-                console.error('Upload error:', error);
-                showStatusMessage('Upload failed: Could not connect to server.', 'danger');
+                console.error('Uppladdningsfel:', error);
+                showStatusMessage('Uppladdning misslyckades: Kunde inte ansluta till servern.', 'danger');
+            }
+        });
+
+        // Händelselyssnare för publish-knappen
+        document.getElementById('publishBtn').addEventListener('click', async function() {
+            if (!uploadedFileUrl) {
+                showStatusMessage('Ingen fil har laddats upp ännu. Ladda upp en fil först.', 'warning');
+                return;
+            }
+
+            const title = prompt('Ange titel för spelet:');
+            const description = prompt('Ange beskrivning för spelet:');
+            const version = prompt('Ange version:');
+
+            if (!title || !description || !version) {
+                showStatusMessage('Alla fält måste fyllas i för att publicera.', 'warning');
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showStatusMessage('Du måste vara inloggad för att publicera.', 'danger');
+                return;
+            }
+
+            try {
+                showStatusMessage('Publicerar spel...', 'info');
+
+                const response = await apiFetch('/games/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        description: description,
+                        download_url: uploadedFileUrl,
+                        version: version
+                    })
+                });
+
+                if (response.ok) {
+                    showStatusMessage('Spel publicerat framgångsrikt!', 'success');
+                    uploadedFileUrl = null; // Återställ
+                    document.getElementById('publishBtn').disabled = true;
+                } else {
+                    showStatusMessage(`Publicering misslyckades: ${response.message || 'Okänt fel'}`, 'danger');
+                }
+            } catch (error) {
+                console.error('Publiceringsfel:', error);
+                showStatusMessage('Publicering misslyckades: Kunde inte ansluta till servern.', 'danger');
             }
         });
 
         // Funktion för att hantera utloggning (antar att den är definierad i index.js)
         function logout() {
-            // This function should be defined in index.js
+            // Denna funktion bör vara definierad i index.js
             if (typeof window.logout === 'function') {
                 window.logout();
             } else {

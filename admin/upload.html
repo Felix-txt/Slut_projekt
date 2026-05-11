@@ -56,12 +56,7 @@
                                 <textarea class="form-control" id="patchNotes" name="patchNotes" rows="4" placeholder="Skriv patch notes här..."></textarea>
                                 <div class="form-text">Beskriv ändringar eller nyheter i denna patch.</div>
                             </div>
-                            <div class="mb-3 form-check">
-                                <input type="checkbox" class="form-check-input" id="publishCheck" name="publish">
-                                <label class="form-check-label" for="publishCheck">Publicera efter uppladdning</label>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Ladda Upp</button>
-                            <button type="button" class="btn btn-success ms-2" id="publishBtn">Publicera</button>
+                            <button type="button" class="btn btn-success" id="publishBtn">Publicera</button>
                         </form>
                         <!-- Område för statusmeddelanden -->
                         <div id="statusMessage" class="mt-3" style="display: none;"></div>
@@ -110,7 +105,7 @@
                 }
             }
 
-            throw lastError || new Error("Could not connect to server");
+            throw lastError || new Error("Kunde inte ansluta till servern");
         }
 
         // Funktion för att visa statusmeddelanden
@@ -127,74 +122,19 @@
         // Variabel för att lagra den uppladdade filens URL
         let uploadedFileUrl = null;
 
-        // Händelselyssnare för formulärskickning
-        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
-            event.preventDefault(); // Förhindra standard formulärskickning
-
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
-            const patchNotes = document.getElementById('patchNotes').value;
-            const publish = document.getElementById('publishCheck').checked;
-
-            if (!file) {
-                showStatusMessage('Välj en fil att ladda upp.', 'warning');
-                return;
-            }
-
-            // Skapa FormData-objekt för att skicka filen
-            const formData = new FormData();
-            formData.append('file', file);
-            if (patchNotes) {
-                formData.append('patchNotes', patchNotes);
-            }
-            if (publish) {
-                formData.append('publish', 'true');
-            }
-
-            // Hämta autentiseringstoken
-            const token = localStorage.getItem('token');
-            if (!token) {
-                showStatusMessage('Du måste vara inloggad för att ladda upp filer.', 'danger');
-                return;
-            }
-
-            try {
-                // Visa laddningsmeddelande
-                showStatusMessage('Laddar upp fil...', 'info');
-
-                // Gör API-förfrågan till uppladdningsendpoint
-                // Antar att backend har en endpoint som /api/admin/upload
-                const response = await apiFetch('/admin/upload', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}` // Inkludera auth-token
-                    },
-                    body: formData // Skicka fildata
-                });
-
-                if (response.ok) {
-                    // Framgång: visa framgångsmeddelande och fil-URL om tillhandahållen
-                    const message = response.downloadUrl ? `Fil uppladdad framgångsrikt! Nedladdnings-URL: ${response.downloadUrl}` : 'Fil uppladdad framgångsrikt!';
-                    showStatusMessage(message, 'success');
-                    fileInput.value = ''; // Rensa fil-input
-                    document.getElementById('patchNotes').value = ''; // Rensa patch notes
-                    document.getElementById('publishCheck').checked = false; // Återställ checkbox
-                    uploadedFileUrl = response.downloadUrl || null; // Lagra URL för senare användning
-                    document.getElementById('publishBtn').disabled = !uploadedFileUrl; // Aktivera publish-knapp om URL finns
-                } else {
-                    // Fel: visa felmeddelande
-                    showStatusMessage(`Uppladdning misslyckades: ${response.errorMessage || 'Okänt fel'}`, 'danger');
-                }
-            } catch (error) {
-                console.error('Uppladdningsfel:', error);
-                showStatusMessage('Uppladdning misslyckades: Kunde inte ansluta till servern.', 'danger');
-            }
-        });
+        // Händelselyssnare för formulärskickning - borttagen eftersom vi bara har publiceringsknapp
+        // document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+        //     ...
+        // });
 
         // Händelselyssnare för publish-knappen
         document.getElementById('publishBtn').addEventListener('click', async function() {
-            if (!uploadedFileUrl) {
-                showStatusMessage('Ingen fil har laddats upp ännu. Ladda upp en fil först.', 'warning');
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            const patchNotes = document.getElementById('patchNotes').value;
+
+            if (!file) {
+                showStatusMessage('Välj en fil att ladda upp.', 'warning');
                 return;
             }
 
@@ -207,16 +147,45 @@
                 return;
             }
 
+            // Hämta autentiseringstoken
             const token = localStorage.getItem('token');
             if (!token) {
-                showStatusMessage('Du måste vara inloggad för att publicera.', 'danger');
+                showStatusMessage('Du måste vara inloggad för att ladda upp filer.', 'danger');
                 return;
             }
 
             try {
-                showStatusMessage('Publicerar spel...', 'info');
+                showStatusMessage('Laddar upp fil och publicerar spel...', 'info');
 
-                const response = await apiFetch('/games/create', {
+                // Först ladda upp filen
+                const formData = new FormData();
+                formData.append('file', file);
+                if (patchNotes) {
+                    formData.append('patchNotes', patchNotes);
+                }
+                formData.append('publish', 'true');
+
+                const uploadResponse = await apiFetch('/admin/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                if (!uploadResponse.ok) {
+                    showStatusMessage(`Uppladdning misslyckades: ${uploadResponse.errorMessage || 'Okänt fel'}`, 'danger');
+                    return;
+                }
+
+                const downloadUrl = uploadResponse.downloadUrl;
+                if (!downloadUrl) {
+                    showStatusMessage('Uppladdning lyckades men ingen nedladdnings-URL mottogs.', 'warning');
+                    return;
+                }
+
+                // Sedan skapa spelet
+                const gameResponse = await apiFetch('/games/create', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -225,21 +194,21 @@
                     body: JSON.stringify({
                         title: title,
                         description: description,
-                        download_url: uploadedFileUrl,
+                        download_url: downloadUrl,
                         version: version
                     })
                 });
 
-                if (response.ok) {
-                    showStatusMessage('Spel publicerat framgångsrikt!', 'success');
-                    uploadedFileUrl = null; // Återställ
-                    document.getElementById('publishBtn').disabled = true;
+                if (gameResponse.ok) {
+                    showStatusMessage('Fil uppladdad och spel publicerat framgångsrikt!', 'success');
+                    fileInput.value = '';
+                    document.getElementById('patchNotes').value = '';
                 } else {
-                    showStatusMessage(`Publicering misslyckades: ${response.message || 'Okänt fel'}`, 'danger');
+                    showStatusMessage(`Publicering misslyckades: ${gameResponse.message || 'Okänt fel'}`, 'danger');
                 }
             } catch (error) {
-                console.error('Publiceringsfel:', error);
-                showStatusMessage('Publicering misslyckades: Kunde inte ansluta till servern.', 'danger');
+                console.error('Fel:', error);
+                showStatusMessage('Misslyckades: Kunde inte ansluta till servern.', 'danger');
             }
         });
 

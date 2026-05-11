@@ -161,8 +161,9 @@ button:hover,
     background: #d9d9d9;
     min-height: 205px;
     display: flex;
-    gap: 80px;
-    padding: 0;
+    align-items: center;
+    gap: 34px;
+    padding: 8px 0;
 }
 
 .avatar {
@@ -212,25 +213,32 @@ button:hover,
 }
 
 .profile-info {
-    margin-top: 11px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
 .row {
     display: flex;
     align-items: center;
-    gap: 30px;
-    margin-bottom: 67px;
+    gap: 14px;
+    margin-bottom: 0;
 }
 
 .pill {
-    width: 288px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: fit-content;
+    max-width: 360px;
+    min-width: 0;
     height: 40px;
     background: #4a4747;
     color: white;
     border-radius: 28px;
-    text-align: center;
+    padding: 0 20px;
     line-height: 40px;
-    font-size: 30px;
+    font-size: 24px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -761,7 +769,6 @@ button:hover,
 
             <div class="row">
                 <div class="pill" id="emailText">MAIL</div>
-                <button class="change-btn" onclick="openEdit('email')">Change</button>
             </div>
         </div>
     </section>
@@ -828,6 +835,8 @@ let viewer = null;
 let activeProfile = null;
 let canEdit = false;
 let activeStats = {level: 0, money: 0, inventoryCount: 0, totalCasesOpened: 0};
+let hasCloudSave = false;
+let checkedCloudSave = false;
 let activeInventoryItems = [];
 let lastInventoryOptions = {};
 let selectedInventoryIndex = -1;
@@ -976,6 +985,8 @@ function logout() {
     viewer = null;
     activeProfile = null;
     canEdit = false;
+    hasCloudSave = false;
+    checkedCloudSave = false;
     renderHeader();
     window.location.href = "login-signin.html#login";
 }
@@ -1080,7 +1091,15 @@ function updateSyncState() {
         return;
     }
 
-    const synced = localStorage.getItem(syncKey(activeProfile.id)) === "true";
+    const syncedLocally = localStorage.getItem(syncKey(activeProfile.id)) === "true";
+    const synced = syncedLocally || hasCloudSave;
+
+    if (!synced && !checkedCloudSave) {
+        els.infoSync.textContent = "Checking...";
+        els.warning.style.display = "none";
+        return;
+    }
+
     els.infoSync.textContent = synced ? "Synced" : "Not synced";
     els.warning.style.display = synced ? "none" : "block";
 }
@@ -1091,6 +1110,8 @@ async function loadOwnerSnapshot() {
             headers: authHeaders()
         });
         const snapshot = save.snapshot || null;
+        hasCloudSave = Boolean(snapshot);
+        checkedCloudSave = true;
         const items = normalizeInventory(snapshot);
 
         renderStats(statsFromSnapshot(snapshot, items));
@@ -1099,11 +1120,15 @@ async function loadOwnerSnapshot() {
             updatedAt: save.updatedAt || snapshot?.savedAt,
             declaredCount: Number(snapshot?.inventoryCount ?? items.length)
         });
+        updateSyncState();
     } catch (error) {
+        hasCloudSave = false;
+        checkedCloudSave = true;
         renderStats({});
         renderInventory([], {
             emptyMessage: "Could not load game inventory from cloud save."
         });
+        updateSyncState();
     }
 }
 
@@ -1409,6 +1434,8 @@ async function initAccountPage() {
     const accountId = requestedAccountId();
 
     try {
+        hasCloudSave = false;
+        checkedCloudSave = false;
         viewer = await loadViewer();
         renderHeader();
 

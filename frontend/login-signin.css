@@ -126,10 +126,31 @@ input:focus {
 }
 
 .link {
+    display: inline-block;
+    width: fit-content;
+    padding: 0;
+    border: none;
+    background: transparent;
     font-size: 14px;
     color: blue;
     margin: 8px 0;
     cursor: pointer;
+    text-decoration: underline;
+}
+
+.form-copy {
+    margin: 0 0 10px;
+    color: #333;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+.reset-preview {
+    display: block;
+    margin-top: 12px;
+    color: #1c3fb8;
+    font-size: 14px;
+    overflow-wrap: anywhere;
 }
 
 .hidden {

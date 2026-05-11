@@ -86,6 +86,16 @@ CREATE TABLE IF NOT EXISTS user_balance (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Password reset links
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token_hash VARCHAR(64) NOT NULL UNIQUE,
+    expires_at TIMESTAMP NOT NULL,
+    used_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- User open crate history
 CREATE TABLE IF NOT EXISTS crate_opens (
     id SERIAL PRIMARY KEY,
@@ -115,5 +125,7 @@ CREATE TABLE IF NOT EXISTS saves (
 CREATE INDEX IF NOT EXISTS idx_user_inventory_user ON user_inventory(user_id);
 CREATE INDEX IF NOT EXISTS idx_crate_skins_crate ON crate_skins(crate_id);
 CREATE INDEX IF NOT EXISTS idx_crate_opens_user ON crate_opens(user_id);
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_hash ON password_reset_tokens(token_hash);
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_user ON password_reset_tokens(user_id);
 CREATE INDEX IF NOT EXISTS idx_saves_user_game ON saves(user_id, game_id);
 CREATE INDEX IF NOT EXISTS idx_saves_save_data_gin ON saves USING GIN (save_data);

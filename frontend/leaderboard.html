@@ -300,10 +300,7 @@ body {
         <button class="login-btn" onclick="goLogin()">LOGIN</button>
     </div>
     <div class="account-chip" id="accountChip">
-        <div class="user-icon" id="userIcon">
-            <img id="profilePic" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z'/%3E%3C/svg%3E" onclick="goAccount()">
-            <input type="file" id="picUpload" accept="image/*" style="display:none" onchange="changeProfilePic(event)">
-        </div>
+        <div class="user-icon" onclick="goAccount()"></div>
         <div class="account-name" id="accountName"></div>
         <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
@@ -396,8 +393,6 @@ function checkAuth(){ // kollar om anvä'ndaren är logged in eller inte
         document.getElementById("authButtons").style.display = "none";
         document.getElementById("accountChip").style.display = "flex";
         document.getElementById("accountName").textContent = localStorage.getItem("username") || localStorage.getItem("email") || "Logged in";
-        const savePic = localStorage.getItem("profilePicture");
-        if (savePic) document.getElementById("profilePic").src = savePic;
     }
 }
 
@@ -407,7 +402,6 @@ function clearSessionUser() {
     localStorage.removeItem("username");
     localStorage.removeItem("email");
     localStorage.removeItem("isAdmin");
-    localStorage.removeItem("profilePicture");
 }
 
 function logout() {
@@ -415,17 +409,6 @@ function logout() {
     document.getElementById("authButtons").style.display = "flex";
     document.getElementById("accountChip").style.display = "none";
     window.location.href = "login-signin.html#login";
-}
-
-function changeprofile(event){
-    const file = event.target.files[0];
-    if (file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        document.getElementById("profilePic").src = e.target.result;
-        localStorage.setItem("profilePicture", e.target.result);
-    }
-    reader.readAsDataURL(file);
 }
 
 function goLogin() {

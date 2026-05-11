@@ -117,7 +117,6 @@ function saveSession(data) {
     localStorage.setItem("username", data.username || "");
     localStorage.setItem("email", data.email || "");
     localStorage.setItem("isAdmin", data.is_admin ? "true" : "false");
-    localStorage.setItem("profilePicture", data.profile_picture || "");
 }
 
 function loadRememberedLogin() {

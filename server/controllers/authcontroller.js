@@ -183,7 +183,6 @@ const login = async (req, res) => {
             email: user.email,
             username: user.username,
             is_admin: user.is_admin,
-            profile_picture: user.profile_picture
         });
         
     }

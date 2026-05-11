@@ -122,20 +122,129 @@ body {
 }
 
 .slideshow {
+    position: relative;
     height: 340px;
-    background: #888;
+    overflow: hidden;
     border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
+    background: #10131f;
     transition: 0.3s;
-    font-size: 2rem;
-    font-weight: bold;
+    box-shadow: 0 18px 36px rgba(12, 16, 28, 0.22);
 }
 .slideshow:hover {
     transform: scale(1.01);
     box-shadow: 0 0 12px #4a6cff;
+}
+
+.slide-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.55s ease;
+}
+
+.slide.active {
+    opacity: 1;
+}
+
+.slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+}
+
+.slide-overlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 18px 22px;
+    background: linear-gradient(180deg, rgba(12, 14, 22, 0) 0%, rgba(12, 14, 22, 0.78) 100%);
+    color: white;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.slide-caption {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.slide-label {
+    font-size: 0.82rem;
+    color: #8db9ff;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.slide-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.slide-counter {
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.8);
+}
+
+.slide-nav {
+    position: absolute;
+    inset: 50% 16px auto 16px;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.slide-arrow {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 999px;
+    background: rgba(15, 19, 31, 0.72);
+    color: white;
+    font-size: 1.4rem;
+    cursor: pointer;
+    pointer-events: auto;
+    backdrop-filter: blur(6px);
+}
+
+.slide-arrow:hover {
+    background: rgba(74, 108, 255, 0.92);
+    transform: scale(1.05);
+}
+
+.slide-dots {
+    position: absolute;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+}
+
+.slide-dot {
+    width: 10px;
+    height: 10px;
+    border: none;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.42);
+    cursor: pointer;
+}
+
+.slide-dot.active {
+    width: 28px;
+    background: #4a6cff;
 }
 
 .content-boxes {
@@ -219,22 +328,6 @@ body {
 .right:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-}
-
-.slideshow {
-    height: 220px;
-    background: #888;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    margin-bottom: 20px;
-    transition: 0.3s;
-}
-.slideshow:hover {
-    transform: scale(1.01);
-    box-shadow: 0 0 12px #4a6cff;
 }
 
 .text-list p {
@@ -380,7 +473,14 @@ body {
 <div class="container">
 
     <div class="hero-section">
-        <div class="slideshow">PHOTO SLIDESHOW</div>
+        <div class="slideshow" id="slideshow">
+            <div class="slide-track" id="slideTrack"></div>
+            <div class="slide-nav">
+                <button class="slide-arrow" id="slidePrev" aria-label="Previous slide">&#8249;</button>
+                <button class="slide-arrow" id="slideNext" aria-label="Next slide">&#8250;</button>
+            </div>
+            <div class="slide-dots" id="slideDots" aria-label="Slideshow navigation"></div>
+        </div>
     </div>
 
     <div class="content-boxes">
@@ -407,6 +507,51 @@ body {
 <script>
 
 const API = getApiBase();
+const SLIDES = [
+    {
+        src: "assets/slideshow/Recovered_ScreenClip_2026-05-11_11-39-24.png",
+        label: "Inventory",
+        title: "Rare drop showcase"
+    },
+    {
+        src: "assets/slideshow/Recovered_ScreenClip_2026-05-11_11-37-20.png",
+        label: "Gameplay",
+        title: "Live case opening"
+    },
+    {
+        src: "assets/slideshow/Recovered_ScreenClip_2026-05-11_11-36-43.png",
+        label: "UI",
+        title: "In-game progression view"
+    },
+    {
+        src: "assets/slideshow/Recovered_ScreenClip_2026-05-11_11-35-42.png",
+        label: "Inventory",
+        title: "Collection highlights"
+    },
+    {
+        src: "assets/slideshow/Recovered_ScreenClip_2026-05-11_11-34-31.png",
+        label: "Reward",
+        title: "Gold reward moment"
+    },
+    {
+        src: "assets/slideshow/Recovered_ScreenClip_2026-05-11_11-34-14.png",
+        label: "Showcase",
+        title: "Skins and rewards"
+    },
+    {
+        src: "assets/slideshow/Recovered_ScreenClip_2026-05-11_11-33-58.png",
+        label: "Highlight",
+        title: "Match-winning pull"
+    },
+    {
+        src: "assets/slideshow/Recovered_ScreenClip_2026-05-11_11-33-20.png",
+        label: "Preview",
+        title: "Game feature snapshot"
+    }
+];
+
+let activeSlideIndex = 0;
+let slideInterval = null;
 
 function getApiBase() {
     const host = window.location.hostname || "localhost";
@@ -421,6 +566,67 @@ function getApiBase() {
     }
 
     return `${protocol}//${host}:5001/api`;
+}
+
+function renderSlideshow() {
+    const track = document.getElementById("slideTrack");
+    const dots = document.getElementById("slideDots");
+
+    if (!track || !dots || !SLIDES.length) return;
+
+    track.innerHTML = SLIDES.map((slide, index) => `
+        <figure class="slide${index === 0 ? " active" : ""}">
+            <img src="${slide.src}" alt="${slide.title}">
+            <figcaption class="slide-overlay">
+                <div class="slide-caption">
+                    <span class="slide-label">${slide.label}</span>
+                    <span class="slide-title">${slide.title}</span>
+                </div>
+                <span class="slide-counter">${index + 1}/${SLIDES.length}</span>
+            </figcaption>
+        </figure>
+    `).join("");
+
+    dots.innerHTML = SLIDES.map((slide, index) => `
+        <button class="slide-dot${index === 0 ? " active" : ""}" aria-label="Go to slide ${index + 1}" data-index="${index}"></button>
+    `).join("");
+
+    dots.querySelectorAll(".slide-dot").forEach((dot) => {
+        dot.addEventListener("click", () => {
+            showSlide(Number(dot.dataset.index));
+            restartSlideshow();
+        });
+    });
+}
+
+function showSlide(index) {
+    const slides = document.querySelectorAll(".slide");
+    const dots = document.querySelectorAll(".slide-dot");
+
+    if (!slides.length) return;
+
+    activeSlideIndex = (index + slides.length) % slides.length;
+    slides.forEach((slide, slideIndex) => {
+        slide.classList.toggle("active", slideIndex === activeSlideIndex);
+    });
+    dots.forEach((dot, dotIndex) => {
+        dot.classList.toggle("active", dotIndex === activeSlideIndex);
+    });
+}
+
+function startSlideshow() {
+    if (slideInterval || SLIDES.length < 2) return;
+    slideInterval = window.setInterval(() => {
+        showSlide(activeSlideIndex + 1);
+    }, 4200);
+}
+
+function restartSlideshow() {
+    if (slideInterval) {
+        window.clearInterval(slideInterval);
+        slideInterval = null;
+    }
+    startSlideshow();
 }
 
 document.getElementById("burger").addEventListener("click", function() {
@@ -493,7 +699,17 @@ function goGameInfo() {
     window.location.href = "game/gameinf.html";
 };
 
-checkAuth();// kör auth status när sidan laddas
+renderSlideshow();
+document.getElementById("slidePrev").addEventListener("click", function() {
+    showSlide(activeSlideIndex - 1);
+    restartSlideshow();
+});
+document.getElementById("slideNext").addEventListener("click", function() {
+    showSlide(activeSlideIndex + 1);
+    restartSlideshow();
+});
+startSlideshow();
+checkAuth();// kÃ¶r auth status nÃ¤r sidan laddas
 </script>
 
 </body>

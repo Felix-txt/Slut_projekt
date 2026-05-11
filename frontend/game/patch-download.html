@@ -103,6 +103,40 @@ body{
     gap:10px;
 }
 
+.account-chip{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+}
+
+.user-icon{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:#5a6c8f;
+    cursor:pointer;
+}
+
+.account-name{
+    max-width:120px;
+    font-size:13px;
+    font-weight:bold;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+
+.logout-btn{
+    border:none;
+    background:#4a4747;
+    color:white;
+    padding:5px 10px;
+    border-radius:12px;
+    cursor:pointer;
+    font-size:12px;
+}
+
 .login-btn,
 .signup-btn{
     padding:8px 16px;
@@ -436,9 +470,15 @@ body{
         <a href="../leaderboard.html">Leaderboard</a>
     </nav>
 
-    <div class="auth">
+    <div class="auth" id="authButtons">
         <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
         <button class="login-btn" onclick="goLogin()">LOGIN</button>
+    </div>
+
+    <div class="account-chip" id="accountChip">
+        <div class="user-icon" onclick="goAccount()"></div>
+        <div class="account-name" id="accountName"></div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
 
 </div>
@@ -503,7 +543,6 @@ body{
 
 <script>
 
-<<<<<<< Updated upstream
 function getApiBase() {
     const host = window.location.hostname || "localhost";
     const protocol = window.location.protocol === "file:" ? "http:" : window.location.protocol;
@@ -519,10 +558,7 @@ function getApiBase() {
     return `${protocol}//${host}:5001/api`;
 }
 
-document.getElementById("burger").addEventListener("click", function() {
-=======
 document.getElementById("burger").addEventListener("click", function(){
->>>>>>> Stashed changes
     document.getElementById("menu").classList.toggle("show");
 });
 
@@ -555,9 +591,99 @@ function goSignup(){
     window.location.href = "../login-signin.html#signup";
 }
 
+function getStoredSessionUser() {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+
+    const storedAdmin = localStorage.getItem("isAdmin");
+    const user = {
+        token,
+        isAdmin: storedAdmin === "true",
+        username: localStorage.getItem("username") || "",
+        email: localStorage.getItem("email") || "",
+        accountId: localStorage.getItem("accountId") || ""
+    };
+
+    if (storedAdmin === "true" || storedAdmin === "false") {
+        return user;
+    }
+
+    try {
+        const payload = token.split(".")[1];
+        const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+        const json = decodeURIComponent(atob(base64).split("").map((char) => {
+            return `%${(`00${char.charCodeAt(0).toString(16)}`).slice(-2)}`;
+        }).join(""));
+        const parsed = JSON.parse(json);
+
+        user.isAdmin = parsed.is_admin === true;
+        user.accountId = user.accountId || parsed.accountId || parsed.userID || "";
+        user.email = user.email || parsed.email || "";
+        localStorage.setItem("isAdmin", user.isAdmin ? "true" : "false");
+    } catch (error) {
+        return user;
+    }
+
+    return user;
+}
+
+function renderBurgerMenu(user) {
+    const menu = document.getElementById("menu");
+    const accountHref = user?.accountId ? `../account.html?id=${encodeURIComponent(user.accountId)}` : "../account.html";
+    const links = [
+        `<a href="../index.html">Home</a>`,
+        `<a href="${accountHref}">Account</a>`,
+        `<a href="patch-download.html">Patch & Download</a>`,
+        `<a href="gameinf.html">Game info</a>`,
+        `<a href="../leaderboard.html">Leaderboard</a>`
+    ];
+
+    if (user?.isAdmin) {
+        links.push(`<a href="../../admin/panel.html">Admin Panel</a>`);
+    }
+
+    menu.innerHTML = links.join("");
+}
+
+function checkAuth() {
+    const user = getStoredSessionUser();
+    renderBurgerMenu(user);
+
+    if (!user) {
+        document.getElementById("authButtons").style.display = "flex";
+        document.getElementById("accountChip").style.display = "none";
+        return;
+    }
+
+    document.getElementById("authButtons").style.display = "none";
+    document.getElementById("accountChip").style.display = "flex";
+    document.getElementById("accountName").textContent = user.username || user.email || "Logged in";
+}
+
+function clearSessionUser() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("accountId");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    localStorage.removeItem("isAdmin");
+}
+
+function logout() {
+    clearSessionUser();
+    checkAuth();
+    window.location.href = "../login-signin.html#login";
+}
+
+function goAccount() {
+    const accountId = localStorage.getItem("accountId");
+    window.location.href = accountId ? `../account.html?id=${encodeURIComponent(accountId)}` : "../account.html";
+}
+
 function downloadClient(){
     window.location.href = "../downloads/LuCS-Clicker-latest.exe";
 }
+
+checkAuth();
 
 </script>
 

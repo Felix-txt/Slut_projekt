@@ -915,12 +915,16 @@ function decodeJwtPayload(token) {
         const payload = parts[1];
         if (!payload) return null;
         const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
-        const binary = atob(base64);
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-            bytes[i] = binary.charCodeAt(i);
+        const decoded = atob(base64);
+        try {
+            return JSON.parse(decoded);
+        } catch (e) {
+            const bytes = new Uint8Array(decoded.length);
+            for (let i = 0; i < decoded.length; i++) {
+                bytes[i] = decoded.charCodeAt(i);
+            }
+            return JSON.parse(new TextDecoder().decode(bytes));
         }
-        return JSON.parse(new TextDecoder().decode(bytes));
     } catch (e) {
         return null;
     }
@@ -989,10 +993,11 @@ function getStoredSessionUser() {
     };
 
     const parsed = decodeJwtPayload(token);
+    console.log("JWT payload:", parsed);
     if (parsed) {
-        storedUser.id = Number(parsed.accountId || parsed.userID) || storedUser.id;
+        storedUser.id = Number(parsed.accountId || parsed.userID || parsed.sub || parsed.id) || storedUser.id;
         if (parsed.email) storedUser.email = parsed.email;
-        if (parsed.username) storedUser.username = parsed.username;
+        if (parsed.username || parsed.name) storedUser.username = parsed.username || parsed.name || "";
         storedUser.is_admin = parsed.is_admin === true || storedUser.is_admin;
     }
 
@@ -1048,6 +1053,8 @@ function renderEditMode() {
 }
 
 function renderProfile(profile) {
+    console.log("renderProfile profile:", JSON.stringify(profile));
+    console.log("renderProfile canEdit:", canEdit);
     const username = profile?.username || "USER NAME";
     const email = canEdit ? profile?.email || "MAIL" : "Private";
 
@@ -1441,15 +1448,18 @@ async function initAccountPage() {
 
         if (canEdit) {
             activeProfile = viewer;
+            console.log("viewer before API fetch:", JSON.stringify(viewer));
             try {
                 const profileData = await apiFetch(`/users/${encodeURIComponent(viewer.id)}`, {headers: authHeaders()});
+                console.log("API response:", JSON.stringify(profileData));
                 if (profileData.user) {
                     viewer = {...viewer, ...profileData.user};
                     persistSessionUser(viewer);
                     activeProfile = viewer;
+                    console.log("viewer after API fetch:", JSON.stringify(viewer));
                 }
             } catch (e) {
-                // use cached/JWT data as fallback
+                console.error("API fetch failed, using cached data:", e.message);
             }
         } else {
             activeProfile = await loadPublicProfile(profileId);
@@ -1460,6 +1470,7 @@ async function initAccountPage() {
 
         await loadInventory();
     } catch (error) {
+        console.error("initAccountPage caught:", error);
         renderHeader();
         renderEditMode();
         renderError(error.message || "Could not load account");

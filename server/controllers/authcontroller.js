@@ -70,12 +70,21 @@ const register = async (req, res) => {
             });
         }
     
-        const usercheck = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
-        if (usercheck.rows.length > 0) {
+        const emailCheck = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
+        if (emailCheck.rows.length > 0) {
             return res.status(409).json({
                 ok: false,
                 errorType: `auth`,
                 errorMessage: `email already in use`
+            });
+        }
+
+        const usernameCheck = await db.query(`SELECT * FROM users WHERE username = $1`, [username]);
+        if (usernameCheck.rows.length > 0) {
+            return res.status(409).json({
+                ok: false,
+                errorType: `auth`,
+                errorMessage: `username already taken`
             });
         }
 

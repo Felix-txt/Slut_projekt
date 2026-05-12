@@ -163,7 +163,7 @@ button:hover,
     display: flex;
     align-items: center;
     gap: 34px;
-    padding: 8px 0;
+    padding: 22px 28px;
 }
 
 .avatar {
@@ -756,6 +756,11 @@ button:hover,
 
 <div class="account-page" id="accountPage">
     <section class="profile-box">
+        <label class="avatar" id="avatar" title="Change profile picture">
+            <img id="bigPic" src="" alt="Profile picture">
+            <input id="picUpload" type="file" accept="image/*" hidden>
+        </label>
+
         <div class="profile-info">
             <div class="row">
                 <div class="pill" id="usernameText">USER NAME</div>
@@ -931,6 +936,20 @@ function persistSessionUser(user) {
     localStorage.setItem("isAdmin", user.is_admin ? "true" : "false");
 }
 
+function profilePicKey(accountId) {
+    return `profilePic:${accountId}`;
+}
+
+function renderProfilePicture(profile) {
+    const accountId = profile?.id;
+    const savedPic = accountId ? localStorage.getItem(profilePicKey(accountId)) : "";
+    const picture = savedPic || DEFAULT_PROFILE_PIC;
+
+    if (els.bigPic) els.bigPic.src = picture;
+    if (els.smallPic) els.smallPic.src = picture;
+    if (els.avatar) els.avatar.classList.add("has-pic");
+}
+
 function getStoredSessionUser() {
     const token = localStorage.getItem("token");
     if (!token) return null;
@@ -1021,6 +1040,7 @@ function renderProfile(profile) {
     els.infoMail.textContent = `Mail: ${email}`;
 
     renderStats(profile?.stats || activeStats);
+    renderProfilePicture(profile);
     updateSyncState();
 }
 
@@ -1487,6 +1507,20 @@ document.querySelectorAll(".filter-btn").forEach(btn => {
         renderInventory(activeInventoryItems, lastInventoryOptions);
     });
 });
+
+if (els.picUpload) {
+    els.picUpload.addEventListener("change", function() {
+        const file = this.files?.[0];
+        if (!file || !canEdit || !activeProfile) return;
+
+        const reader = new FileReader();
+        reader.onload = function() {
+            localStorage.setItem(profilePicKey(activeProfile.id), reader.result);
+            renderProfilePicture(activeProfile);
+        };
+        reader.readAsDataURL(file);
+    });
+}
 
 function goLogin() {
     window.location.href = "login-signin.html#login";

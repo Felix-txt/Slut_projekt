@@ -49,12 +49,14 @@
                             <div class="mb-3">
                                 <label for="fileInput" class="form-label">Välj Fil</label>
                                 <input type="file" class="form-control" id="fileInput" name="file" required>
-                                <div class="form-text">Välj en fil att ladda upp till servern.</div>
                             </div>
                             <div class="mb-3">
                                 <label for="patchNotes" class="form-label">Patch Notes</label>
                                 <textarea class="form-control" id="patchNotes" name="patchNotes" rows="4" placeholder="Skriv patch notes här..."></textarea>
-                                <div class="form-text">Beskriv ändringar eller nyheter i denna patch.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="version" class="form-label">Version</label>
+                                <input type="text" class="form-control" id="version" name="version" placeholder="Ange version, t.ex. 1.0.0" required>
                             </div>
                             <button type="button" class="btn btn-success" id="publishBtn">Publicera</button>
                         </form>
@@ -132,6 +134,7 @@
             const fileInput = document.getElementById('fileInput');
             const file = fileInput.files[0];
             const patchNotes = document.getElementById('patchNotes').value;
+            const version = document.getElementById('version').value;
 
             if (!file) {
                 showStatusMessage('Välj en fil att ladda upp.', 'warning');
@@ -140,7 +143,6 @@
 
             const title = prompt('Ange titel för spelet:');
             const description = prompt('Ange beskrivning för spelet:');
-            const version = prompt('Ange version:');
 
             if (!title || !description || !version) {
                 showStatusMessage('Alla fält måste fyllas i för att publicera.', 'warning');
@@ -203,6 +205,7 @@
                     showStatusMessage('Fil uppladdad och spel publicerat framgångsrikt!', 'success');
                     fileInput.value = '';
                     document.getElementById('patchNotes').value = '';
+                    document.getElementById('version').value = '';
                 } else {
                     showStatusMessage(`Publicering misslyckades: ${gameResponse.message || 'Okänt fel'}`, 'danger');
                 }

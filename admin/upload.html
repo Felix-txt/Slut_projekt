@@ -73,41 +73,26 @@
 
     <!-- Anpassad JavaScript för hantering av filuppladdning -->
     <script>
-        // Funktion för att få API-kandidater (återanvänd från index.js)
-        function getApiCandidates() {
-            const host = window.location.hostname || "localhost";
-            const protocol = window.location.protocol === "file:" ? "http:" : window.location.protocol;
-            const candidates = [];
+        const API = "http://10.0.33.243:5000/api";
 
-            if (window.location.protocol !== "file:" && window.location.port === "8090") {
-                candidates.push(`${window.location.origin}/api`);
-            }
-
-            if (window.location.protocol !== "file:" && (window.location.port === "5000" || window.location.port === "5001")) {
-                candidates.push(`${window.location.origin}/api`);
-            }
-
-            candidates.push(`${protocol}//${host}:5001/api`);
-            candidates.push(`${protocol}//${host}:5000/api`);
-
-            return [...new Set(candidates)];
-        }
-
-        // Funktion för att göra API-förfrågningar (återanvänd från index.js)
         async function apiFetch(path, options = {}) {
-            let lastError = null;
-
-            for (const baseUrl of getApiCandidates()) {
-                try {
-                    const res = await fetch(`${baseUrl}${path}`, options);
-                    const text = await res.text();
-                    return text ? JSON.parse(text) : {};
-                } catch (error) {
-                    lastError = error;
-                }
+            const res = await fetch(`${API}${path}`, options);
+            const text = await res.text();
+            if (!text) return {};
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                console.error("API returned non-JSON:", text.slice(0, 200));
+                throw new Error(`Server returned ${res.status}`);
             }
-
-            throw lastError || new Error("Kunde inte ansluta till servern");
+            if (!res.ok) {
+                const error = new Error(data.errorMessage || "Request failed");
+                error.status = res.status;
+                error.data = data;
+                throw error;
+            }
+            return data;
         }
 
         // Funktion för att visa statusmeddelanden

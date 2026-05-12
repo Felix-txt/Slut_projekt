@@ -70,6 +70,48 @@ body {
     box-shadow: 0 0 10px #4a6cff;
 }
 
+.account-chip {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #5a6c8f;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.user-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.account-name {
+    max-width: 120px;
+    font-size: 13px;
+    font-weight: bold;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #333;
+}
+
+.logout-btn {
+    border: none;
+    background: #4a4747;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
 .menu {
     display: none;
     flex-direction: column;
@@ -144,14 +186,22 @@ body {
 
     <div class="title">CS-Clicker Game</div>
 
-    <div class="auth">
+    <div class="auth" id="authButtons">
         <button class="login-btn" onclick="goLogin()">LOGIN</button>
         <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
     </div>
 
+    <div class="account-chip" id="accountChip" style="display:none">
+        <div class="user-icon" onclick="goAccount()">
+            <img id="smallPic" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z'/%3E%3C/svg%3E">
+        </div>
+        <div class="account-name" id="accountName"></div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
     <nav class="menu" id="menu">
         <a href="../index.html">Home</a>
-        <a href="../account.html">Account</a>
+        <a href="../account.html" id="accountMenuLink">Account</a>
         <a href="patch-download.html">Patch & Download</a>
         <a href="../leaderboard.html">Leaderboard</a>
     </nav>
@@ -186,6 +236,69 @@ body {
 
 <script>
 const API = "http://10.0.33.243:5000/api";
+
+function decodeJwtPayload(token) {
+    try {
+        if (!token || typeof token !== "string") return null;
+        const parts = token.trim().split(".");
+        if (parts.length !== 3) return null;
+        const payload = parts[1];
+        if (!payload) return null;
+        const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+        const decoded = atob(base64);
+        try {
+            return JSON.parse(decoded);
+        } catch (e) {
+            const bytes = new Uint8Array(decoded.length);
+            for (let i = 0; i < decoded.length; i++) {
+                bytes[i] = decoded.charCodeAt(i);
+            }
+            return JSON.parse(new TextDecoder().decode(bytes));
+        }
+    } catch (e) {
+        return null;
+    }
+}
+
+function getStoredSessionUser() {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+    const storedUser = {
+        id: Number(localStorage.getItem("accountId")) || null,
+        username: localStorage.getItem("username") || "",
+        email: localStorage.getItem("email") || "",
+        is_admin: localStorage.getItem("isAdmin") === "true"
+    };
+    const parsed = decodeJwtPayload(token);
+    if (parsed) {
+        storedUser.id = Number(parsed.accountId || parsed.userID || parsed.sub || parsed.id) || storedUser.id;
+        if (parsed.email) storedUser.email = parsed.email;
+        if (parsed.username || parsed.name) storedUser.username = parsed.username || parsed.name || "";
+        storedUser.is_admin = parsed.is_admin === true || storedUser.is_admin;
+    }
+    return storedUser.id ? storedUser : null;
+}
+
+function renderHeader() {
+    const viewer = getStoredSessionUser();
+    const authButtons = document.getElementById("authButtons");
+    const accountChip = document.getElementById("accountChip");
+    const accountName = document.getElementById("accountName");
+    const accountMenuLink = document.getElementById("accountMenuLink");
+
+    if (!viewer) {
+        authButtons.style.display = "flex";
+        accountChip.style.display = "none";
+        if (accountMenuLink) accountMenuLink.href = "../account.html";
+        return;
+    }
+
+    authButtons.style.display = "none";
+    accountChip.style.display = "flex";
+    accountName.textContent = viewer.username || viewer.email || "Logged in";
+    if (accountMenuLink) accountMenuLink.href = `../account.html?id=${encodeURIComponent(viewer.id)}`;
+}
+
 document.getElementById("burger").addEventListener("click", function() {
     document.getElementById("menu").classList.toggle("show");
 });
@@ -200,12 +313,32 @@ document.addEventListener('click', function(event) {
 });
 
 function goLogin() {
-    window.location.href = "../login-signin.html";
+    window.location.href = "../login-signin.html#login";
 }
 
 function goSignup() {
-    window.location.href = "../login-signin.html";
+    window.location.href = "../login-signin.html#signup";
 }
+
+function goAccount() {
+    const viewer = getStoredSessionUser();
+    if (viewer) {
+        window.location.href = `../account.html?id=${encodeURIComponent(viewer.id)}`;
+        return;
+    }
+    window.location.href = "../login-signin.html#login";
+}
+
+function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("accountId");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    localStorage.removeItem("isAdmin");
+    renderHeader();
+}
+
+renderHeader();
 </script>
 
 </body>

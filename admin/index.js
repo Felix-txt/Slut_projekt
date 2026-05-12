@@ -1,4 +1,4 @@
-const API_CANDIDATES = getApiCandidates();
+const API = "http://10.0.33.243:5000/api";
 const ROOT_ADMIN_EMAIL = "admin@test.local";
 let users = [];
 let search;
@@ -7,39 +7,24 @@ let usersTableBody;
 let usersCount;
 let currentAdminId;
 
-function getApiCandidates() {
-    const host = window.location.hostname || "localhost";
-    const protocol = window.location.protocol === "file:" ? "http:" : window.location.protocol;
-    const candidates = [];
-
-    if (window.location.protocol !== "file:" && window.location.port === "8085") {
-        candidates.push(`${window.location.origin}/api`);
-    }
-
-    if (window.location.protocol !== "file:" && (window.location.port === "5000" || window.location.port === "5001")) {
-        candidates.push(`${window.location.origin}/api`);
-    }
-
-    candidates.push(`${protocol}//${host}:5001/api`);
-    candidates.push(`${protocol}//${host}:5000/api`);
-
-    return [...new Set(candidates)];
-}
-
 async function apiFetch(path, options = {}) {
-    let lastError = null;
-
-    for (const baseUrl of API_CANDIDATES) {
-        try {
-            const res = await fetch(`${baseUrl}${path}`, options);
-            const text = await res.text();
-            return text ? JSON.parse(text) : {};
-        } catch (error) {
-            lastError = error;
-        }
+    const res = await fetch(`${API}${path}`, options);
+    const text = await res.text();
+    if (!text) return {};
+    let data;
+    try {
+        data = JSON.parse(text);
+    } catch (e) {
+        console.error("API returned non-JSON:", text.slice(0, 200));
+        throw new Error(`Server returned ${res.status}`);
     }
-
-    throw lastError || new Error("Could not connect to server");
+    if (!res.ok) {
+        const error = new Error(data.errorMessage || "Request failed");
+        error.status = res.status;
+        error.data = data;
+        throw error;
+    }
+    return data;
 }
 
 function getCurrentTokenPayload() {

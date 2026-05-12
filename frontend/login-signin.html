@@ -151,16 +151,25 @@ async function signup() {
     msg.textContent = "";
 
     try {
+        console.log("Sending register request...");
         const data = await apiFetch("/auth/register", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({email, username, password})
         });
+        console.log("Register response:", data);
 
-        if (!data.ok) {
-            msg.textContent = data.errorMessage || (data.errorType ? `Error: ${data.errorType}` : "Could not create account");
+        if (data.ok === false) {
+            msg.textContent = data.errorMessage || "Could not create account";
             return;
         }
+        if (!data.ok && !data.userID) {
+            msg.textContent = data.errorMessage || "Unknown error";
+            return;
+        }
+
+        // Registration succeeded - auto login
+        
 
         const loginData = await apiFetch("/auth/login", {
             method: "POST",
@@ -188,11 +197,13 @@ async function login() {
     msg.textContent = "";
 
     try {
+        console.log("Sending login request for:", email);
         const data = await apiFetch("/auth/login", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({email, password, adminCode})
         });
+        console.log("Login response:", data);
 
         if (data.token) {
             saveSession(data);

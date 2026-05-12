@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
+const jwt = require('jsonwebtoken');
 const {verifyToken} = require('../middleware/auth');
 
 const PUBLIC_GAME_ID = 'case-clicker';
@@ -28,6 +29,19 @@ function serializePublicUser(row) {
             updatedAt: row.save_updated_at
         }
     };
+}
+
+function tryParseUserIdFromToken(req) {
+    try {
+        const auth = req.headers.authorization;
+        if (!auth) return null;
+        const token = auth.split(' ')[1];
+        if (!token) return null;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        return Number(decoded.accountId || decoded.userID) || null;
+    } catch (e) {
+        return null;
+    }
 }
 
 router.get('/me', verifyToken, async (req, res) => {
@@ -62,6 +76,7 @@ router.get('/:id', async (req, res) => {
             `SELECT
                 u.id,
                 u.username,
+                u.email,
                 u.created_at,
                 COALESCE((s.save_data->>'level')::numeric, 0) AS level,
                 COALESCE((s.save_data->>'money')::numeric, 0) AS money,
@@ -78,7 +93,11 @@ router.get('/:id', async (req, res) => {
             return res.status(404).json({ok: false, errorMessage: 'account not found'});
         }
 
-        res.json({ok: true, user: serializePublicUser(result.rows[0])});
+        const tokenUserId = tryParseUserIdFromToken(req);
+        const isOwner = tokenUserId === userId;
+        const user = isOwner ? serializePrivateUser(result.rows[0]) : serializePublicUser(result.rows[0]);
+
+        res.json({ok: true, user});
     } catch (error) {
         console.error(error);
         res.status(500).json({ok: false, errorMessage: 'server error'});

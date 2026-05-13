@@ -86,7 +86,7 @@ py -m http.server 8085
 
 Open:
 
-http://localhost:8085/frontend/login-signin.html
+http://localhost:8085/frontend/html/login-signin.html
 
 Expected normal local ports
 ---------------------------

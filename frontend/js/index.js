@@ -1,42 +1,42 @@
 ﻿const API = "http://100.126.153.254:5000/api";
 const SLIDES = [
     {
-        src: "assets/slideshow/Recovered_ScreenClip_2026-05-11_11-39-24.png",
+        src: "../assets/slideshow/Recovered_ScreenClip_2026-05-11_11-39-24.png",
         label: "Gold Gold Gold!",
         title: "Rare drop showcase"
     },
     {
-        src: "assets/slideshow/Recovered_ScreenClip_2026-05-11_11-37-20.png",
+        src: "../assets/slideshow/Recovered_ScreenClip_2026-05-11_11-37-20.png",
         label: "Settings",
         title: "Many diffrent settings to customize your experience"
     },
     {
-        src: "assets/slideshow/Recovered_ScreenClip_2026-05-11_11-36-43.png",
+        src: "../assets/slideshow/Recovered_ScreenClip_2026-05-11_11-36-43.png",
         label: "TradeUps",
         title: "Take a chance to get something better with trade-ups"
     },
     {
-        src: "assets/slideshow/Recovered_ScreenClip_2026-05-11_11-35-42.png",
+        src: "../assets/slideshow/Recovered_ScreenClip_2026-05-11_11-35-42.png",
         label: "Inventory",
         title: "Collection highlights"
     },
     {
-        src: "assets/slideshow/Recovered_ScreenClip_2026-05-11_11-34-31.png",
+        src: "../assets/slideshow/Recovered_ScreenClip_2026-05-11_11-34-31.png",
         label: "Achivements",
         title: "To help you progress faster and track progress"
     },
     {
-        src: "assets/slideshow/Recovered_ScreenClip_2026-05-11_11-34-14.png",
+        src: "../assets/slideshow/Recovered_ScreenClip_2026-05-11_11-34-14.png",
         label: "Uppgrades",
         title: "Various upgrades to boost your clicker power and efficiency"
     },
     {
-        src: "assets/slideshow/Recovered_ScreenClip_2026-05-11_11-33-58.png",
+        src: "../assets/slideshow/Recovered_ScreenClip_2026-05-11_11-33-58.png",
         label: "Store with many diffrent cases",
         title: "A wide variety of cases to choose from, each with its own unique items and themes"
     },
     {
-        src: "assets/slideshow/Recovered_ScreenClip_2026-05-11_11-33-20.png",
+        src: "../assets/slideshow/Recovered_ScreenClip_2026-05-11_11-33-20.png",
         label: "Click!",
         title: "Time to click to earn!"
     }
@@ -151,7 +151,7 @@ function renderBurgerMenu(user) {
     }
 
     if (user?.isAdmin) {
-        links.push(`<a href="../admin/panel.html" id="adminLink">Admin Panel</a>`);
+        links.push(`<a href="../../admin/html/panel.html" id="adminLink">Admin Panel</a>`);
     }
 
     menu.innerHTML = links.join("");
@@ -231,8 +231,8 @@ function goSignup() { // om man klickar pÃ¥ signup gÃ¥r den till signup sidd
 
 function downloadLatestClient() {
     // TODO: ErsÃ¤tt med faktisk filepath nÃ¤r den finns
-    // Exempel: const filePath = "downloads/LuCS-Clicker-latest.exe";
-    const filePath = "downloads/LuCS-Clicker-latest.exe";
+    // Exempel: const filePath = "../downloads/LuCS-Clicker-latest.exe";
+    const filePath = "../downloads/LuCS-Clicker-latest.exe";
     window.location.href = filePath;
 };
 

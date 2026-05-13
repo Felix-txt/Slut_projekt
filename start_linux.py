@@ -151,8 +151,8 @@ def start_frontend():
     if not wait_for_port("127.0.0.1", FRONTEND_PORT, timeout=10):
         fail(f"Frontend did not open port {FRONTEND_PORT}.")
 
-    print(f"Frontend: http://localhost:{FRONTEND_PORT}/frontend/login-signin.html")
-    print(f"Leaderboard: http://localhost:{FRONTEND_PORT}/frontend/leaderboard.html")
+    print(f"Frontend: http://localhost:{FRONTEND_PORT}/frontend/html/login-signin.html")
+    print(f"Leaderboard: http://localhost:{FRONTEND_PORT}/frontend/html/leaderboard.html")
 
 
 def handle_exit(signum, frame):

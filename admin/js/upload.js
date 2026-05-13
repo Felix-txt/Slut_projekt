@@ -135,7 +135,7 @@
                 localStorage.removeItem('username');
                 localStorage.removeItem('email');
                 localStorage.removeItem('accountId');
-                window.location.href = '../frontend/login-signin.html#login';
+                window.location.href = '../../frontend/html/login-signin.html#login';
             }
         }
 

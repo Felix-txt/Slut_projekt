@@ -108,7 +108,7 @@ share server running on http://localhost:8090
 
 Other PCs should open:
 
-http://192.168.1.126:8090/frontend/login-signin.html
+http://192.168.1.126:8090/frontend/html/login-signin.html
 
 
 Firewall
@@ -175,7 +175,7 @@ JSON starting with {"ok":true,...}
 
 Then open:
 
-http://192.168.1.126:8090/frontend/login-signin.html
+http://192.168.1.126:8090/frontend/html/login-signin.html
 
 
 How game sync works
@@ -250,4 +250,3 @@ Common problems
    - Change inventory.
    - Wait up to 30 seconds for autosave/cloud sync, or close game normally to trigger final sync.
    - Refresh account page.
-

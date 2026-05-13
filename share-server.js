@@ -59,7 +59,7 @@ function proxyApi(req, res) {
 
 function resolveStaticPath(urlPath) {
     const safePath = path.normalize(decodeURIComponent(urlPath)).replace(/^(\.\.[/\\])+/, "");
-    const relativePath = safePath === path.sep ? "frontend/index.html" : safePath.replace(/^[/\\]/, "");
+    const relativePath = safePath === path.sep ? "frontend/html/index.html" : safePath.replace(/^[/\\]/, "");
     const candidates = [
         path.resolve(ROOT, relativePath),
         path.resolve(ROOT, "frontend", relativePath)

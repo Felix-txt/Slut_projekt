@@ -1,4 +1,4 @@
-const API = "http://10.0.33.243:5000/api";
+const API = "http://clicker.mrhello.se/api";
 const ROOT_ADMIN_EMAIL = "admin@test.local";
 let users = [];
 let search;

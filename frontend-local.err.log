@@ -1,0 +1,53 @@
+127.0.0.1 - - [13/May/2026 13:32:06] "GET /frontend/login-signin.html HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:32:19] "GET /frontend/login-signin.html HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:32:43] "GET /frontend/login-signin.html HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:32:43] "GET /frontend/login-signin.css HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:32:45] code 404, message File not found
+127.0.0.1 - - [13/May/2026 13:32:45] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [13/May/2026 13:32:52] "GET /frontend/login-signin.html HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:33:26] "GET /frontend/account.html?id=1 HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:33:50] "GET /frontend/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:33:50] "GET /frontend/assets/slideshow/Recovered_ScreenClip_2026-05-11_11-39-24.png HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:33:50] "GET /frontend/assets/slideshow/Recovered_ScreenClip_2026-05-11_11-36-43.png HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:33:50] "GET /frontend/assets/slideshow/Recovered_ScreenClip_2026-05-11_11-35-42.png HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:33:50] "GET /frontend/assets/slideshow/Recovered_ScreenClip_2026-05-11_11-33-20.png HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:33:50] "GET /frontend/assets/slideshow/Recovered_ScreenClip_2026-05-11_11-34-31.png HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:33:50] "GET /frontend/assets/slideshow/Recovered_ScreenClip_2026-05-11_11-34-14.png HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:33:50] "GET /frontend/assets/slideshow/Recovered_ScreenClip_2026-05-11_11-37-20.png HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:33:50] "GET /frontend/assets/slideshow/Recovered_ScreenClip_2026-05-11_11-33-58.png HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:35:38] "GET /frontend/game/patch-download.html HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:35:49] "GET /frontend/game/gameinf.html HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:38:40] code 404, message File not found
+127.0.0.1 - - [13/May/2026 13:38:40] "GET /frontend/game/gameinf.html HTTP/1.1" 404 -
+127.0.0.1 - - [13/May/2026 13:38:42] code 404, message File not found
+127.0.0.1 - - [13/May/2026 13:38:42] "GET /frontend/game/gameinf.html HTTP/1.1" 404 -
+127.0.0.1 - - [13/May/2026 13:38:44] code 404, message File not found
+127.0.0.1 - - [13/May/2026 13:38:44] "GET /frontend/game/gameinf.html HTTP/1.1" 404 -
+127.0.0.1 - - [13/May/2026 13:38:45] code 404, message File not found
+127.0.0.1 - - [13/May/2026 13:38:45] "GET /frontend/game/gameinf.html HTTP/1.1" 404 -
+127.0.0.1 - - [13/May/2026 13:38:46] code 404, message File not found
+127.0.0.1 - - [13/May/2026 13:38:46] "GET /frontend/game/gameinf.html HTTP/1.1" 404 -
+127.0.0.1 - - [13/May/2026 13:38:47] code 404, message File not found
+127.0.0.1 - - [13/May/2026 13:38:47] "GET /frontend/game/gameinf.html HTTP/1.1" 404 -
+127.0.0.1 - - [13/May/2026 13:38:53] code 404, message File not found
+127.0.0.1 - - [13/May/2026 13:38:53] "GET /frontend/game/gameinf.html HTTP/1.1" 404 -
+127.0.0.1 - - [13/May/2026 13:39:11] code 404, message File not found
+127.0.0.1 - - [13/May/2026 13:39:11] "GET /frontend/game/gameinf.html HTTP/1.1" 404 -
+127.0.0.1 - - [13/May/2026 13:39:12] code 404, message File not found
+127.0.0.1 - - [13/May/2026 13:39:12] "GET /frontend/game/gameinf.html HTTP/1.1" 404 -
+127.0.0.1 - - [13/May/2026 13:39:15] code 404, message File not found
+127.0.0.1 - - [13/May/2026 13:39:15] "GET /frontend/game/gameinf.html HTTP/1.1" 404 -
+127.0.0.1 - - [13/May/2026 13:40:29] "GET /frontend/game/gameinf.html HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:40:38] "GET /frontend/game/gameinf.html HTTP/1.1" 304 -
+127.0.0.1 - - [13/May/2026 13:41:41] "GET /frontend/game/gameinf.html HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:43:07] code 404, message File not found
+127.0.0.1 - - [13/May/2026 13:43:07] "GET /frontend/game/gameinf.html HTTP/1.1" 404 -
+127.0.0.1 - - [13/May/2026 13:44:17] "GET /frontend/game/gameinf.html HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:47:01] "GET /frontend/leaderboard.html HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:47:25] "GET /frontend/index.html HTTP/1.1" 304 -
+127.0.0.1 - - [13/May/2026 13:47:32] code 404, message File not found
+127.0.0.1 - - [13/May/2026 13:47:32] "GET /frontend/downloads/LuCS-Clicker-latest.exe HTTP/1.1" 404 -
+127.0.0.1 - - [13/May/2026 13:50:29] "GET /frontend/game/patch-download.html HTTP/1.1" 304 -
+127.0.0.1 - - [13/May/2026 13:50:34] "GET /frontend/game/gameinf.html HTTP/1.1" 200 -
+127.0.0.1 - - [13/May/2026 13:51:59] "GET /frontend/account.html?id=1 HTTP/1.1" 304 -
+127.0.0.1 - - [13/May/2026 13:52:59] "GET /frontend/leaderboard.html HTTP/1.1" 200 -

@@ -17,13 +17,26 @@ body {
     background: linear-gradient(135deg, #ececec, #d9d9d9);
 }
 
-
+.header {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    position: relative;
+}
 
 .burger {
     cursor: pointer;
     user-select: none;
 }
 
+.burger svg {
+    transition: 0.3s;
+}
+
+.burger:hover svg {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 6px #4a6cff);
+}
 
 
 .title {
@@ -32,6 +45,11 @@ body {
     padding: 10px 30px;
     border-radius: 20px;
     font-size: 32px;
+    transition: 0.3s;
+}
+
+.title:hover {
+    box-shadow: 0 0 8px #4a6cff;
 }
 
 .auth {
@@ -66,6 +84,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     animation: fadeIn 0.2s ease;
+    z-index: 1000;
 }
 .menu a {
     padding: 10px;
@@ -270,6 +289,41 @@ body {
     font-size: 12px;
 }
 
+@media (max-width: 700px) {
+    .header {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .title {
+        order: 3;
+        width: 100%;
+        text-align: center;
+        font-size: 26px;
+    }
+
+    .auth {
+        margin-left: auto;
+    }
+
+    .container {
+        padding: 24px 14px;
+    }
+
+    .leaderboard {
+        width: 100%;
+    }
+
+    .lb-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .sort-controls {
+        justify-content: flex-start;
+    }
+}
+
 </style>
 </head>
 
@@ -326,7 +380,7 @@ body {
 
 <script>
 
-const API = "http://10.0.33.243:5000/api";
+const API = "http://100.126.153.254:5000/api";
 let currentSort = "money";
 
 async function apiFetch(path, options = {}) {

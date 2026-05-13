@@ -6,267 +6,455 @@
 <title>Patch & Download</title>
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
 }
 
-body {
-    background: linear-gradient(135deg, #ececec, #d9d9d9);
+body{
+    background:linear-gradient(135deg,#ececec,#d9d9d9);
+    overflow-x:hidden;
 }
 
-.header {
-    display: flex;
-    align-items: center;
-    padding: 15px;
+.page-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0);
+    pointer-events:none;
+    transition:0.35s;
+    z-index:5;
 }
 
-.burger svg {
-    transition: 0.3s;
-}
-.burger:hover svg {
-    transform: scale(1.1);
-    filter: drop-shadow(0 0 6px #4a6cff);
+.page-overlay.active{
+    background:rgba(0,0,0,0.5);
 }
 
-.title {
-    margin: auto;
-    background: #ddd;
-    padding: 10px 30px;
-    border-radius: 20px;
-    font-size: 32px;
-    transition: 0.3s;
-}
-.title:hover {
-    box-shadow: 0 0 15px #4a6cff;
+.header{
+    display:flex;
+    align-items:center;
+    padding:15px;
+    position:relative;
+    z-index:100;
 }
 
-.auth {
-    display: flex;
-    gap: 10px;
+.burger{
+    cursor:pointer;
 }
 
-.auth button {
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: none;
-    cursor: pointer;
-    transition: 0.3s;
+.burger svg{
+    transition:0.3s;
 }
 
-.login-btn {
-    background: #5a6c8f;
-    color: white;
-}
-.signup-btn {
-    background: #2f4bb2;
-    color: white;
+.burger:hover svg{
+    transform:scale(1.1);
+    filter:drop-shadow(0 0 6px #4a6cff);
 }
 
-.auth button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 10px #4a6cff;
+.title{
+    margin:auto;
+    background:#ddd;
+    padding:10px 30px;
+    border-radius:20px;
+    font-size:32px;
+    transition:0.3s;
 }
 
-.account-chip {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
+.title:hover{
+    box-shadow:0 0 8px #4a6cff;
 }
 
-.user-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #5a6c8f;
-    cursor: pointer;
-    overflow: hidden;
+.menu{
+    display:none;
+    flex-direction:column;
+    background:#eee;
+    position:absolute;
+    top:60px;
+    left:10px;
+    padding:15px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    animation:fadeIn 0.2s ease;
+    z-index:1000;
 }
 
-.user-icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.menu a{
+    padding:10px;
+    text-decoration:none;
+    color:#333;
+    border-radius:8px;
+    transition:0.2s;
 }
 
-.account-name {
-    max-width: 120px;
-    font-size: 13px;
-    font-weight: bold;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    color: #333;
+.menu a:hover{
+    background:#4a6cff;
+    color:white;
+    transform:translateX(5px);
 }
 
-.logout-btn {
-    border: none;
-    background: #4a4747;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 12px;
+.menu.show{
+    display:flex;
 }
 
-.menu {
-    display: none;
-    flex-direction: column;
-    background: #eee;
-    position: absolute;
-    top: 60px;
-    left: 10px;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-.menu a {
-    padding: 10px;
-    text-decoration: none;
-    color: #333;
-    border-radius: 8px;
-    transition: 0.2s;
-}
-.menu a:hover {
-    background: #4a6cff;
-    color: white;
-}
-.menu.show {
-    display: flex;
+.auth{
+    display:flex;
+    gap:10px;
 }
 
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px;
+.login-btn,
+.signup-btn{
+    padding:8px 16px;
+    border-radius:20px;
+    border:none;
+    color:white;
+    cursor:pointer;
+    transition:0.3s;
 }
 
-.patch-box {
-    width: 80%;
-    max-width: 900px;
-    height: 350px;
-    background: #dcdcdc;
-    border-radius: 25px;
-    padding: 25px;
-    overflow-y: auto;
-    transition: 0.3s;
+.login-btn{
+    background:#5a6c8f;
 }
 
-.patch-box:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+.signup-btn{
+    background:#2f4bb2;
 }
 
-.patch-box h2 {
-    margin-bottom: 15px;
+.login-btn:hover,
+.signup-btn:hover{
+    transform:scale(1.03);
+    box-shadow:0 0 8px #4a6cff;
 }
 
-.patch-box p {
-    margin: 8px 0;
-    transition: 0.2s;
-}
-.patch-box p:hover {
-    color: #4a6cff;
+.container{
+    padding:30px;
 }
 
-.download-btn {
-    margin-top: 30px;
-    padding: 20px 70px;
-    font-size: 22px;
-    border-radius: 40px;
-    border: none;
-    cursor: pointer;
-    color: white;
-    font-weight: bold;
-    position: relative;
-    overflow: hidden;
+.hero{
+    background:#0f1525;
+    border-radius:24px;
+    min-height:540px;
+    position:relative;
+    overflow:hidden;
 
-    background: linear-gradient(270deg, #2f4bb2, #4a6cff, #2f4bb2);
-    background-size: 400% 400%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
 
-    animation: gradientMove 6s ease infinite, pulse 2s infinite;
-
-    transition: 0.3s;
+    box-shadow:0 18px 36px rgba(12,16,28,0.22);
 }
 
-.download-btn::before {
-    content: "";
-    position: absolute;
-    inset: -5px;
-    border-radius: 40px;
-    background: linear-gradient(270deg, #4a6cff, #00d4ff, #4a6cff);
-    z-index: -1;
-    filter: blur(15px);
-    opacity: 0.7;
+.hero::before{
+    content:"";
+    position:absolute;
 
-    animation: glowMove 6s linear infinite;
+    width:1100px;
+    height:1100px;
+
+    background:
+    radial-gradient(circle,
+    rgba(74,108,255,0.22) 0%,
+    transparent 70%);
+
+    animation:rotateGlow 20s linear infinite;
 }
 
-.download-btn::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(
-        120deg,
-        transparent,
-        rgba(255,255,255,0.5),
-        transparent
+.hero-content{
+    position:relative;
+    z-index:2;
+    text-align:center;
+    color:white;
+    margin-bottom:55px;
+}
+
+.hero-content h1{
+    font-size:5rem;
+
+    margin-bottom:12px;
+
+    text-shadow:
+    0 0 12px rgba(74,108,255,0.7),
+    0 0 30px rgba(74,108,255,0.35);
+}
+
+.hero-content p{
+    font-size:1.15rem;
+    opacity:0.9;
+}
+
+.download-btn{
+    position:relative;
+    z-index:20;
+
+    padding:24px 90px;
+
+    border:none;
+    border-radius:18px;
+
+    font-size:1.35rem;
+    font-weight:900;
+    letter-spacing:1px;
+
+    color:white;
+    cursor:pointer;
+
+    overflow:hidden;
+
+    background:
+    linear-gradient(
+        135deg,
+        #07111f 0%,
+        #10213d 20%,
+        #17376d 40%,
+        #2450a6 60%,
+        #17376d 80%,
+        #07111f 100%
     );
-    transform: skewX(-20deg);
 
-    animation: shine 3s infinite;
+    background-size:300% 300%;
+
+    animation:
+    blueFlow 8s ease infinite,
+    pulse 2.2s infinite;
+
+    transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+
+    box-shadow:
+    0 0 15px rgba(74,108,255,0.35),
+    inset 0 0 15px rgba(255,255,255,0.03);
+
+    backdrop-filter:blur(8px);
 }
 
-.download-btn:hover {
-    transform: scale(1.12);
-    box-shadow: 0 0 30px #4a6cff;
+.download-btn::before{
+    content:"";
+
+    position:absolute;
+    inset:0;
+
+    background:
+    repeating-linear-gradient(
+        -45deg,
+        rgba(255,255,255,0.03) 0px,
+        rgba(255,255,255,0.03) 2px,
+        transparent 2px,
+        transparent 8px
+    );
+
+    mix-blend-mode:screen;
+
+    animation:textureMove 5s linear infinite;
 }
 
-.download-btn:active {
-    transform: scale(0.95);
+.download-btn::after{
+    content:"";
+
+    position:absolute;
+
+    inset:-2px;
+
+    border-radius:20px;
+
+    background:
+    radial-gradient(circle at 20% 20%,
+    rgba(90,140,255,0.9),
+    transparent 25%),
+
+    radial-gradient(circle at 80% 70%,
+    rgba(60,110,255,0.8),
+    transparent 30%),
+
+    radial-gradient(circle at 40% 90%,
+    rgba(120,170,255,0.5),
+    transparent 25%);
+
+    filter:blur(16px);
+
+    opacity:0.7;
+
+    z-index:-1;
+
+    animation:lavaMove 6s linear infinite;
 }
 
+.download-btn:hover{
 
-@keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
+    transform:scale(1.08);
 
-@keyframes glowMove {
-    0% { background-position: 0%; }
-    100% { background-position: 200%; }
-}
+    box-shadow:
+    0 0 20px rgba(74,108,255,0.7),
+    0 0 40px rgba(74,108,255,0.55),
+    0 0 70px rgba(74,108,255,0.35),
 
-@keyframes shine {
-    0% { left: -100%; }
-    50% { left: 120%; }
-    100% { left: 120%; }
+    inset 0 0 25px rgba(255,255,255,0.06);
 }
 
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+.download-btn:hover::after{
+
+    opacity:1;
+
+    filter:blur(28px);
+
+    transform:scale(1.2);
 }
 
-.patch-box::-webkit-scrollbar {
-    width: 8px;
+.download-btn:active{
+    transform:scale(0.97);
 }
-.patch-box::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
+
+.patch-section{
+    margin-top:35px;
+
+    background:#dcdcdc;
+
+    border-radius:20px;
+
+    padding:30px;
+
+    box-shadow:0 10px 20px rgba(0,0,0,0.08);
 }
+
+.patch-section h2{
+    margin-bottom:25px;
+    font-size:2rem;
+}
+
+.patch-note{
+    background:#cfcfcf;
+
+    padding:18px;
+
+    border-radius:16px;
+
+    margin-bottom:18px;
+
+    transition:0.25s;
+}
+
+.patch-note:hover{
+    transform:translateX(6px);
+    background:#c4c4c4;
+    box-shadow:0 0 10px rgba(74,108,255,0.25);
+}
+
+.patch-note h3{
+    margin-bottom:8px;
+    color:#2f4bb2;
+}
+
+::-webkit-scrollbar{
+    width:10px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#888;
+    border-radius:10px;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(-10px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+@keyframes rotateGlow{
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+@keyframes blueFlow{
+
+    0%{
+        background-position:0% 50%;
+    }
+
+    50%{
+        background-position:100% 50%;
+    }
+
+    100%{
+        background-position:0% 50%;
+    }
+}
+
+@keyframes textureMove{
+
+    0%{
+        transform:translateX(-50px);
+    }
+
+    100%{
+        transform:translateX(50px);
+    }
+}
+
+@keyframes lavaMove{
+
+    0%{
+        transform:translateX(-10px) translateY(0px);
+    }
+
+    25%{
+        transform:translateX(10px) translateY(-6px);
+    }
+
+    50%{
+        transform:translateX(0px) translateY(10px);
+    }
+
+    75%{
+        transform:translateX(-8px) translateY(-8px);
+    }
+
+    100%{
+        transform:translateX(-10px) translateY(0px);
+    }
+}
+
+@keyframes pulse{
+
+    0%,100%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.03);
+    }
+}
+
+@media(max-width:900px){
+
+    .hero-content h1{
+        font-size:3rem;
+    }
+
+    .download-btn{
+        padding:22px 45px;
+        font-size:1.1rem;
+    }
+}
+
 </style>
 </head>
 
 <body>
+
+<div class="page-overlay" id="pageOverlay"></div>
 
 <div class="header">
 
@@ -278,53 +466,76 @@ body {
 
     <div class="title">CS-Clicker Game</div>
 
-    <div class="auth" id="authButtons">
-        <button class="login-btn" onclick="goLogin()">LOGIN</button>
-        <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
-    </div>
-
-    <div class="account-chip" id="accountChip" style="display:none">
-        <div class="user-icon" onclick="goAccount()">
-            <img id="smallPic" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z'/%3E%3C/svg%3E">
-        </div>
-        <div class="account-name" id="accountName"></div>
-        <button class="logout-btn" onclick="logout()">Logout</button>
-    </div>
-
     <nav class="menu" id="menu">
         <a href="../index.html">Home</a>
-        <a href="../account.html" id="accountMenuLink">Account</a>
-        <a href="../leaderboard.html">Leaderboard</a>
+        <a href="../account.html">Account</a>
+        <a href="patch-download.html">Patch & Download</a>
         <a href="gameinf.html">Game info</a>
+        <a href="../leaderboard.html">Leaderboard</a>
     </nav>
+
+    <div class="auth">
+        <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
+        <button class="login-btn" onclick="goLogin()">LOGIN</button>
+    </div>
 
 </div>
 
 <div class="container">
 
-    <div class="patch-box">
-        <h2>Patch Notes v1.0</h2>
+    <section class="hero">
 
-        <p>• Added new clicker mechanics</p>
-        <p>• Improved UI animations</p>
-        <p>• Added skins system</p>
-        <p>• Leaderboard implemented</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
-        <p>• Bug fixes and performance improvements</p>
+        <div class="hero-content">
+            <h1>PATCH 1.2</h1>
 
-        <p>• More content coming soon...</p>
-    </div>
+            <p>
+                Massive improvements, smoother gameplay and upgraded visuals.
+            </p>
+        </div>
 
-    <button class="download-btn" onclick="downloadGame()">DOWNLOAD</button>
+        <button
+            class="download-btn"
+            id="downloadBtn"
+            onclick="downloadClient()"
+        >
+            ⬇ DOWNLOAD NOW
+        </button>
+
+    </section>
+
+    <section class="patch-section">
+
+        <h2>Patch Notes</h2>
+
+        <div class="patch-note">
+            <h3>UI Improvements</h3>
+            <p>
+                Redesigned interface with modern animations and smoother interactions.
+            </p>
+        </div>
+
+        <div class="patch-note">
+            <h3>Case Opening Effects</h3>
+            <p>
+                Added improved reward animations and better sound syncing.
+            </p>
+        </div>
+
+        <div class="patch-note">
+            <h3>Performance Update</h3>
+            <p>
+                Increased FPS stability and reduced loading times.
+            </p>
+        </div>
+
+        <div class="patch-note">
+            <h3>Inventory Changes</h3>
+            <p>
+                Inventory system is now prepared for future sorting and trading systems.
+            </p>
+        </div>
+
+    </section>
 
 </div>
 
@@ -397,46 +608,40 @@ document.getElementById("burger").addEventListener("click", function() {
     document.getElementById("menu").classList.toggle("show");
 });
 
-document.addEventListener('click', function(event) {
-    const menu = document.getElementById("menu")
-    const burger = document.getElementById("burger")
+document.addEventListener("click", function(event){
 
-    if (!menu.contains(event.target) && !burger.contains(event.target)){
-        menu.classList.remove('show');
+    const menu = document.getElementById("menu");
+    const burger = document.getElementById("burger");
+
+    if(!menu.contains(event.target) && !burger.contains(event.target)){
+        menu.classList.remove("show");
     }
 });
 
-function goLogin() {
+const downloadBtn = document.getElementById("downloadBtn");
+const overlay = document.getElementById("pageOverlay");
+
+downloadBtn.addEventListener("mouseenter", () => {
+    overlay.classList.add("active");
+});
+
+downloadBtn.addEventListener("mouseleave", () => {
+    overlay.classList.remove("active");
+});
+
+
+function goLogin(){
     window.location.href = "../login-signin.html#login";
 }
 
-function goSignup() {
+function goSignup(){
     window.location.href = "../login-signin.html#signup";
 }
 
-function goAccount() {
-    const viewer = getStoredSessionUser();
-    if (viewer) {
-        window.location.href = `../account.html?id=${encodeURIComponent(viewer.id)}`;
-        return;
-    }
-    window.location.href = "../login-signin.html#login";
+function downloadClient(){
+    window.location.href = "../downloads/LuCS-Clicker-latest.exe";
 }
 
-function logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("accountId");
-    localStorage.removeItem("username");
-    localStorage.removeItem("email");
-    localStorage.removeItem("isAdmin");
-    renderHeader();
-}
-
-function downloadGame() {
-    alert("FELIX FIXA BRUR");
-}
-
-renderHeader();
 </script>
 
 </body>

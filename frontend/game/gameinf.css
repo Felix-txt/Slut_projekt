@@ -1,0 +1,252 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #fff;
+    color: #111;
+}
+
+.header {
+    display: flex;
+    align-items: flex-start;
+    padding: 18px 48px 0;
+    position: relative;
+}
+
+.burger svg {
+    transition: 0.3s;
+}
+.burger:hover svg {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 6px #4a6cff);
+}
+
+.title {
+    margin: 0 auto;
+    background: #d8d8d8;
+    padding: 8px 30px;
+    border-radius: 20px;
+    min-width: 420px;
+    text-align: center;
+    font-size: 24px;
+    transition: 0.3s;
+}
+.title:hover {
+    box-shadow: 0 0 15px #4a6cff;
+}
+
+.auth {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 138px;
+}
+
+.auth button {
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 22px;
+    color: #111;
+}
+
+.login-btn {
+    background: #a9b8d7;
+}
+.signup-btn {
+    background: #dedede;
+}
+
+.auth button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #4a6cff;
+}
+
+.account-chip {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #5a6c8f;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.user-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.account-name {
+    max-width: 120px;
+    font-size: 13px;
+    font-weight: bold;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #333;
+}
+
+.logout-btn {
+    border: none;
+    background: #4a4747;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.menu {
+    display: none;
+    flex-direction: column;
+    background: #eee;
+    position: absolute;
+    top: 60px;
+    left: 10px;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+.menu a {
+    padding: 10px;
+    text-decoration: none;
+    color: #333;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+.menu a:hover {
+    background: #4a6cff;
+    color: white;
+}
+.menu.show {
+    display: flex;
+}
+
+.container {
+    width: min(780px, calc(100% - 48px));
+    margin: 62px auto 0;
+    padding: 0;
+}
+
+.info-panel {
+    background: #d8d8d8;
+    padding: 22px 26px 28px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 46px;
+}
+
+.info-card {
+    min-height: 280px;
+    background: #70706f;
+    color: #fff;
+    padding: 22px 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.info-marker {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #d8d8d8;
+    color: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.info-card h2 {
+    margin: 18px 0 12px;
+    font-size: 22px;
+    line-height: 1.15;
+}
+
+.info-card p {
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.disclaimer {
+    margin-top: 22px;
+    background: #d8d8d8;
+    padding: 6px;
+    font-size: 13px;
+    line-height: 1.25;
+}
+
+.quick-links {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 34px;
+    margin-top: 34px;
+}
+
+.quick-links button {
+    min-height: 27px;
+    border: none;
+    border-radius: 999px;
+    background: #d8d8d8;
+    color: #222;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.25s;
+}
+
+.quick-links button:hover {
+    background: #a9b8d7;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 850px) {
+    .header {
+        padding: 18px 22px 0;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .title {
+        order: 3;
+        min-width: 100%;
+        font-size: 22px;
+    }
+
+    .auth {
+        width: 130px;
+    }
+
+    .container {
+        width: calc(100% - 32px);
+        margin-top: 34px;
+    }
+
+    .info-grid,
+    .quick-links {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .info-card {
+        min-height: auto;
+    }
+}
+

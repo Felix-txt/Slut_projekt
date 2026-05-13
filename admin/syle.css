@@ -4,19 +4,23 @@
 }
 .burger:hover svg{
     transition: 0.3s;
-    filter: drop-shadow(0 0 6px #4a6cff;)
+    filter: drop-shadow(0 0 6px #4a6cff);
 }
 .menu{
     display: none;
     flex-direction: column;
     background: #eee;
-    position: absolute;
-    top: 60px;
-    left: 10px;
+    position: fixed !important;
+    top: 36px !important;
+    left: 4px !important;
     padding: 15px;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     animation: fadeIn 0.2s ease;
+    z-index: 2147483647 !important;
+    min-width: 176px;
+    overflow: visible;
+    isolation: isolate;
 }
 .menu a{
     padding: 10px;
@@ -33,7 +37,7 @@
 
 }
 .menu.show{
-    display: flex;
+    display: flex !important;
 }
 
 /*############ Admin Panel ##############*/
@@ -44,6 +48,8 @@
     width: 100%;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+    z-index: 2147483646;
 }
 .user{
     margin: 10px;
@@ -81,6 +87,8 @@
   display: flex;
   align-items: flex-start;
   gap: 12px;
+  position: relative;
+  z-index: 1;
 }
 
 .admin-panel {
@@ -221,6 +229,8 @@
   border: 1px solid #d0d0d0;
   border-radius: 8px;
   background: #fff;
+  position: relative;
+  z-index: 0;
 }
 
 .users-table {
@@ -310,4 +320,8 @@
   border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 700;
+}
+
+.status-message {
+  display: none;
 }

@@ -1,263 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="sv">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Game Info</title>
 
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-}
-
-body {
-    background: #fff;
-    color: #111;
-}
-
-.header {
-    display: flex;
-    align-items: flex-start;
-    padding: 18px 48px 0;
-    position: relative;
-}
-
-.burger svg {
-    transition: 0.3s;
-}
-.burger:hover svg {
-    transform: scale(1.1);
-    filter: drop-shadow(0 0 6px #4a6cff);
-}
-
-.title {
-    margin: 0 auto;
-    background: #d8d8d8;
-    padding: 8px 30px;
-    border-radius: 20px;
-    min-width: 420px;
-    text-align: center;
-    font-size: 24px;
-    transition: 0.3s;
-}
-.title:hover {
-    box-shadow: 0 0 15px #4a6cff;
-}
-
-.auth {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: 138px;
-}
-
-.auth button {
-    padding: 7px 16px;
-    border-radius: 20px;
-    border: none;
-    cursor: pointer;
-    transition: 0.3s;
-    font-size: 22px;
-    color: #111;
-}
-
-.login-btn {
-    background: #a9b8d7;
-}
-.signup-btn {
-    background: #dedede;
-}
-
-.auth button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 10px #4a6cff;
-}
-
-.account-chip {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-}
-
-.user-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #5a6c8f;
-    cursor: pointer;
-    overflow: hidden;
-}
-
-.user-icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.account-name {
-    max-width: 120px;
-    font-size: 13px;
-    font-weight: bold;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    color: #333;
-}
-
-.logout-btn {
-    border: none;
-    background: #4a4747;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 12px;
-}
-
-.menu {
-    display: none;
-    flex-direction: column;
-    background: #eee;
-    position: absolute;
-    top: 60px;
-    left: 10px;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-.menu a {
-    padding: 10px;
-    text-decoration: none;
-    color: #333;
-    border-radius: 8px;
-    transition: 0.2s;
-}
-.menu a:hover {
-    background: #4a6cff;
-    color: white;
-}
-.menu.show {
-    display: flex;
-}
-
-.container {
-    width: min(780px, calc(100% - 48px));
-    margin: 62px auto 0;
-    padding: 0;
-}
-
-.info-panel {
-    background: #d8d8d8;
-    padding: 22px 26px 28px;
-}
-
-.info-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 46px;
-}
-
-.info-card {
-    min-height: 280px;
-    background: #70706f;
-    color: #fff;
-    padding: 22px 18px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.info-marker {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: #d8d8d8;
-    color: #222;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-}
-
-.info-card h2 {
-    margin: 18px 0 12px;
-    font-size: 22px;
-    line-height: 1.15;
-}
-
-.info-card p {
-    font-size: 14px;
-    line-height: 1.45;
-}
-
-.disclaimer {
-    margin-top: 22px;
-    background: #d8d8d8;
-    padding: 6px;
-    font-size: 13px;
-    line-height: 1.25;
-}
-
-.quick-links {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 34px;
-    margin-top: 34px;
-}
-
-.quick-links button {
-    min-height: 27px;
-    border: none;
-    border-radius: 999px;
-    background: #d8d8d8;
-    color: #222;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.25s;
-}
-
-.quick-links button:hover {
-    background: #a9b8d7;
-    transform: translateY(-2px);
-}
-
-@media (max-width: 850px) {
-    .header {
-        padding: 18px 22px 0;
-        flex-wrap: wrap;
-        gap: 14px;
-    }
-
-    .title {
-        order: 3;
-        min-width: 100%;
-        font-size: 22px;
-    }
-
-    .auth {
-        width: 130px;
-    }
-
-    .container {
-        width: calc(100% - 32px);
-        margin-top: 34px;
-    }
-
-    .info-grid,
-    .quick-links {
-        grid-template-columns: 1fr;
-        gap: 18px;
-    }
-
-    .info-card {
-        min-height: auto;
-    }
-}
-</style>
+<link rel="stylesheet" href="gameinf.css">
 </head>
 
 <body>
@@ -277,7 +25,7 @@ body {
         <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
     </div>
 
-    <div class="account-chip" id="accountChip" style="display:none">
+    <div class="account-chip" id="accountChip">
         <div class="user-icon" onclick="goAccount()">
             <img id="smallPic" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z'/%3E%3C/svg%3E">
         </div>
@@ -303,11 +51,11 @@ body {
                         <div class="info-marker">1</div>
                         <h2>Klicka och uppgradera</h2>
                         <p>
-                            CS-Clicker Game är ett idle/clicker-spel där du samlar pengar genom att klicka och uppgradera din utrustning.
+                            CS-Clicker Game Ã¤r ett idle/clicker-spel dÃ¤r du samlar pengar genom att klicka och uppgradera din utrustning.
                         </p>
                     </div>
                     <p>
-                        Spelet är inspirerat av klassiska clicker-games men med en Counter-Strike stil och progression.
+                        Spelet Ã¤r inspirerat av klassiska clicker-games men med en Counter-Strike stil och progression.
                     </p>
                 </article>
 
@@ -316,11 +64,11 @@ body {
                         <div class="info-marker">2</div>
                         <h2>Skins och progression</h2>
                         <p>
-                            Du kan låsa upp skins, förbättra din inkomst per sekund och klättra på leaderboarden.
+                            Du kan lÃ¥sa upp skins, fÃ¶rbÃ¤ttra din inkomst per sekund och klÃ¤ttra pÃ¥ leaderboarden.
                         </p>
                     </div>
                     <p>
-                        Målet är att bli rikast, få de bästa skinsen och dominera topplistan.
+                        MÃ¥let Ã¤r att bli rikast, fÃ¥ de bÃ¤sta skinsen och dominera topplistan.
                     </p>
                 </article>
 
@@ -329,11 +77,11 @@ body {
                         <div class="info-marker">3</div>
                         <h2>Uppdateringar och events</h2>
                         <p>
-                            Nya uppdateringar kommer regelbundet med events, nya funktioner och förbättringar.
+                            Nya uppdateringar kommer regelbundet med events, nya funktioner och fÃ¶rbÃ¤ttringar.
                         </p>
                     </div>
                     <p>
-                        Håll koll på patch notes för nya cases, balansändringar och andra ändringar i spelet.
+                        HÃ¥ll koll pÃ¥ patch notes fÃ¶r nya cases, balansÃ¤ndringar och andra Ã¤ndringar i spelet.
                     </p>
                 </article>
             </div>
@@ -353,124 +101,8 @@ body {
     </main>
 </div>
 
-<script>
-const API = "http://100.126.153.254:5000/api";
-
-function decodeJwtPayload(token) {
-    try {
-        if (!token || typeof token !== "string") return null;
-        const parts = token.trim().split(".");
-        if (parts.length !== 3) return null;
-        const payload = parts[1];
-        if (!payload) return null;
-        const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
-        const decoded = atob(base64);
-        try {
-            return JSON.parse(decoded);
-        } catch (e) {
-            const bytes = new Uint8Array(decoded.length);
-            for (let i = 0; i < decoded.length; i++) {
-                bytes[i] = decoded.charCodeAt(i);
-            }
-            return JSON.parse(new TextDecoder().decode(bytes));
-        }
-    } catch (e) {
-        return null;
-    }
-}
-
-function getStoredSessionUser() {
-    const token = localStorage.getItem("token");
-    if (!token) return null;
-    const storedUser = {
-        id: Number(localStorage.getItem("accountId")) || null,
-        username: localStorage.getItem("username") || "",
-        email: localStorage.getItem("email") || "",
-        is_admin: localStorage.getItem("isAdmin") === "true"
-    };
-    const parsed = decodeJwtPayload(token);
-    if (parsed) {
-        storedUser.id = Number(parsed.accountId || parsed.userID || parsed.sub || parsed.id) || storedUser.id;
-        if (parsed.email) storedUser.email = parsed.email;
-        if (parsed.username || parsed.name) storedUser.username = parsed.username || parsed.name || "";
-        storedUser.is_admin = parsed.is_admin === true || storedUser.is_admin;
-    }
-    return storedUser.id ? storedUser : null;
-}
-
-function renderHeader() {
-    const viewer = getStoredSessionUser();
-    const authButtons = document.getElementById("authButtons");
-    const accountChip = document.getElementById("accountChip");
-    const accountName = document.getElementById("accountName");
-    const accountMenuLink = document.getElementById("accountMenuLink");
-
-    if (!viewer) {
-        authButtons.style.display = "flex";
-        accountChip.style.display = "none";
-        if (accountMenuLink) accountMenuLink.href = "../account.html";
-        return;
-    }
-
-    authButtons.style.display = "none";
-    accountChip.style.display = "flex";
-    accountName.textContent = viewer.username || viewer.email || "Logged in";
-    if (accountMenuLink) accountMenuLink.href = `../account.html?id=${encodeURIComponent(viewer.id)}`;
-}
-
-document.getElementById("burger").addEventListener("click", function() {
-    document.getElementById("menu").classList.toggle("show");
-});
-
-document.addEventListener('click', function(event) {
-    const menu = document.getElementById("menu")
-    const burger = document.getElementById("burger")
-
-    if (!menu.contains(event.target) && !burger.contains(event.target)){
-        menu.classList.remove('show');
-    }
-});
-
-function goLogin() {
-    window.location.href = "../login-signin.html#login";
-}
-
-function goSignup() {
-    window.location.href = "../login-signin.html#signup";
-}
-
-function goHome() {
-    window.location.href = "../index.html";
-}
-
-function goPatchdownload() {
-    window.location.href = "patch-download.html";
-}
-
-function goLeaderboard() {
-    window.location.href = "../leaderboard.html";
-}
-
-function goAccount() {
-    const viewer = getStoredSessionUser();
-    if (viewer) {
-        window.location.href = `../account.html?id=${encodeURIComponent(viewer.id)}`;
-        return;
-    }
-    window.location.href = "../login-signin.html#login";
-}
-
-function logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("accountId");
-    localStorage.removeItem("username");
-    localStorage.removeItem("email");
-    localStorage.removeItem("isAdmin");
-    renderHeader();
-}
-
-renderHeader();
-</script>
+<script src="gameinf.js"></script>
 
 </body>
 </html>
+

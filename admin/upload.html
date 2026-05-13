@@ -1,9 +1,9 @@
-<html lang="en">
+﻿<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload</title>
-    <link rel="stylesheet" href="syle.css">
+    <link rel="stylesheet" href="syle.css?v=10">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
 <body>
@@ -35,7 +35,7 @@
         </div>
     </div>
 
-    <!-- Sektion för uppladdningsformulär -->
+    <!-- Sektion fÃ¶r uppladdningsformulÃ¤r -->
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
@@ -44,15 +44,15 @@
                         <h3>Upload File</h3>
                     </div>
                     <div class="card-body">
-                        <!-- Formulär för filuppladdning -->
+                        <!-- FormulÃ¤r fÃ¶r filuppladdning -->
                         <form id="uploadForm" enctype="multipart/form-data">
                             <div class="mb-3">
-                                <label for="fileInput" class="form-label">Välj Fil</label>
+                                <label for="fileInput" class="form-label">VÃ¤lj Fil</label>
                                 <input type="file" class="form-control" id="fileInput" name="file" required>
                             </div>
                             <div class="mb-3">
                                 <label for="patchNotes" class="form-label">Patch Notes</label>
-                                <textarea class="form-control" id="patchNotes" name="patchNotes" rows="4" placeholder="Skriv patch notes här..."></textarea>
+                                <textarea class="form-control" id="patchNotes" name="patchNotes" rows="4" placeholder="Skriv patch notes hÃ¤r..."></textarea>
                             </div>
                             <div class="mb-3">
                                 <label for="version" class="form-label">Version</label>
@@ -60,8 +60,8 @@
                             </div>
                             <button type="button" class="btn btn-success" id="publishBtn">Publicera</button>
                         </form>
-                        <!-- Område för statusmeddelanden -->
-                        <div id="statusMessage" class="mt-3" style="display: none;"></div>
+                        <!-- OmrÃ¥de fÃ¶r statusmeddelanden -->
+                        <div id="statusMessage" class="mt-3 status-message"></div>
                     </div>
                 </div>
             </div>
@@ -71,148 +71,8 @@
     <script src="index.js?v=9"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
-    <!-- Anpassad JavaScript för hantering av filuppladdning -->
-    <script>
-        const API = "http://10.0.33.243:5000/api";
-
-        async function apiFetch(path, options = {}) {
-            const res = await fetch(`${API}${path}`, options);
-            const text = await res.text();
-            if (!text) return {};
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch (e) {
-                console.error("API returned non-JSON:", text.slice(0, 200));
-                throw new Error(`Server returned ${res.status}`);
-            }
-            if (!res.ok) {
-                const error = new Error(data.errorMessage || "Request failed");
-                error.status = res.status;
-                error.data = data;
-                throw error;
-            }
-            return data;
-        }
-
-        // Funktion för att visa statusmeddelanden
-        function showStatusMessage(message, type = 'info') {
-            const statusDiv = document.getElementById('statusMessage');
-            statusDiv.className = `alert alert-${type}`;
-            statusDiv.textContent = message;
-            statusDiv.style.display = 'block';
-            setTimeout(() => {
-                statusDiv.style.display = 'none';
-            }, 5000); // Dölj efter 5 sekunder
-        }
-
-        // Variabel för att lagra den uppladdade filens URL
-        let uploadedFileUrl = null;
-
-        // Händelselyssnare för formulärskickning - borttagen eftersom vi bara har publiceringsknapp
-        // document.getElementById('uploadForm').addEventListener('submit', async function(event) {
-        //     ...
-        // });
-
-        // Händelselyssnare för publish-knappen
-        document.getElementById('publishBtn').addEventListener('click', async function() {
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
-            const patchNotes = document.getElementById('patchNotes').value;
-            const version = document.getElementById('version').value;
-
-            if (!file) {
-                showStatusMessage('Välj en fil att ladda upp.', 'warning');
-                return;
-            }
-
-            const title = prompt('Ange titel för spelet:');
-            const description = prompt('Ange beskrivning för spelet:');
-
-            if (!title || !description || !version) {
-                showStatusMessage('Alla fält måste fyllas i för att publicera.', 'warning');
-                return;
-            }
-
-            // Hämta autentiseringstoken
-            const token = localStorage.getItem('token');
-            if (!token) {
-                showStatusMessage('Du måste vara inloggad för att ladda upp filer.', 'danger');
-                return;
-            }
-
-            try {
-                showStatusMessage('Laddar upp fil och publicerar spel...', 'info');
-
-                // Först ladda upp filen
-                const formData = new FormData();
-                formData.append('file', file);
-                if (patchNotes) {
-                    formData.append('patchNotes', patchNotes);
-                }
-                formData.append('publish', 'true');
-
-                const uploadResponse = await apiFetch('/admin/upload', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: formData
-                });
-
-                if (!uploadResponse.ok) {
-                    showStatusMessage(`Uppladdning misslyckades: ${uploadResponse.errorMessage || 'Okänt fel'}`, 'danger');
-                    return;
-                }
-
-                const downloadUrl = uploadResponse.downloadUrl;
-                if (!downloadUrl) {
-                    showStatusMessage('Uppladdning lyckades men ingen nedladdnings-URL mottogs.', 'warning');
-                    return;
-                }
-
-                // Sedan skapa spelet
-                const gameResponse = await apiFetch('/games/create', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        title: title,
-                        description: description,
-                        download_url: downloadUrl,
-                        version: version
-                    })
-                });
-
-                if (gameResponse.ok) {
-                    showStatusMessage('Fil uppladdad och spel publicerat framgångsrikt!', 'success');
-                    fileInput.value = '';
-                    document.getElementById('patchNotes').value = '';
-                    document.getElementById('version').value = '';
-                } else {
-                    showStatusMessage(`Publicering misslyckades: ${gameResponse.message || 'Okänt fel'}`, 'danger');
-                }
-            } catch (error) {
-                console.error('Fel:', error);
-                showStatusMessage('Misslyckades: Kunde inte ansluta till servern.', 'danger');
-            }
-        });
-
-        // Funktion för att hantera utloggning (antar att den är definierad i index.js)
-        function logout() {
-            // Denna funktion bör vara definierad i index.js
-            if (typeof window.logout === 'function') {
-                window.logout();
-            } else {
-                localStorage.removeItem('token');
-                localStorage.removeItem('username');
-                localStorage.removeItem('email');
-                localStorage.removeItem('accountId');
-                window.location.href = '../frontend/login-signin.html#login';
-            }
-        }
-    </script>
+    <!-- Anpassad JavaScript fÃ¶r hantering av filuppladdning -->
+    <script src="upload.js"></script>
 </body>
 </html>
+

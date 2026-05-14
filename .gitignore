@@ -1,0 +1,16 @@
+# Environment variables
+.env
+server/.env
+
+# Node modules
+node_modules/
+
+# Logs
+*.log
+
+# Docker compose override
+docker-compose.override.yml
+
+# OS generated files
+.DS_Store
+Thumbs.db

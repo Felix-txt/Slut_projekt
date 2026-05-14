@@ -1,8 +1,5 @@
--- ============================================================================
--- CSGO Clicker Game Database Schema
--- ============================================================================
 
--- Users table
+-- Felix gjorde denna för users,
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
@@ -11,6 +8,9 @@ CREATE TABLE IF NOT EXISTS users (
     is_admin BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+-- AI made
 
 -- Games table
 CREATE TABLE IF NOT EXISTS games (

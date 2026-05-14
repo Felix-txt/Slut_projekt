@@ -1,4 +1,4 @@
-﻿const API = "http://100.126.153.254:5000/api";
+const API = "/api";
 const SLIDES = [
     {
         src: "../assets/slideshow/Recovered_ScreenClip_2026-05-11_11-39-24.png",

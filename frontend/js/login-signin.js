@@ -1,4 +1,4 @@
-﻿const API = "http://100.126.153.254:5000/api";
+const API = "/api";
 
 async function apiFetch(path, options = {}) {
     const res = await fetch(`${API}${path}`, options);

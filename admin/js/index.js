@@ -1,4 +1,4 @@
-const API = "http://100.126.153.254:5000/api";
+const API = "/api";
 const ROOT_ADMIN_EMAIL = "admin@test.local";
 let users = [];
 let search;

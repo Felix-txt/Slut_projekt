@@ -1,3 +1,0 @@
-◇ injected env (11) from .env // tip: ⌘ suppress logs { quiet: true }
-◇ injected env (0) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
-server running on http://0.0.0.0:5001

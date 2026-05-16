@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS Clicker</title>
+
+<link rel="stylesheet" href="../css/index.css">
+</head>
+
+<body>
+
+<div class="header">
+
+    <div class="burger" id="burger">
+        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" viewBox="0 0 15 15">
+            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+        </svg>
+    </div>
+
+    <div class="title">CS-Clicker Game</div>
+
+    <nav class="menu" id="menu">
+        <a href="account.html">Account</a>
+        <a href="game/patch-download.html">Patch & Download</a>
+        <a href="game/gameinf.html">Game info</a>
+        <a href="leaderboard.html">Leaderboard</a>
+        <a href="../../admin/html/panel.html" id="adminLink" class="admin-link-hidden">Admin Panel</a>
+    </nav>
+
+    <div class="auth" id="authButtons">
+        <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
+        <button class="login-btn" onclick="goLogin()">LOGIN</button>
+    </div>
+    <div class="account-chip" id="accountChip">
+        <div class="user-icon" onclick="goAccount()"></div>
+        <div class="account-name" id="accountName"></div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+</div>
+
+<div class="container">
+
+    <div class="hero-section">
+        <div class="slideshow" id="slideshow">
+            <div class="slide-track" id="slideTrack"></div>
+            <div class="slide-nav">
+                <button class="slide-arrow" id="slidePrev" aria-label="Previous slide">&#8249;</button>
+                <button class="slide-arrow" id="slideNext" aria-label="Next slide">&#8250;</button>
+            </div>
+            <div class="slide-dots" id="slideDots" aria-label="Slideshow navigation"></div>
+        </div>
+    </div>
+
+    <div class="content-boxes">
+        <div class="left">
+            <h1>LuCS</h1>
+            <h1>CASE CLICKER</h1>
+            <button class="main-download-btn" onclick="downloadLatestClient()">â¬‡ DOWNLOAD NOW</button>
+
+            <button class="Download-btn" onclick="goPatchdownload()">Patch Notes</button>
+            <button>Leaderboard</button>
+        </div>
+
+        <div class="right">
+            <div class="text-list">
+                <button class="news-btn" onclick="goPatchdownload()">Latest Update</button>
+                <p>Events</p>
+                <button class="news-btn" onclick="goGameInfo()">Contact us</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="../js/index.js"></script>
+
+</body>
+</html>
+

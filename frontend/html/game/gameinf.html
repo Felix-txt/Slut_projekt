@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Info</title>
+
+<link rel="stylesheet" href="../../css/gameinf.css">
+</head>
+
+<body>
+
+<div class="header">
+
+    <div class="burger" id="burger">
+        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" viewBox="0 0 15 15">
+            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+        </svg>
+    </div>
+
+    <div class="title">CS-Clicker Game</div>
+
+    <div class="auth" id="authButtons">
+        <button class="login-btn" onclick="goLogin()">LOGIN</button>
+        <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
+    </div>
+
+    <div class="account-chip" id="accountChip">
+        <div class="user-icon" onclick="goAccount()">
+            <img id="smallPic" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z'/%3E%3C/svg%3E">
+        </div>
+        <div class="account-name" id="accountName"></div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <nav class="menu" id="menu">
+        <a href="../index.html">Home</a>
+        <a href="../account.html" id="accountMenuLink">Account</a>
+        <a href="patch-download.html">Patch & Download</a>
+        <a href="../leaderboard.html">Leaderboard</a>
+    </nav>
+
+</div>
+
+<div class="container">
+    <main>
+        <section class="info-panel">
+            <div class="info-grid">
+                <article class="info-card">
+                    <div>
+                        <div class="info-marker">1</div>
+                        <h2>Klicka och uppgradera</h2>
+                        <p>
+                            CS-Clicker Game Ã¤r ett idle/clicker-spel dÃ¤r du samlar pengar genom att klicka och uppgradera din utrustning.
+                        </p>
+                    </div>
+                    <p>
+                        Spelet Ã¤r inspirerat av klassiska clicker-games men med en Counter-Strike stil och progression.
+                    </p>
+                </article>
+
+                <article class="info-card">
+                    <div>
+                        <div class="info-marker">2</div>
+                        <h2>Skins och progression</h2>
+                        <p>
+                            Du kan lÃ¥sa upp skins, fÃ¶rbÃ¤ttra din inkomst per sekund och klÃ¤ttra pÃ¥ leaderboarden.
+                        </p>
+                    </div>
+                    <p>
+                        MÃ¥let Ã¤r att bli rikast, fÃ¥ de bÃ¤sta skinsen och dominera topplistan.
+                    </p>
+                </article>
+
+                <article class="info-card">
+                    <div>
+                        <div class="info-marker">3</div>
+                        <h2>Uppdateringar och events</h2>
+                        <p>
+                            Nya uppdateringar kommer regelbundet med events, nya funktioner och fÃ¶rbÃ¤ttringar.
+                        </p>
+                    </div>
+                    <p>
+                        HÃ¥ll koll pÃ¥ patch notes fÃ¶r nya cases, balansÃ¤ndringar och andra Ã¤ndringar i spelet.
+                    </p>
+                </article>
+            </div>
+        </section>
+
+        <div class="disclaimer">
+            DISCLAIMER: This is a fan-made project and is not affiliated with or endorsed by Valve Corporation.
+            All trademarks and copyrights belong to their respective owners. This project is intended for educational
+            and non-commercial use only.
+        </div>
+
+        <div class="quick-links">
+            <button onclick="goHome()">HOME</button>
+            <button onclick="goPatchdownload()">PATCH & DOWNLOAD</button>
+            <button onclick="goLeaderboard()">LEADERBOARD</button>
+        </div>
+    </main>
+</div>
+
+<script src="../../js/gameinf.js"></script>
+
+</body>
+</html>
+

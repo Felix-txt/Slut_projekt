@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS Clicker - Account</title>
+
+<link rel="stylesheet" href="../css/account.css">
+</head>
+
+<body>
+
+<div class="header">
+    <div class="burger" id="burger">
+        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" viewBox="0 0 15 15">
+            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+        </svg>
+    </div>
+
+    <div class="title">CS-Clicker Account</div>
+
+    <nav class="menu" id="menu">
+        <a href="index.html">Home</a>
+        <a href="game/patch-download.html">Patch & Download</a>
+        <a href="game/gameinf.html">Game info</a>
+        <a href="leaderboard.html">Leaderboard</a>
+        <a href="account.html" id="accountMenuLink">Account</a>
+    </nav>
+
+    <div class="auth" id="authButtons">
+        <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
+        <button class="login-btn" onclick="goLogin()">LOGIN</button>
+    </div>
+
+    <div class="account-chip" id="accountChip">
+        <div class="user-icon" onclick="goAccount()">
+            <img id="smallPic" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z'/%3E%3C/svg%3E">
+        </div>
+        <div class="account-name" id="accountName"></div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<div class="account-page" id="accountPage">
+    <section class="profile-box">
+        <label class="avatar" id="avatar" title="Change profile picture">
+            <img id="bigPic" src="" alt="Profile picture">
+            <input id="picUpload" type="file" accept="image/*" hidden>
+        </label>
+
+        <div class="profile-info">
+            <div class="row">
+                <div class="pill" id="usernameText">USER NAME</div>
+                <button class="change-btn" onclick="openEdit('username')">Change</button>
+            </div>
+
+            <div class="row">
+                <div class="pill" id="emailText">MAIL</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="main-area">
+        <div class="account-summary">
+            <div class="warning" id="warning" onclick="syncGame()">Account not synced with game</div>
+
+            <section class="card">
+                <h1>Account info</h1>
+                <div class="info-box">
+                    <div class="info-row" id="infoName"></div>
+                    <div class="info-row" id="infoId"></div>
+                    <div class="info-row" id="infoMail"></div>
+                    <div class="info-row" id="infoLevel">Level: 0</div>
+                    <div class="info-row" id="infoCoins">Coins: 0</div>
+                    <div class="info-row" id="infoSync">Not synced</div>
+                </div>
+            </section>
+        </div>
+
+        <div class="inventory-area">
+            <button class="toggle-btn" id="inventoryToggle" onclick="toggleInventory()">TOGGLE<br>INVENTORY</button>
+
+            <section class="inventory" id="inventory">
+                <div class="inventory-head">
+                    <div></div>
+                    <div class="inventory-title-group">
+                        <h2 id="inventoryTitle">Inventory</h2>
+                        <div class="inventory-meta" id="inventoryMeta"></div>
+                    </div>
+                    <div class="filters">
+                        <button class="filter-btn active" data-sort="value">Value</button>
+                        <button class="filter-btn" data-sort="date">Date</button>
+                        <button class="filter-btn" data-sort="fav">Fav</button>
+                        <button class="filter-btn" data-sort="type">Type</button>
+                    </div>
+                </div>
+                <div class="inventory-grid" id="inventoryGrid"></div>
+                <aside class="item-details" id="itemDetails" aria-live="polite"></aside>
+            </section>
+        </div>
+    </div>
+</div>
+
+<div class="modal-bg" id="modalBg">
+    <form class="modal" onsubmit="saveEdit(event)">
+        <h2 id="modalTitle">Change</h2>
+        <input id="editInput" type="text">
+        <div class="modal-actions">
+            <button type="button" onclick="closeEdit()">Cancel</button>
+            <button type="submit">Save</button>
+        </div>
+    </form>
+</div>
+
+<script src="../js/account.js"></script>
+
+</body>
+</html>
+

@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaderboard</title>
+
+<link rel="stylesheet" href="../css/leaderboard.css">
+</head>
+
+<body>
+
+<div class="header">
+
+    <div class="burger" id="burger">
+        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-list" viewBox="0 0 15 15">
+            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+        </svg>
+    </div>
+
+    <div class="title">CS-Clicker Game</div>
+
+    <div class="auth" id="authButtons">
+        <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
+        <button class="login-btn" onclick="goLogin()">LOGIN</button>
+    </div>
+    <div class="account-chip" id="accountChip">
+        <div class="user-icon" onclick="goAccount()"></div>
+        <div class="account-name" id="accountName"></div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <nav class="menu" id="menu">
+        <a href="index.html">Home</a>
+        <a href="account.html">Account</a>
+        <a href="game/patch-download.html">Patch & Download</a>
+        <a href="game/gameinf.html">Game info</a>
+    </nav>
+
+</div>
+
+<div class="container">
+    <div class="leaderboard">
+
+        <div class="lb-header">
+            <h2>Leaderboard</h2>
+            <div class="sort-controls">
+                <button class="sort-btn active" data-sort="money">Money</button>
+                <button class="sort-btn" data-sort="level">Level</button>
+                <button class="sort-btn" data-sort="casesOpened">Cases</button>
+                <button class="sort-btn" data-sort="inventoryCount">Items</button>
+            </div>
+        </div>
+
+        <div class="lb-list" id="leaderboardList">
+            <div class="empty-state">Loading leaderboard...</div>
+        </div>
+
+    </div>
+</div>
+
+<script src="../js/leaderboard.js"></script>
+
+</body>
+</html>
+

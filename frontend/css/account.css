@@ -1,0 +1,712 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #ececec, #d9d9d9);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    position: relative;
+}
+
+.burger {
+    cursor: pointer;
+}
+
+.burger svg,
+.title,
+button,
+.slot,
+.avatar {
+    transition: 0.3s;
+}
+
+.burger:hover svg,
+button:hover,
+.avatar:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 6px #4a6cff);
+}
+
+.title {
+    margin: auto;
+    background: #ddd;
+    padding: 10px 30px;
+    border-radius: 20px;
+    font-size: 32px;
+}
+
+.title:hover {
+    box-shadow: 0 0 8px #4a6cff;
+}
+
+.menu {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    left: 10px;
+    background: #eee;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+.menu.show {
+    display: flex;
+}
+
+.menu a {
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+.menu a:hover {
+    background: #4a6cff;
+    color: white;
+}
+
+.auth {
+    display: flex;
+    gap: 10px;
+}
+
+.auth button,
+.change-btn,
+.toggle-btn,
+.modal button {
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.signup-btn {
+    background: #2f4bb2;
+    padding: 8px 16px;
+    border-radius: 20px;
+}
+
+.login-btn {
+    background: #5a6c8f;
+    padding: 8px 16px;
+    border-radius: 20px;
+}
+
+.account-chip {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #5a6c8f;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.user-icon img,
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.account-name {
+    max-width: 120px;
+    font-size: 13px;
+    font-weight: bold;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.logout-btn {
+    border: none;
+    background: #4a4747;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.account-page {
+    padding: 30px;
+    min-height: calc(100vh - 92px);
+}
+
+.profile-box {
+    background: #d9d9d9;
+    min-height: 205px;
+    display: flex;
+    align-items: center;
+    gap: 34px;
+    padding: 22px 28px;
+}
+
+.avatar {
+    width: 138px;
+    height: 138px;
+    border-radius: 50%;
+    background: #a6a2a2;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+}
+
+.avatar img {
+    display: none;
+}
+
+.avatar.has-pic img {
+    display: block;
+}
+
+.avatar.has-pic::before,
+.avatar.has-pic::after {
+    display: none;
+}
+
+.avatar::before {
+    content: "";
+    position: absolute;
+    top: 34px;
+    left: 48px;
+    width: 35px;
+    height: 35px;
+    border: 6px solid #000;
+    border-radius: 50%;
+}
+
+.avatar::after {
+    content: "";
+    position: absolute;
+    top: 76px;
+    left: 37px;
+    width: 55px;
+    height: 42px;
+    border: 6px solid #000;
+    border-bottom: none;
+    border-radius: 50px 50px 0 0;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 0;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: fit-content;
+    max-width: 360px;
+    min-width: 0;
+    height: 40px;
+    background: #4a4747;
+    color: white;
+    border-radius: 28px;
+    padding: 0 20px;
+    line-height: 40px;
+    font-size: 24px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.change-btn {
+    width: 126px;
+    height: 40px;
+    background: #4a4747;
+    border-radius: 22px;
+    font-size: 20px;
+}
+
+.account-page.view-only .change-btn {
+    display: none;
+}
+
+.account-page.view-only .avatar {
+    cursor: default;
+    pointer-events: none;
+}
+
+.main-area {
+    display: flex;
+    gap: 74px;
+    margin-top: 10px;
+}
+
+.warning {
+    width: 334px;
+    height: 38px;
+    background: #ff8585;
+    line-height: 38px;
+    text-align: center;
+    font-size: 21px;
+    cursor: pointer;
+}
+
+.card {
+    width: 334px;
+    height: 537px;
+    background: #d9d9d9;
+    margin-top: 9px;
+    padding-top: 28px;
+}
+
+.card h1 {
+    text-align: center;
+    font-size: 32px;
+    font-weight: normal;
+    margin-bottom: 29px;
+}
+
+.info-box {
+    width: 298px;
+    height: 441px;
+    margin: auto;
+    background: #929292;
+    padding-top: 24px;
+}
+
+.info-row {
+    width: 219px;
+    height: 41px;
+    background: #d9d9d9;
+    margin: 0 auto 27px;
+    padding: 0 12px;
+    line-height: 41px;
+    font-size: 18px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.inventory-area {
+    flex: 1;
+    padding-top: 22px;
+}   
+
+.toggle-btn {
+    width: 150px;
+    height: 64px;
+    background: #868686;
+    border-radius: 22px;
+    font-size: 21px;
+}
+
+.inventory {
+    display: none;
+    width: 100%;
+    min-height: 650px;
+    margin-top: 16px;
+    background: #eeeeee;
+    border: 1px solid #cfcfcf;
+    border-radius: 8px;
+    box-shadow: none;
+    padding: 24px;
+    overflow: hidden;
+}
+
+.inventory.show {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 18px;
+}
+
+.inventory-head {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) auto;
+    align-items: center;
+    gap: 18px;
+    padding: 0 180px 4px 0;
+}
+
+.inventory-title-group {
+    min-width: 0;
+}
+
+.inventory h2 {
+    max-width: 100%;
+    color: #222;
+    padding: 0;
+    text-align: left;
+    font-weight: 500;
+    font-size: 32px;
+    line-height: 1.1;
+    margin-bottom: 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.inventory-meta {
+    min-height: 20px;
+    margin-bottom: 0;
+    text-align: left;
+    color: #666;
+    font-size: 14px;
+}
+
+.filters {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    justify-self: start;
+    gap: 2px;
+    margin-bottom: 0;
+    background: #dedede;
+    border: 1px solid #c8c8c8;
+    border-radius: 6px;
+    padding: 4px;
+    position: relative;
+}
+
+.filters::before {
+    content: "Sort by";
+    position: absolute;
+    top: -24px;
+    left: 2px;
+    background: transparent;
+    color: #666;
+    padding: 0;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.filter-btn {
+    min-width: 68px;
+    background: transparent;
+    color: #333;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    background: #777;
+    color: white;
+    box-shadow: none;
+}
+
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+    align-content: start;
+    gap: 12px;
+    min-height: 500px;
+    max-height: calc(100vh - 260px);
+    background: #d0d0d0;
+    border: 1px solid #bdbdbd;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.slot {
+    width: 100%;
+    aspect-ratio: 1;
+    min-height: 0;
+    background: #eeeeee;
+    border: 1px solid #bababa;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    cursor: pointer;
+    overflow: hidden;
+    color: #333;
+    box-shadow: none;
+}
+
+.slot:hover,
+.slot.selected {
+    background: #f8f8f8;
+    border-color: #555;
+    box-shadow: none;
+    color: #222;
+}
+
+.slot-image {
+    width: 78%;
+    height: 78%;
+    object-fit: contain;
+    flex: 0 0 auto;
+}
+
+.slot-name {
+    width: 84%;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 1.2;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.slot-meta {
+    display: none;
+}
+
+.slot:hover .slot-meta,
+.slot.selected .slot-meta {
+    color: white;
+}
+
+.slot.empty {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-height: 96px;
+    aspect-ratio: auto;
+    border-radius: 8px;
+    cursor: default;
+    color: #666;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: #e7e7e7;
+}
+
+.slot.empty:hover {
+    background: #e7e7e7;
+    color: #666;
+    transform: none;
+    filter: none;
+    border-color: #c4cbd8;
+    box-shadow: none;
+}
+
+.item-details {
+    display: none;
+    align-self: start;
+    min-height: 306px;
+    background: #eeeeee;
+    border: 1px solid #c8c8c8;
+    border-radius: 8px;
+    padding: 22px;
+    color: #222;
+    box-shadow: none;
+}
+
+.item-details.show {
+    display: block;
+}
+
+.item-details-top {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.item-details-icon {
+    min-height: 96px;
+    background: #d8d8d8;
+    border: 1px solid #c4c4c4;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    color: #333;
+    font-weight: 700;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.item-details-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.item-details-lines {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+}
+
+.detail-line {
+    min-height: 30px;
+    background: #d8d8d8;
+    border: 1px solid #c4c4c4;
+    border-radius: 4px;
+    padding: 7px 10px;
+    font-size: 13px;
+    line-height: 1.15;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.detail-line.wide {
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.account-page.inventory-open .profile-box {
+    display: none;
+}
+
+.account-page.inventory-open .main-area {
+    display: block;
+    margin-top: 0;
+}
+
+.account-page.inventory-open .account-summary {
+    display: none;
+}
+
+.account-page.inventory-open .inventory-area {
+    padding-top: 0;
+    position: relative;
+}
+
+.account-page.inventory-open .toggle-btn {
+    position: absolute;
+    top: 28px;
+    right: 28px;
+    width: 136px;
+    height: 44px;
+    margin: 0;
+    border-radius: 6px;
+    background: #555;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: none;
+    z-index: 2;
+}
+
+.account-page.inventory-open .toggle-btn:hover {
+    background: #333;
+    filter: none;
+    transform: translateY(-1px);
+}
+
+.account-page.inventory-open .inventory {
+    margin-top: 0;
+}
+
+.modal-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-bg.show {
+    display: flex;
+}
+
+.modal {
+    width: 360px;
+    background: #d9d9d9;
+    border: 8px solid #929292;
+    padding: 22px;
+}
+
+.modal h2 {
+    margin-bottom: 15px;
+    font-weight: normal;
+}
+
+.modal input {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 15px;
+    padding: 5px 10px;
+    font-size: 18px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal button {
+    background: #4a4747;
+    padding: 9px 15px;
+    border-radius: 15px;
+}
+
+@media (max-width: 800px) {
+    .profile-box,
+    .main-area {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .row {
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .pill {
+        width: 210px;
+        font-size: 22px;
+    }
+
+    .inventory.show {
+        grid-template-columns: 1fr;
+    }
+
+    .inventory-head {
+        grid-template-columns: 1fr;
+        padding-right: 0;
+    }
+
+    .inventory h2 {
+        min-width: 0;
+        font-size: 28px;
+    }
+
+    .filters {
+        margin-top: 34px;
+        flex-wrap: wrap;
+    }
+
+    .inventory-grid {
+        grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+        padding: 22px;
+        max-height: none;
+    }
+
+    .account-page.inventory-open .toggle-btn {
+        position: static;
+        margin: 0 0 12px auto;
+        display: block;
+    }
+}
+

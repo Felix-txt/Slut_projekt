@@ -1,0 +1,68 @@
+﻿
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auth</title>
+    <link rel="stylesheet" href="../css/login-signin.css">
+</head>
+
+<body>
+
+<div class="header">CS-Clicker Game</div>
+
+<div class="card">
+
+    <div class="toggle">
+        <button id="signupBtn" onclick="showSignup()">SIGN UP</button>
+        <button id="loginBtn" class="active" onclick="showLogin()">LOGIN</button>
+    </div>
+
+    <div id="signupForm" class="hidden">
+        <input type="email" id="signupEmail" placeholder="Email address">
+        <input type="text" id="signupUsername" placeholder="Username">
+        <input type="password" id="signupPassword" placeholder="Password">
+        <button class="submit" onclick="signup()">SIGN UP</button>
+        <div id="signupMsg"></div>
+    </div>
+
+    <div id="loginForm">
+        <input type="email" id="loginEmail" placeholder="Email address">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <div id="adminCodeWrap" class="hidden">
+            <input type="password" id="adminCode" placeholder="Extra verification code">
+        </div>
+        <label class="remember-me">
+            <input type="checkbox" id="rememberMe">
+            <span>Remember me</span>
+        </label>
+        <button type="button" class="link" onclick="showForgotPassword()">Forgot password?</button>
+        <button class="submit" onclick="login()">LOGIN</button>
+        <div id="loginMsg"></div>
+    </div>
+
+    <div id="forgotForm" class="hidden">
+        <p class="form-copy">Enter your email and we will send a reset link.</p>
+        <input type="email" id="forgotEmail" placeholder="Email address">
+        <button class="submit" onclick="requestPasswordReset()">SEND RESET LINK</button>
+        <button type="button" class="link" onclick="showLogin()">Back to login</button>
+        <div id="forgotMsg"></div>
+    </div>
+
+    <div id="resetForm" class="hidden">
+        <p class="form-copy">Choose a new password for your account.</p>
+        <input type="password" id="resetPassword" placeholder="New password">
+        <input type="password" id="resetPasswordConfirm" placeholder="Confirm new password">
+        <button class="submit" onclick="resetPassword()">RESET PASSWORD</button>
+        <button type="button" class="link" onclick="showLogin()">Back to login</button>
+        <div id="resetMsg"></div>
+    </div>
+
+</div>
+
+<script src="../js/login-signin.js"></script>
+
+</body>
+</html>
+

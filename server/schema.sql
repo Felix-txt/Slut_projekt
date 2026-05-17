@@ -95,7 +95,9 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- User open crate history
+-- #################################################################### -- 
+
+-- User open crate history   Skapad av Aron
 CREATE TABLE IF NOT EXISTS crate_opens (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -105,6 +107,8 @@ CREATE TABLE IF NOT EXISTS crate_opens (
     price_at_open DECIMAL(10, 2),
     opened_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+--##################################################################### --
 
 -- Full game cloud saves. The game owns this JSON shape.
 CREATE TABLE IF NOT EXISTS saves (

@@ -54,7 +54,7 @@ function showAdminAccessMessage(message) {
                 </div>
             </div>
             <p class="admin-access-message">${escapeHtml(message)}</p>
-            <a class="quick-upload-btn" href="../../frontend/html/login-signin.html#login">Login</a>
+            <a class="quick-upload-btn" href="../../login-signin.html#login">Login</a>
         </section>
     `;
 
@@ -68,7 +68,7 @@ function showAdminAccessMessage(message) {
 function renderAccountName() {
     const accountName = document.getElementById("accountName");
     const accountId = localStorage.getItem("accountId") || currentAdminId;
-    const ownProfileUrl = accountId ? accountProfileUrl(accountId) : "../../frontend/html/account.html";
+    const ownProfileUrl = accountId ? accountProfileUrl(accountId) : "../../account.html";
 
     if (accountName) {
         accountName.textContent = localStorage.getItem("username") || localStorage.getItem("email") || "Logged in";
@@ -79,7 +79,7 @@ function renderAccountName() {
         userIcon.href = ownProfileUrl;
     }
 
-    const accountMenuLink = document.querySelector('.menu a[href="../../frontend/html/account.html"]');
+    const accountMenuLink = document.querySelector('.menu a[href="../../account.html"]');
     if (accountMenuLink) {
         accountMenuLink.href = ownProfileUrl;
     }
@@ -95,13 +95,13 @@ function clearSessionUser() {
 
 function logout() {
     clearSessionUser();
-    window.location.href = "../../frontend/html/login-signin.html#login";
+    window.location.href = "../../login-signin.html#login";
 }
 
 function guardAdminPage() {
     const token = localStorage.getItem("token");
     if (!token) {
-        window.location.href = "../../frontend/html/login-signin.html#login";
+        window.location.href = "../../login-signin.html#login";
         return false;
     }
 
@@ -125,7 +125,7 @@ function escapeHtml(value) {
 }
 
 function accountProfileUrl(userId) {
-    return `../../frontend/html/account.html?id=${encodeURIComponent(userId)}`;
+    return `../../account.html?id=${encodeURIComponent(userId)}`;
 }
 
 function renderUsers() {

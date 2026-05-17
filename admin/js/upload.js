@@ -75,6 +75,7 @@ const API = "/api";
                 if (patchNotes) {
                     formData.append('patchNotes', patchNotes);
                 }
+                formData.append('version', version);
                 formData.append('publish', 'true');
 
                 const uploadResponse = await apiFetch('/admin/upload', {
@@ -121,21 +122,17 @@ const API = "/api";
                 }
             } catch (error) {
                 console.error('Fel:', error);
-                showStatusMessage('Misslyckades: Kunde inte ansluta till servern.', 'danger');
+                showStatusMessage(`Misslyckades: ${error.message || 'Kunde inte ansluta till servern.'}`, 'danger');
             }
         });
 
         // Funktion fÃ¶r att hantera utloggning (antar att den Ã¤r definierad i index.js)
         function logout() {
             // Denna funktion bÃ¶r vara definierad i index.js
-            if (typeof window.logout === 'function') {
-                window.logout();
-            } else {
-                localStorage.removeItem('token');
-                localStorage.removeItem('username');
-                localStorage.removeItem('email');
-                localStorage.removeItem('accountId');
-                window.location.href = '../../login-signin.html#login';
-            }
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('email');
+            localStorage.removeItem('accountId');
+            window.location.href = '../../login-signin.html#login';
         }
 

@@ -99,7 +99,7 @@ function goSignup(){
 }
 
 function downloadClient(){
-    window.location.href = "../../downloads/LuCS-Clicker-latest.exe";
+    window.location.href = "../../downloads/LuCS-Clicker-latest.zip";
 }
 
 function goAccount() {

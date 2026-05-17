@@ -14,3 +14,6 @@ docker-compose.override.yml
 # OS generated files
 .DS_Store
 Thumbs.db
+frontend/downloads/LuCS-Clicker-latest.zip
+frontend/downloads/LuCs_Case_Clicker_COMPLETE.zip
+frontend/downloads/LuCS_case_clicker_R1_DEMO.zip

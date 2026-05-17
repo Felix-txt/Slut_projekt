@@ -36,7 +36,7 @@ const createGame = async (req, res) => {
             `INSERT INTO games (title, description, download_url, version) VALUES ($1, $2, $3, $4) RETURNING id`,
             [title, description, download_url, version]
         );
-        res.status(201).json({message: `game created`, gameId: result.rows[0].id});
+        res.status(201).json({ok: true, message: `game created`, gameId: result.rows[0].id});
     } catch (err) {
         console.error(err);
         res.status(500).json({message: `server error`});

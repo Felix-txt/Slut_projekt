@@ -29,6 +29,9 @@ services:
         condition: service_healthy
     environment:
       DB_HOST: postgres
+      DOWNLOADS_DIR: /app/uploads/downloads
+    volumes:
+      - ./frontend/downloads:/app/uploads/downloads
 
   nginx:
     image: nginx:alpine

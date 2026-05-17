@@ -50,14 +50,14 @@ function renderHeader() {
     const accountMenuLink = document.getElementById("accountMenuLink");
 
     if (!viewer) {
-        authButtons.style.display = "flex";
-        accountChip.style.display = "none";
+        authButtons.classList.add("show");
+        accountChip.classList.remove("show");
         if (accountMenuLink) accountMenuLink.href = "../account.html";
         return;
     }
 
-    authButtons.style.display = "none";
-    accountChip.style.display = "flex";
+    authButtons.classList.remove("show");
+    accountChip.classList.add("show");
     accountName.textContent = viewer.username || viewer.email || "Logged in";
     if (accountMenuLink) accountMenuLink.href = `../account.html?id=${encodeURIComponent(viewer.id)}`;
 }
@@ -79,13 +79,15 @@ document.addEventListener("click", function(event){
 const downloadBtn = document.getElementById("downloadBtn");
 const overlay = document.getElementById("pageOverlay");
 
-downloadBtn.addEventListener("mouseenter", () => {
-    overlay.classList.add("active");
-});
+if (downloadBtn && overlay) {
+    downloadBtn.addEventListener("mouseenter", () => {
+        overlay.classList.add("active");
+    });
 
-downloadBtn.addEventListener("mouseleave", () => {
-    overlay.classList.remove("active");
-});
+    downloadBtn.addEventListener("mouseleave", () => {
+        overlay.classList.remove("active");
+    });
+}
 
 
 function goLogin(){
@@ -99,4 +101,24 @@ function goSignup(){
 function downloadClient(){
     window.location.href = "../../downloads/LuCS-Clicker-latest.exe";
 }
+
+function goAccount() {
+    const viewer = getStoredSessionUser();
+    if (viewer) {
+        window.location.href = `../account.html?id=${encodeURIComponent(viewer.id)}`;
+        return;
+    }
+    window.location.href = "../login-signin.html#login";
+}
+
+function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("accountId");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    localStorage.removeItem("isAdmin");
+    renderHeader();
+}
+
+renderHeader();
 

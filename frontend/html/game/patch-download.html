@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Patch & Download</title>
 
-<link rel="stylesheet" href="../../css/patch-download.css">
+<link rel="stylesheet" href="../../css/patch-download.css?v=2">
 </head>
 
 <body>
@@ -24,15 +24,23 @@
 
     <nav class="menu" id="menu">
         <a href="../index.html">Home</a>
-        <a href="../account.html">Account</a>
+        <a href="../account.html" id="accountMenuLink">Account</a>
         <a href="patch-download.html">Patch & Download</a>
         <a href="gameinf.html">Game info</a>
         <a href="../leaderboard.html">Leaderboard</a>
     </nav>
 
-    <div class="auth">
+    <div class="auth" id="authButtons">
         <button class="signup-btn" onclick="goSignup()">SIGN UP</button>
         <button class="login-btn" onclick="goLogin()">LOGIN</button>
+    </div>
+
+    <div class="account-chip" id="accountChip">
+        <div class="user-icon" onclick="goAccount()">
+            <img id="smallPic" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z'/%3E%3C/svg%3E">
+        </div>
+        <div class="account-name" id="accountName"></div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
 
 </div>
@@ -54,7 +62,7 @@
             id="downloadBtn"
             onclick="downloadClient()"
         >
-            â¬‡ DOWNLOAD NOW
+            DOWNLOAD NOW
         </button>
 
     </section>
@@ -95,7 +103,7 @@
 
 </div>
 
-<script src="../../js/patch-download.js"></script>
+<script src="../../js/patch-download.js?v=2"></script>
 
 </body>
 </html>

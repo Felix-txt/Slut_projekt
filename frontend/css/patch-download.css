@@ -90,8 +90,58 @@ body{
 }
 
 .auth{
-    display:flex;
+    display:none;
     gap:10px;
+}
+
+.auth.show{
+    display:flex;
+}
+
+.account-chip {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.account-chip.show {
+    display: flex;
+}
+
+.user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #5a6c8f;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.user-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.account-name {
+    max-width: 120px;
+    font-size: 13px;
+    font-weight: bold;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #333;
+}
+
+.logout-btn {
+    border: none;
+    background: #4a4747;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 12px;
 }
 
 .login-btn,

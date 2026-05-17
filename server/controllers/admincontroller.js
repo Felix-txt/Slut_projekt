@@ -2,7 +2,7 @@ const db = require(`../config/database`);
 const {ROOT_ADMIN_EMAIL} = require(`../config/rootAdmin`);
 const PUBLIC_GAME_ID = `case-clicker`;
 
-const getUsers = async (req, res) => {
+const getUsers = async (req, res) => { // hämtar alla användare
     try {
         const result = await db.query(
             `SELECT
@@ -40,7 +40,7 @@ const getUsers = async (req, res) => {
     }
 };
 
-const updateUserAdminStatus = async (req, res) => {
+const updateUserAdminStatus = async (req, res) => { // uppdaterar en användares admin status, används för att ge eller ta bort admin rättigheter
     try {
         const userId = Number(req.params.id);
         const {isAdmin} = req.body;
@@ -61,7 +61,7 @@ const updateUserAdminStatus = async (req, res) => {
             });
         }
 
-        const protectedUser = await db.query(`SELECT email FROM users WHERE id = $1`, [userId]);
+        const protectedUser = await db.query(`SELECT email FROM users WHERE id = $1`, [userId]); //hämtar användade för att veta om den finns och för att skydda root admin så att den inte kan ändras
         if (protectedUser.rows.length === 0) {
             return res.status(404).json({
                 ok: false,
@@ -70,7 +70,7 @@ const updateUserAdminStatus = async (req, res) => {
             });
         }
 
-        if (protectedUser.rows[0].email.toLowerCase() === ROOT_ADMIN_EMAIL) {
+        if (protectedUser.rows[0].email.toLowerCase() === ROOT_ADMIN_EMAIL) { // root admin skyddas så att den inte kan ändras eller tas bort
             return res.status(403).json({
                 ok: false,
                 errorType: `auth`,
@@ -78,7 +78,7 @@ const updateUserAdminStatus = async (req, res) => {
             });
         }
 
-        if (userId === req.userId && !isAdmin) {
+        if (userId === req.userId && !isAdmin) { // skyddar så att admin inte kan ta bort sig själv från admin
             return res.status(400).json({
                 ok: false,
                 errorType: `validation`,
@@ -86,7 +86,7 @@ const updateUserAdminStatus = async (req, res) => {
             });
         }
 
-        const result = await db.query(
+        const result = await db.query( // uppdaterar admin status för användaren
             `UPDATE users
              SET is_admin = $1
              WHERE id = $2
@@ -94,7 +94,7 @@ const updateUserAdminStatus = async (req, res) => {
             [isAdmin, userId]
         );
 
-        const user = result.rows[0];
+        const user = result.rows[0]; // returnerar den uppdaterade användaren
         res.json({
             ok: true,
             user: {
@@ -104,7 +104,7 @@ const updateUserAdminStatus = async (req, res) => {
                 isAdmin: user.is_admin
             }
         });
-    } catch (error) {
+    } catch (error) { // tar hand om fel och skickar server error om något är fel
         console.error(error);
         res.status(500).json({
             ok: false,
@@ -114,7 +114,7 @@ const updateUserAdminStatus = async (req, res) => {
     }
 };
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res) => { // tar bort en användare
     try {
         const userId = Number(req.params.id);
 
@@ -126,7 +126,7 @@ const deleteUser = async (req, res) => {
             });
         }
 
-        if (userId === req.userId) {
+        if (userId === req.userId) { // skyddar så att admin inte kan ta bort sig själv
             return res.status(400).json({
                 ok: false,
                 errorType: `validation`,
@@ -134,7 +134,7 @@ const deleteUser = async (req, res) => {
             });
         }
 
-        const protectedUser = await db.query(`SELECT email FROM users WHERE id = $1`, [userId]);
+        const protectedUser = await db.query(`SELECT email FROM users WHERE id = $1`, [userId]); // hämtar användade för att veta om den finns och för att skydda root admin så att den inte kan ändras eller tas bort
         if (protectedUser.rows.length === 0) {
             return res.status(404).json({
                 ok: false,
@@ -143,7 +143,7 @@ const deleteUser = async (req, res) => {
             });
         }
 
-        if (protectedUser.rows[0].email.toLowerCase() === ROOT_ADMIN_EMAIL) {
+        if (protectedUser.rows[0].email.toLowerCase() === ROOT_ADMIN_EMAIL) { // root admin skyddas så att den inte kan ändras eller tas bort
             return res.status(403).json({
                 ok: false,
                 errorType: `auth`,
@@ -151,18 +151,18 @@ const deleteUser = async (req, res) => {
             });
         }
 
-        const result = await db.query(
+        const result = await db.query( // tar bort användaren och returnerar den borttagna användaren
             `DELETE FROM users
              WHERE id = $1
              RETURNING id, username, email`,
             [userId]
         );
 
-        res.json({
+        res.json({ // returnerar den borttagna användaren
             ok: true,
             deletedUser: result.rows[0]
         });
-    } catch (error) {
+    } catch (error) { // tar hand om fel och skickar server error om något är fel
         console.error(error);
         res.status(500).json({
             ok: false,
@@ -172,4 +172,4 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = {getUsers, updateUserAdminStatus, deleteUser};
+module.exports = {getUsers, updateUserAdminStatus, deleteUser}; // exporterar funktionerna så att de kan användas i routes

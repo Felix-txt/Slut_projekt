@@ -1,5 +1,5 @@
 
--- Felix gjorde denna för users,
+-- Users table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 
--- AI made
+-- #################################################################### --
 
 -- Games table
 CREATE TABLE IF NOT EXISTS games (

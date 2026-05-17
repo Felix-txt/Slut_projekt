@@ -5,13 +5,13 @@ const crypto = require(`crypto`);
 const nodemailer = require(`nodemailer`);
 const {ROOT_ADMIN_EMAIL, ROOT_ADMIN_CODE} = require(`../config/rootAdmin`);
 
-const RESET_TOKEN_MINUTES = 30;
+const RESET_TOKEN_MINUTES = 30; // antal minuter som en reset token är giltig
 
-function hashResetToken(token) {
+function hashResetToken(token) { // crypterar reset token
     return crypto.createHash(`sha256`).update(token).digest(`hex`);
 }
 
-function buildResetUrl(req, token) {
+function buildResetUrl(req, token) { // bygger url för password reset
     const frontendUrl = process.env.FRONTEND_URL;
     if (frontendUrl) {
         return `${frontendUrl.replace(/\/$/, ``)}/login-signin.html#reset=${encodeURIComponent(token)}`;
@@ -22,7 +22,7 @@ function buildResetUrl(req, token) {
     return `${protocol}://${host.replace(/:\d+$/, `:8085`)}/login-signin.html#reset=${encodeURIComponent(token)}`;
 }
 
-async function sendPasswordResetEmail(email, resetUrl) {
+async function sendPasswordResetEmail(email, resetUrl) { // skickar email med nodemailer. är inte fult satt upp än
     const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: Number(process.env.SMTP_PORT || 587),
@@ -33,7 +33,7 @@ async function sendPasswordResetEmail(email, resetUrl) {
         } : undefined
     });
 
-    await transporter.sendMail({
+    await transporter.sendMail({ // skickar email med nodemailer. är inte fult satt upp än, men är här ändå
         from: process.env.SMTP_FROM || process.env.SMTP_USER || `no-reply@cs-clicker.local`,
         to: email,
         subject: `Reset your CS-Clicker password`,
@@ -44,7 +44,7 @@ async function sendPasswordResetEmail(email, resetUrl) {
     return true;
 }
 
-async function ensurePasswordResetTable() {
+async function ensurePasswordResetTable() { // säkerställer att tabellen för reset tokens finns, skapar den om den inte finns
     await db.query(`
         CREATE TABLE IF NOT EXISTS password_reset_tokens (
             id SERIAL PRIMARY KEY,
@@ -55,11 +55,11 @@ async function ensurePasswordResetTable() {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     `);
-    await db.query(`CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_hash ON password_reset_tokens(token_hash)`);
-    await db.query(`CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_user ON password_reset_tokens(user_id)`);
+    await db.query(`CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_hash ON password_reset_tokens(token_hash)`); // index på token_hash för snabbare uppslagning
+    await db.query(`CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_user ON password_reset_tokens(user_id)`); // samma fast för user_id så att vi snabbt kan markera alla tokens som använda när en ny token skapas, så att gamla tokens inte kan användas längre
 }
 
-const register = async (req, res) => {
+const register = async (req, res) => {// hanterar registreringen av nya användare
     try {
         const {username, email, password} = req.body;
         if (!username || !email || !password) {
@@ -70,7 +70,7 @@ const register = async (req, res) => {
             });
         }
     
-        const emailCheck = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
+        const emailCheck = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);// kollar om emlailet redan finns
         if (emailCheck.rows.length > 0) {
             return res.status(409).json({
                 ok: false,
@@ -79,7 +79,7 @@ const register = async (req, res) => {
             });
         }
 
-        const usernameCheck = await db.query(`SELECT * FROM users WHERE username = $1`, [username]);
+        const usernameCheck = await db.query(`SELECT * FROM users WHERE username = $1`, [username]);// kollar om användarnamnet redan finns
         if (usernameCheck.rows.length > 0) {
             return res.status(409).json({
                 ok: false,
@@ -88,7 +88,7 @@ const register = async (req, res) => {
             });
         }
 
-        const hashedpassword = await bcrypt.hash(password, 10);
+        const hashedpassword = await bcrypt.hash(password, 10);// encryptar lösenordet med bcrypt
 
         const client = await db.connect();
         try {
@@ -103,7 +103,7 @@ const register = async (req, res) => {
             const user = result.rows[0];
             const userId = user.id;
             
-            await client.query('INSERT INTO user_balance (user_id, balance) VALUES ($1, 100.00)', [userId]);
+            await client.query('INSERT INTO user_balance (user_id, balance) VALUES ($1, 100.00)', [userId]);// ger nya användare 100 startpengar, en sak till spelet
             
             await client.query(`COMMIT`);
             
@@ -114,13 +114,13 @@ const register = async (req, res) => {
                 username: user.username
             });
         } catch (err) {
-            await client.query(`ROLLBACK`);
+            await client.query(`ROLLBACK`); // om något går fel så rullar vi tillbaka transaktionen så att det inte blir halvfärdiga användare i databasen
             throw err;
         } finally {
             client.release();
         }
     } 
-    catch (error) {
+    catch (error) { // tar hand om fel och skickar server error om något är fel
         console.error(error);
         res.status(500).json({
             ok: false,
@@ -130,10 +130,10 @@ const register = async (req, res) => {
     }
 };
 
-const login = async (req, res) => {
+const login = async (req, res) => { // hanterar inlogning
     try {
-        const {email, password, adminCode} = req.body;
-        if (!email || !password) {
+        const {email, password, adminCode} = req.body; //tar emot email och lösenord från frontend
+        if (!email || !password) {      // om email eller lösenord inte finns så skickas error medelandet
             return res.status(400).json({
                 ok: false,
                 errorType: `validation`,
@@ -141,18 +141,18 @@ const login = async (req, res) => {
             });
         }
         
-        const usercheck = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
+        const usercheck = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);// kollar om det finns det emailet i databasen
         if (usercheck.rows.length === 0) {
-            return res.status(401).json({
+            return res.status(401).json({   // annars skickas error medelandet
                 ok: false,
                 errorType: `auth`,
                 errorMessage: `Fel e-post eller losenord.`
             });
         }
 
-        const user = usercheck.rows[0];
+        const user = usercheck.rows[0]; // hämtar användaren från databasen
 
-        const passwordvalid = await bcrypt.compare(password, user.password);
+        const passwordvalid = await bcrypt.compare(password, user.password);// kollar om lösenordet stämmer
         if (!passwordvalid) {
             return res.status(401).json({
                 ok: false,
@@ -161,7 +161,7 @@ const login = async (req, res) => {
             });
         }
 
-        if (user.email.toLowerCase() === ROOT_ADMIN_EMAIL && !adminCode) {
+        if (user.email.toLowerCase() === ROOT_ADMIN_EMAIL && !adminCode) { // om det är root admin som försöker logga in och inte har angett admin code, så krävs det extra verification
             return res.status(401).json({
                 ok: false,
                 errorType: `auth`,
@@ -170,7 +170,7 @@ const login = async (req, res) => {
             });
         }
 
-        if (user.email.toLowerCase() === ROOT_ADMIN_EMAIL && adminCode !== ROOT_ADMIN_CODE) {
+        if (user.email.toLowerCase() === ROOT_ADMIN_EMAIL && adminCode !== ROOT_ADMIN_CODE) { // om det är root admin som försöker logga in och har angett admin code
             return res.status(401).json({
                 ok: false,
                 errorType: `auth`,
@@ -179,13 +179,13 @@ const login = async (req, res) => {
             });
         }
 
-        const token = jwt.sign(
+        const token = jwt.sign( // skapar en JWT token som innehåller allt om användaren med en secret code från .env och så att den går ut efter 7 dagar
             {accountId: user.id, userID: user.id, email: user.email, username: user.username, is_admin: user.is_admin},
             process.env.JWT_SECRET,
             {expiresIn: `7d`}
         );
 
-        res.status(200).json({
+        res.status(200).json({// skickar tillbaka token och användarinfo till frontend
             ok: true,
             token,
             accountId: user.id,
@@ -205,7 +205,7 @@ const login = async (req, res) => {
     }
 };
 
-const requestPasswordReset = async (req, res) => {
+const requestPasswordReset = async (req, res) => { // hanterar förfrågan om lösenordsåterställning, är här när vi har fått email saken att funka. men gör inget nu
     try {
         const {email} = req.body;
         if (!email) {
@@ -269,7 +269,7 @@ const requestPasswordReset = async (req, res) => {
     }
 };
 
-const resetPassword = async (req, res) => {
+const resetPassword = async (req, res) => { // hanterar själva återställningen av lösenordet, tar emot token och nytt lösenord
     try {
         const {token, password} = req.body;
         if (!token || !password) {
@@ -288,7 +288,7 @@ const resetPassword = async (req, res) => {
             });
         }
 
-        await ensurePasswordResetTable();
+        await ensurePasswordResetTable(); // säkerställer att tabellen för reset tokens finns
 
         const tokenHash = hashResetToken(token);
         const resetCheck = await db.query(
@@ -311,7 +311,7 @@ const resetPassword = async (req, res) => {
         const reset = resetCheck.rows[0];
         const hashedpassword = await bcrypt.hash(password, 10);
 
-        const client = await db.connect();
+        const client = await db.connect(); // använder en transaktion för att uppdatera lösenordet och markera token som användd, så att det inte kan användas igen
         try {
             await client.query(`BEGIN`);
             await client.query(`UPDATE users SET password = $1 WHERE id = $2`, [hashedpassword, reset.user_id]);
@@ -333,7 +333,7 @@ const resetPassword = async (req, res) => {
             ok: true,
             message: `Password updated. You can now log in.`
         });
-    } catch (error) {
+    } catch (error) { // tar hand om fel och skickar server error om något är fel
         console.error(error);
         res.status(500).json({
             ok: false,
@@ -343,4 +343,4 @@ const resetPassword = async (req, res) => {
     }
 };
 
-module.exports = {register, login, requestPasswordReset, resetPassword};
+module.exports = {register, login, requestPasswordReset, resetPassword}; // exporterar funktionerna så att de kan användas i routes

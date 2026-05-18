@@ -5,7 +5,6 @@ const db = require(`../config/database`);
 const {ROOT_ADMIN_EMAIL} = require(`../config/rootAdmin`);
 const PUBLIC_GAME_ID = `case-clicker`;
 const downloadsDir = process.env.DOWNLOADS_DIR || path.resolve(__dirname, `../../frontend/downloads`);
-const latestFileName = process.env.LATEST_GAME_FILENAME || `LuCS-Clicker-latest.zip`;
 const allowedUploadExtensions = new Set([`.zip`, `.love`, `.exe`]);
 
 fs.mkdirSync(downloadsDir, {recursive: true});
@@ -237,17 +236,11 @@ const uploadGameFile = async (req, res) => {
             });
         }
 
-        let downloadFileName = req.file.filename;
-        if (req.body.publish === `true`) {
-            await fs.promises.copyFile(req.file.path, path.join(downloadsDir, latestFileName));
-            downloadFileName = latestFileName;
-        }
-
         res.status(201).json({
             ok: true,
             message: `file uploaded`,
             fileName: req.file.filename,
-            downloadUrl: `/downloads/${downloadFileName}`,
+            downloadUrl: `/downloads/${req.file.filename}`,
             versionedDownloadUrl: `/downloads/${req.file.filename}`
         });
     } catch (error) {

@@ -12,15 +12,17 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- #################################################################### --
 
--- Games table
-CREATE TABLE IF NOT EXISTS games (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    download_url VARCHAR(500),
-    version VARCHAR(50),
-    published BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- Games table  -- skapad av Malte
+CREATE TABLE IF NOT EXISTS games ( -- skapar en tabell som heter games
+    id SERIAL PRIMARY KEY, -- id är unikt nummer för varje spel, SERIAL räknas upp automatiskt och primary key betyder att det är den unika identifieraren för tabellen
+    title VARCHAR(255) NOT NULL, -- title är en textsträng som inte får vara tom samt varchar betyder att den kan vara upp till 255 tecken lång
+    description TEXT, -- besrkivning av spelet, text betyder att det kan vara en längre text
+    genre VARCHAR(100), -- genre av spelet, varchar betyder att den kan vara upp till 100 tecken lång   
+    download_url VARCHAR(500), -- url där spelet kan laddas ner, varchar betyder att den kan vara upp till 500 tecken lång
+    image_url VARCHAR(500), -- url till spelets bild, varchar betyder att den kan
+    version VARCHAR(50), -- version av spelet, varchar betyder att den kan vara upp till 50 tecken lång
+    published BOOLEAN DEFAULT FALSE, -- om spelet är publicerat eller inte, boolean betyder att det kan vara sant eller falskt
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- när spelet skapades, timestamp betyder att det är ett datum och tid, default current_timestamp betyder att det automatiskt sätts till den tidpunkt då raden skapas
 );
 
 -- Skins table (all available weapon skins)

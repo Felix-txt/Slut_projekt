@@ -26,10 +26,10 @@ CREATE TABLE IF NOT EXISTS games ( -- skapar en tabell som heter games
 );
 
 -- Skins table (all available weapon skins)
-CREATE TABLE IF NOT EXISTS skins (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE,
-    weapon_type VARCHAR(100),
+CREATE TABLE IF NOT EXISTS skins ( -- skapar en tabell som heter skins
+    id SERIAL PRIMARY KEY, -- id är unikt nummer för varje skin, SERIAL räknas upp automatiskt och primary key betyder att det är den unika identifieraren för tabellen
+    name VARCHAR(255) NOT NULL UNIQUE, -- name är namnet på skinet, varchar betyder att den kan vara upp till 255 tecken lång, not null betyder att den inte får vara tom, unique betyder att varje skin måste ha ett unikt namn
+    weapon_type VARCHAR(100), -- weapon_type är typen av vapen som skinet tillhör, varchar betyder att den kan vara upp till 100 tecken lång
     rarity VARCHAR(100),
     image_url VARCHAR(500),
     min_price DECIMAL(10, 2) DEFAULT 0,

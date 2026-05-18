@@ -1,4 +1,14 @@
-const API = "/api";
+function getApiBase() {
+    const isLocalStaticPage = (
+        window.location.protocol === "file:" ||
+        ["127.0.0.1", "localhost"].includes(window.location.hostname) &&
+        !["80", "90", "5000", "5001"].includes(window.location.port)
+    );
+
+    return isLocalStaticPage ? "http://localhost:5001/api" : "/api";
+}
+
+const API = getApiBase();
 const ROOT_ADMIN_EMAIL = "admin@test.local";
 let users = [];
 let search;

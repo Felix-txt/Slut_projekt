@@ -9,6 +9,7 @@ const app = express(); // skapar en express app
 
 app.use(cors()); // tillåter cross-origin requests så att serven och hemsidan kan prata utan att servern behöver veta var hemsidan är
 app.use(express.json({ limit: `10mb` })); // sätter maxstorlek för JSON-förfrågningar
+app.use(`/downloads`, express.static(process.env.DOWNLOADS_DIR || path.resolve(__dirname, `../frontend/downloads`)));
 
 // för api routes 
 app.use(`/api/auth`, require(`./routes/auth`));

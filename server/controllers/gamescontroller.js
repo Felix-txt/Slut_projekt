@@ -3,7 +3,7 @@ const db = require(`../config/database`);
 const getAllGames = async (req, res) => {
     try {
         const result = await db.query(
-            `SELECT id, title, description, download_url, version
+            `SELECT id, title, description, download_url, version, created_at
              FROM games
              WHERE published = true
              ORDER BY created_at DESC, id DESC`

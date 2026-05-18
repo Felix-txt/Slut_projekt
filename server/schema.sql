@@ -29,14 +29,14 @@ CREATE TABLE IF NOT EXISTS games ( -- skapar en tabell som heter games
 CREATE TABLE IF NOT EXISTS skins ( -- skapar en tabell som heter skins
     id SERIAL PRIMARY KEY, -- id är unikt nummer för varje skin, SERIAL räknas upp automatiskt och primary key betyder att det är den unika identifieraren för tabellen
     name VARCHAR(255) NOT NULL UNIQUE, -- name är namnet på skinet, varchar betyder att den kan vara upp till 255 tecken lång, not null betyder att den inte får vara tom, unique betyder att varje skin måste ha ett unikt namn
-    weapon_type VARCHAR(100), -- weapon_type är typen av vapen som skinet tillhör, varchar betyder att den kan vara upp till 100 tecken lång
-    rarity VARCHAR(100),
-    image_url VARCHAR(500),
-    min_price DECIMAL(10, 2) DEFAULT 0,
-    max_price DECIMAL(10, 2) DEFAULT 0,
-    is_stattrak BOOLEAN DEFAULT TRUE,
-    is_souvenir BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    weapon_type VARCHAR(100),  -- weapon_type är typen av vapen som skinet tillhör, varchar betyder att den kan vara upp till 100 tecken lång
+    rarity VARCHAR(100), -- rarity är sällsyntheten av skinet, varchar betyder att den kan vara upp till 100 tecken lång
+    image_url VARCHAR(500), -- url till skinets bild, varchar betyder att den kan vara upp till 500 tecken lång
+    min_price DECIMAL(10, 2) DEFAULT 0, -- min_price är det lägsta priset för skinet, decimal betyder att det är ett tal med decimaler, 10 är det totala antalet siffror och 2 är antalet decimaler, default 0 betyder att det automatiskt sätts till 0 om inget annat värde anges
+    max_price DECIMAL(10, 2) DEFAULT 0, -- max_price är det högsta priset för skinet, decimal betyder att det är ett tal med decimaler, 10 är det totala antalet siffror och 2 är antalet decimaler, default 0 betyder att det automatiskt sätts till 0 om inget annat värde anges
+    is_stattrak BOOLEAN DEFAULT TRUE, -- is_stattrak är om skinet har stattrak eller inte, boolean betyder att det kan vara sant eller falskt, default true betyder att det automatiskt sätts till sant om inget annat värde anges
+    is_souvenir BOOLEAN DEFAULT FALSE, -- is_souvenir är om skinet är en souvenir eller inte, boolean betyder att det kan vara sant eller falskt, default false betyder att det automatiskt sätts till falskt om inget annat värde anges
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- när skinet skapades, timestamp betyder att det är ett datum och tid, default current_timestamp betyder att det automatiskt sätts till den tidpunkt då raden skapas
 );
 
 -- Crates table

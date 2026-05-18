@@ -230,10 +230,20 @@ function goSignup() { // om man klickar pÃ¥ signup gÃ¥r den till signup sidd
 };
 
 function downloadLatestClient() {
-    // TODO: ErsÃ¤tt med faktisk filepath nÃ¤r den finns
-    // Exempel: const filePath = "../downloads/LuCS-Clicker-latest.exe";
-    const filePath = "../downloads/LuCS-Clicker-latest.exe";
-    window.location.href = filePath;
+    fetch(`${API}/games/all`)
+        .then((res) => {
+            if (!res.ok) throw new Error("Could not load download link");
+            return res.json();
+        })
+        .then((games) => {
+            const latestGame = Array.isArray(games) ? games.find((game) => game.download_url) : null;
+            if (!latestGame) throw new Error("No uploaded game file found");
+            window.location.href = latestGame.download_url;
+        })
+        .catch((error) => {
+            console.error(error);
+            alert("Ingen uppladdad fil hittades att ladda ner.");
+        });
 };
 
 function goPatchdownload() {

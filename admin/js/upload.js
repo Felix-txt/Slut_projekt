@@ -1,3 +1,4 @@
+(() => {
 function getApiBase() {
     const isLocalStaticPage = (
         window.location.protocol === "file:" ||
@@ -135,11 +136,4 @@ document.getElementById("publishBtn").addEventListener("click", async function()
     }
 });
 
-function logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    localStorage.removeItem("email");
-    localStorage.removeItem("accountId");
-    localStorage.removeItem("isAdmin");
-    window.location.href = "../../login-signin.html#login";
-}
+})();

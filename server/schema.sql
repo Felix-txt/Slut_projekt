@@ -40,16 +40,16 @@ CREATE TABLE IF NOT EXISTS skins ( -- skapar en tabell som heter skins
 );
 
 -- Crates table
-CREATE TABLE IF NOT EXISTS crates (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE,
-    display_name VARCHAR(255),
-    description TEXT,
-    key_name VARCHAR(255),
-    price DECIMAL(10, 2) DEFAULT 0,
-    image_url VARCHAR(500),
-    is_available BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS crates ( -- skapar en tabell som heter crates
+    id SERIAL PRIMARY KEY, -- id är unikt nummer för varje crate, SERIAL räknas upp automatiskt och primary key betyder att det är den unika identifieraren för tabellen
+    name VARCHAR(255) NOT NULL UNIQUE, -- name är namnet på crate, varchar betyder att den kan vara upp till 255 tecken lång, not null betyder att den inte får vara tom, unique betyder att varje crate måste ha ett unikt namn
+    display_name VARCHAR(255), -- display_name är det namn som visas för crate, varchar betyder att den kan vara upp till 255 tecken lång
+    description TEXT, -- besrkivning av crate, text betyder att det kan vara en längre text
+    key_name VARCHAR(255), -- key_name är namnet på nyckeln som krävs för att öppna crate, varchar betyder att den kan vara upp till 255 tecken lång
+    price DECIMAL(10, 2) DEFAULT 0, -- price är priset för att öppna crate, decimal betyder att det är ett tal med decimaler, 10 är det totala antalet siffror och 2 är antalet decimaler, default 0 betyder att det automatiskt sätts till 0 om inget annat värde anges
+    image_url VARCHAR(500), -- url till crate's bild, varchar betyder att den kan vara upp till 500 tecken lång
+    is_available BOOLEAN DEFAULT TRUE, -- is_available är om crate är tillgänglig eller inte, boolean betyder att det kan vara sant eller falskt, default true betyder att det automatiskt sätts till sant om inget annat värde anges
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- när crate skapades, timestamp betyder att det är ett datum och tid, default current_timestamp betyder att det automatiskt sätts till den tidpunkt då raden skapas
 );
 
 -- Crate skins (which skins are in which crate)

@@ -1,4 +1,25 @@
-const API = "/api";
+function getApiBase() {
+    const isLocalStaticPage = (
+        window.location.protocol === "file:" ||
+        ["127.0.0.1", "localhost"].includes(window.location.hostname) &&
+        !["80", "90", "5000", "5001"].includes(window.location.port)
+    );
+
+    return isLocalStaticPage ? "http://localhost:5001/api" : "/api";
+}
+
+const API = getApiBase();
+
+function resolveDownloadUrl(downloadUrl) {
+    if (!downloadUrl) return "";
+    if (/^https?:\/\//i.test(downloadUrl)) return downloadUrl;
+
+    if (API.startsWith("http://") || API.startsWith("https://")) {
+        return new URL(downloadUrl, API.replace(/\/api\/?$/, "/")).href;
+    }
+
+    return downloadUrl;
+}
 const SLIDES = [
     {
         src: "../assets/slideshow/Recovered_ScreenClip_2026-05-11_11-39-24.png",
@@ -238,7 +259,7 @@ function downloadLatestClient() {
         .then((games) => {
             const latestGame = Array.isArray(games) ? games.find((game) => game.download_url) : null;
             if (!latestGame) throw new Error("No uploaded game file found");
-            window.location.href = latestGame.download_url;
+            window.location.href = resolveDownloadUrl(latestGame.download_url);
         })
         .catch((error) => {
             console.error(error);

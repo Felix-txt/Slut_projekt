@@ -1,4 +1,14 @@
-const API = "/api";
+function getApiBase() {
+    const isLocalStaticPage = (
+        window.location.protocol === "file:" ||
+        ["127.0.0.1", "localhost"].includes(window.location.hostname) &&
+        !["80", "90", "5000", "5001"].includes(window.location.port)
+    );
+
+    return isLocalStaticPage ? "http://localhost:5001/api" : "/api";
+}
+
+const API = getApiBase();
 
 async function apiFetch(path, options = {}) {
     const res = await fetch(`${API}${path}`, options);

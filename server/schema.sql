@@ -99,15 +99,15 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
 
 -- #################################################################### -- 
 
--- User open crate history   Skapad av Aron
-CREATE TABLE IF NOT EXISTS crate_opens (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    crate_id INTEGER REFERENCES crates(id),
-    skin_id INTEGER REFERENCES skins(id),
-    rarity VARCHAR(100),
-    price_at_open DECIMAL(10, 2),
-    opened_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- User open crate history   Skapad av Aron 
+CREATE TABLE IF NOT EXISTS crate_opens ( -- skapar en tabell som heter crate_opens, if not exists betyder att den bara skapas om den inte redan finns.
+    id SERIAL PRIMARY KEY, -- id är unikt nummer för varje rad i crate_opens, SERIAL räknas upp automatiskt och primary key betyder att det är den unika identifieraren för tabellen
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE, -- user_id är id för användaren som öppnade crate, integer betyder att det är ett heltal, references users(id) betyder att det refererar till id i users tabellen, on delete cascade betyder att om en användare tas bort så tas alla rader i crate_opens som refererar till den användaren också bort
+    crate_id INTEGER REFERENCES crates(id), -- crate_id är id för crate som öppnades, integer betyder att det är ett heltal, references crates(id) betyder att det refererar till id i crates tabellen
+    skin_id INTEGER REFERENCES skins(id), -- skin_id är id för skinet som användaren fick, integer betyder att det är ett heltal, references skins(id) betyder att det refererar till id i skins tabellen
+    rarity VARCHAR(100), -- rarity är sällsyntheten av skinet som användaren fick, varchar betyder att den kan vara upp till 100 tecken lång
+    price_at_open DECIMAL(10, 2), -- price_at_open är priset på skinet vid tidpunkten då crate öppnades, decimal betyder att det är ett tal med decimaler, 10 är det totala antalet siffror och 2 är antalet decimaler
+    opened_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- när crate öppnades, timestamp betyder att det är ett datum och tid, default current_timestamp betyder att det automatiskt sätts till den tidpunkt då raden skapas
 );
 
 --##################################################################### --

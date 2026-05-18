@@ -63,19 +63,19 @@ CREATE TABLE IF NOT EXISTS crate_skins (  -- skapar en tabell som heter crate_sk
 );
 
 -- User inventory (items owned by players)
-CREATE TABLE IF NOT EXISTS user_inventory (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    skin_id INTEGER REFERENCES skins(id),
-    crate_id INTEGER REFERENCES crates(id),
-    rarity VARCHAR(100),
-    wear FLOAT,
-    float_value FLOAT,
-    stattrak BOOLEAN DEFAULT FALSE,
-    souvenir BOOLEAN DEFAULT FALSE,
-    pattern_id VARCHAR(100),
-    obtained_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_in_trade BOOLEAN DEFAULT FALSE
+CREATE TABLE IF NOT EXISTS user_inventory ( -- skapar en tabell som heter user_inventory, if not exists betyder att den bara skapas om den inte redan finns.
+    id SERIAL PRIMARY KEY, -- id är unikt nummer för varje rad i user_inventory, SERIAL räknas upp automatiskt och primary key betyder att det är den unika identifieraren för tabellen
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE, -- user_id är id för användaren som äger item, integer betyder att det är ett heltal, references users(id) betyder att det refererar till id i users tabellen, on delete cascade betyder att om en användare tas bort så tas alla rader i user_inventory som refererar till den användaren också bort
+    skin_id INTEGER REFERENCES skins(id), -- skin_id är id för skinet som användaren äger, integer betyder att det är ett heltal, references skins(id) betyder att det refererar till id i skins tabellen
+    crate_id INTEGER REFERENCES crates(id), -- crate_id är id för crate som item tillhör, integer betyder att det är ett heltal, references crates(id) betyder att det refererar till id i crates tabellen
+    rarity VARCHAR(100), -- rarity är sällsyntheten av itemet, varchar betyder att den kan vara upp till 100 tecken lång
+    wear FLOAT, -- wear är slitagegraden för itemet, float betyder att det kan vara ett decimaltal
+    float_value FLOAT, -- float_value är float-värdet för itemet, float betyder att det kan vara ett decimaltal
+    stattrak BOOLEAN DEFAULT FALSE, -- stattrak är en flagga som indikerar om itemet har stattrak, boolean betyder att det kan vara sant eller falskt
+    souvenir BOOLEAN DEFAULT FALSE, -- souvenir är en flagga som indikerar om itemet är en souvenir, boolean betyder att det kan vara sant eller falskt
+    pattern_id VARCHAR(100), -- pattern_id är mönster-id för itemet, varchar betyder att den kan vara upp till 100 tecken lång
+    obtained_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- när itemet erhölls, timestamp betyder att det är ett datum och tid, default current_timestamp betyder att det automatiskt sätts till den tidpunkt då raden skapas
+    is_in_trade BOOLEAN DEFAULT FALSE -- is_in_trade är en flagga som indikerar om itemet är i en pågående trade, boolean betyder att det kan vara sant eller falskt, default false betyder att det automatiskt sätts till falskt om inget annat värde anges
 );
 
 -- User currency balance

@@ -53,13 +53,13 @@ CREATE TABLE IF NOT EXISTS crates ( -- skapar en tabell som heter crates
 );
 
 -- Crate skins (which skins are in which crate)
-CREATE TABLE IF NOT EXISTS crate_skins (
-    id SERIAL PRIMARY KEY,
-    crate_id INTEGER REFERENCES crates(id) ON DELETE CASCADE,
-    skin_id INTEGER REFERENCES skins(id) ON DELETE CASCADE,
-    rarity VARCHAR(100),
-    weight DECIMAL(10, 4) DEFAULT 1.0,
-    UNIQUE(crate_id, skin_id)
+CREATE TABLE IF NOT EXISTS crate_skins (  -- skapar en tabell som heter crate_skins
+    id SERIAL PRIMARY KEY, -- id är unikt nummer för varje rad i crate_skins, SERIAL räknas upp automatiskt och primary key betyder att det är den unika identifieraren för tabellen
+    crate_id INTEGER REFERENCES crates(id) ON DELETE CASCADE, -- crate_id är id för crate som skinet tillhör, integer betyder att det är ett heltal, references crates(id) betyder att det refererar till id i crates tabellen, on delete cascade betyder att om en crate tas bort så tas alla rader i crate_skins som refererar till den craten också bort
+    skin_id INTEGER REFERENCES skins(id) ON DELETE CASCADE, -- skin_id är id för skinet som tillhör crate, integer betyder att det är ett heltal, references skins(id) betyder att det refererar till id i skins tabellen, on delete cascade betyder att om ett skin tas bort så tas alla rader i crate_skins som refererar till det skinet också bort
+    rarity VARCHAR(100), -- rarity är sällsyntheten av skinet i crate, varchar betyder att den kan vara upp till 100 tecken lång
+    weight DECIMAL(10, 4) DEFAULT 1.0, -- weight är sannolikheten att få skin
+    UNIQUE(crate_id, skin_id) -- varje skin kan bara finnas en gång i varje crate
 );
 
 -- User inventory (items owned by players)

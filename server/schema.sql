@@ -1,5 +1,5 @@
 
--- Felix gjorde denna för users,
+-- Users table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
@@ -10,70 +10,72 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 
--- AI made
+-- #################################################################### --
 
--- Games table
-CREATE TABLE IF NOT EXISTS games (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    download_url VARCHAR(500),
-    version VARCHAR(50),
-    published BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- Games table  -- skapad av Malte
+CREATE TABLE IF NOT EXISTS games ( -- skapar en tabell som heter games
+    id SERIAL PRIMARY KEY, -- id är unikt nummer för varje spel, SERIAL räknas upp automatiskt och primary key betyder att det är den unika identifieraren för tabellen
+    title VARCHAR(255) NOT NULL, -- title är en textsträng som inte får vara tom samt varchar betyder att den kan vara upp till 255 tecken lång
+    description TEXT, -- besrkivning av spelet, text betyder att det kan vara en längre text
+    genre VARCHAR(100), -- genre av spelet, varchar betyder att den kan vara upp till 100 tecken lång   
+    download_url VARCHAR(500), -- url där spelet kan laddas ner, varchar betyder att den kan vara upp till 500 tecken lång
+    image_url VARCHAR(500), -- url till spelets bild, varchar betyder att den kan
+    version VARCHAR(50), -- version av spelet, varchar betyder att den kan vara upp till 50 tecken lång
+    published BOOLEAN DEFAULT FALSE, -- om spelet är publicerat eller inte, boolean betyder att det kan vara sant eller falskt
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- när spelet skapades, timestamp betyder att det är ett datum och tid, default current_timestamp betyder att det automatiskt sätts till den tidpunkt då raden skapas
 );
 
 -- Skins table (all available weapon skins)
-CREATE TABLE IF NOT EXISTS skins (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE,
-    weapon_type VARCHAR(100),
-    rarity VARCHAR(100),
-    image_url VARCHAR(500),
-    min_price DECIMAL(10, 2) DEFAULT 0,
-    max_price DECIMAL(10, 2) DEFAULT 0,
-    is_stattrak BOOLEAN DEFAULT TRUE,
-    is_souvenir BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS skins ( -- skapar en tabell som heter skins
+    id SERIAL PRIMARY KEY, -- id är unikt nummer för varje skin, SERIAL räknas upp automatiskt och primary key betyder att det är den unika identifieraren för tabellen
+    name VARCHAR(255) NOT NULL UNIQUE, -- name är namnet på skinet, varchar betyder att den kan vara upp till 255 tecken lång, not null betyder att den inte får vara tom, unique betyder att varje skin måste ha ett unikt namn
+    weapon_type VARCHAR(100),  -- weapon_type är typen av vapen som skinet tillhör, varchar betyder att den kan vara upp till 100 tecken lång
+    rarity VARCHAR(100), -- rarity är sällsyntheten av skinet, varchar betyder att den kan vara upp till 100 tecken lång
+    image_url VARCHAR(500), -- url till skinets bild, varchar betyder att den kan vara upp till 500 tecken lång
+    min_price DECIMAL(10, 2) DEFAULT 0, -- min_price är det lägsta priset för skinet, decimal betyder att det är ett tal med decimaler, 10 är det totala antalet siffror och 2 är antalet decimaler, default 0 betyder att det automatiskt sätts till 0 om inget annat värde anges
+    max_price DECIMAL(10, 2) DEFAULT 0, -- max_price är det högsta priset för skinet, decimal betyder att det är ett tal med decimaler, 10 är det totala antalet siffror och 2 är antalet decimaler, default 0 betyder att det automatiskt sätts till 0 om inget annat värde anges
+    is_stattrak BOOLEAN DEFAULT TRUE, -- is_stattrak är om skinet har stattrak eller inte, boolean betyder att det kan vara sant eller falskt, default true betyder att det automatiskt sätts till sant om inget annat värde anges
+    is_souvenir BOOLEAN DEFAULT FALSE, -- is_souvenir är om skinet är en souvenir eller inte, boolean betyder att det kan vara sant eller falskt, default false betyder att det automatiskt sätts till falskt om inget annat värde anges
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- när skinet skapades, timestamp betyder att det är ett datum och tid, default current_timestamp betyder att det automatiskt sätts till den tidpunkt då raden skapas
 );
 
 -- Crates table
-CREATE TABLE IF NOT EXISTS crates (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE,
-    display_name VARCHAR(255),
-    description TEXT,
-    key_name VARCHAR(255),
-    price DECIMAL(10, 2) DEFAULT 0,
-    image_url VARCHAR(500),
-    is_available BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS crates ( -- skapar en tabell som heter crates
+    id SERIAL PRIMARY KEY, -- id är unikt nummer för varje crate, SERIAL räknas upp automatiskt och primary key betyder att det är den unika identifieraren för tabellen
+    name VARCHAR(255) NOT NULL UNIQUE, -- name är namnet på crate, varchar betyder att den kan vara upp till 255 tecken lång, not null betyder att den inte får vara tom, unique betyder att varje crate måste ha ett unikt namn
+    display_name VARCHAR(255), -- display_name är det namn som visas för crate, varchar betyder att den kan vara upp till 255 tecken lång
+    description TEXT, -- besrkivning av crate, text betyder att det kan vara en längre text
+    key_name VARCHAR(255), -- key_name är namnet på nyckeln som krävs för att öppna crate, varchar betyder att den kan vara upp till 255 tecken lång
+    price DECIMAL(10, 2) DEFAULT 0, -- price är priset för att öppna crate, decimal betyder att det är ett tal med decimaler, 10 är det totala antalet siffror och 2 är antalet decimaler, default 0 betyder att det automatiskt sätts till 0 om inget annat värde anges
+    image_url VARCHAR(500), -- url till crate's bild, varchar betyder att den kan vara upp till 500 tecken lång
+    is_available BOOLEAN DEFAULT TRUE, -- is_available är om crate är tillgänglig eller inte, boolean betyder att det kan vara sant eller falskt, default true betyder att det automatiskt sätts till sant om inget annat värde anges
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- när crate skapades, timestamp betyder att det är ett datum och tid, default current_timestamp betyder att det automatiskt sätts till den tidpunkt då raden skapas
 );
 
 -- Crate skins (which skins are in which crate)
-CREATE TABLE IF NOT EXISTS crate_skins (
-    id SERIAL PRIMARY KEY,
-    crate_id INTEGER REFERENCES crates(id) ON DELETE CASCADE,
-    skin_id INTEGER REFERENCES skins(id) ON DELETE CASCADE,
-    rarity VARCHAR(100),
-    weight DECIMAL(10, 4) DEFAULT 1.0,
-    UNIQUE(crate_id, skin_id)
+CREATE TABLE IF NOT EXISTS crate_skins (  -- skapar en tabell som heter crate_skins
+    id SERIAL PRIMARY KEY, -- id är unikt nummer för varje rad i crate_skins, SERIAL räknas upp automatiskt och primary key betyder att det är den unika identifieraren för tabellen
+    crate_id INTEGER REFERENCES crates(id) ON DELETE CASCADE, -- crate_id är id för crate som skinet tillhör, integer betyder att det är ett heltal, references crates(id) betyder att det refererar till id i crates tabellen, on delete cascade betyder att om en crate tas bort så tas alla rader i crate_skins som refererar till den craten också bort
+    skin_id INTEGER REFERENCES skins(id) ON DELETE CASCADE, -- skin_id är id för skinet som tillhör crate, integer betyder att det är ett heltal, references skins(id) betyder att det refererar till id i skins tabellen, on delete cascade betyder att om ett skin tas bort så tas alla rader i crate_skins som refererar till det skinet också bort
+    rarity VARCHAR(100), -- rarity är sällsyntheten av skinet i crate, varchar betyder att den kan vara upp till 100 tecken lång
+    weight DECIMAL(10, 4) DEFAULT 1.0, -- weight är sannolikheten att få skin
+    UNIQUE(crate_id, skin_id) -- varje skin kan bara finnas en gång i varje crate
 );
 
 -- User inventory (items owned by players)
-CREATE TABLE IF NOT EXISTS user_inventory (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    skin_id INTEGER REFERENCES skins(id),
-    crate_id INTEGER REFERENCES crates(id),
-    rarity VARCHAR(100),
-    wear FLOAT,
-    float_value FLOAT,
-    stattrak BOOLEAN DEFAULT FALSE,
-    souvenir BOOLEAN DEFAULT FALSE,
-    pattern_id VARCHAR(100),
-    obtained_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_in_trade BOOLEAN DEFAULT FALSE
+CREATE TABLE IF NOT EXISTS user_inventory ( -- skapar en tabell som heter user_inventory, if not exists betyder att den bara skapas om den inte redan finns.
+    id SERIAL PRIMARY KEY, -- id är unikt nummer för varje rad i user_inventory, SERIAL räknas upp automatiskt och primary key betyder att det är den unika identifieraren för tabellen
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE, -- user_id är id för användaren som äger item, integer betyder att det är ett heltal, references users(id) betyder att det refererar till id i users tabellen, on delete cascade betyder att om en användare tas bort så tas alla rader i user_inventory som refererar till den användaren också bort
+    skin_id INTEGER REFERENCES skins(id), -- skin_id är id för skinet som användaren äger, integer betyder att det är ett heltal, references skins(id) betyder att det refererar till id i skins tabellen
+    crate_id INTEGER REFERENCES crates(id), -- crate_id är id för crate som item tillhör, integer betyder att det är ett heltal, references crates(id) betyder att det refererar till id i crates tabellen
+    rarity VARCHAR(100), -- rarity är sällsyntheten av itemet, varchar betyder att den kan vara upp till 100 tecken lång
+    wear FLOAT, -- wear är slitagegraden för itemet, float betyder att det kan vara ett decimaltal
+    float_value FLOAT, -- float_value är float-värdet för itemet, float betyder att det kan vara ett decimaltal
+    stattrak BOOLEAN DEFAULT FALSE, -- stattrak är en flagga som indikerar om itemet har stattrak, boolean betyder att det kan vara sant eller falskt
+    souvenir BOOLEAN DEFAULT FALSE, -- souvenir är en flagga som indikerar om itemet är en souvenir, boolean betyder att det kan vara sant eller falskt
+    pattern_id VARCHAR(100), -- pattern_id är mönster-id för itemet, varchar betyder att den kan vara upp till 100 tecken lång
+    obtained_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- när itemet erhölls, timestamp betyder att det är ett datum och tid, default current_timestamp betyder att det automatiskt sätts till den tidpunkt då raden skapas
+    is_in_trade BOOLEAN DEFAULT FALSE -- is_in_trade är en flagga som indikerar om itemet är i en pågående trade, boolean betyder att det kan vara sant eller falskt, default false betyder att det automatiskt sätts till falskt om inget annat värde anges
 );
 
 -- User currency balance
@@ -95,16 +97,20 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- User open crate history
-CREATE TABLE IF NOT EXISTS crate_opens (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    crate_id INTEGER REFERENCES crates(id),
-    skin_id INTEGER REFERENCES skins(id),
-    rarity VARCHAR(100),
-    price_at_open DECIMAL(10, 2),
-    opened_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- #################################################################### -- 
+
+-- User open crate history   Skapad av Aron 
+CREATE TABLE IF NOT EXISTS crate_opens ( -- skapar en tabell som heter crate_opens, if not exists betyder att den bara skapas om den inte redan finns.
+    id SERIAL PRIMARY KEY, -- id är unikt nummer för varje rad i crate_opens, SERIAL räknas upp automatiskt och primary key betyder att det är den unika identifieraren för tabellen
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE, -- user_id är id för användaren som öppnade crate, integer betyder att det är ett heltal, references users(id) betyder att det refererar till id i users tabellen, on delete cascade betyder att om en användare tas bort så tas alla rader i crate_opens som refererar till den användaren också bort
+    crate_id INTEGER REFERENCES crates(id), -- crate_id är id för crate som öppnades, integer betyder att det är ett heltal, references crates(id) betyder att det refererar till id i crates tabellen
+    skin_id INTEGER REFERENCES skins(id), -- skin_id är id för skinet som användaren fick, integer betyder att det är ett heltal, references skins(id) betyder att det refererar till id i skins tabellen
+    rarity VARCHAR(100), -- rarity är sällsyntheten av skinet som användaren fick, varchar betyder att den kan vara upp till 100 tecken lång
+    price_at_open DECIMAL(10, 2), -- price_at_open är priset på skinet vid tidpunkten då crate öppnades, decimal betyder att det är ett tal med decimaler, 10 är det totala antalet siffror och 2 är antalet decimaler
+    opened_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- när crate öppnades, timestamp betyder att det är ett datum och tid, default current_timestamp betyder att det automatiskt sätts till den tidpunkt då raden skapas
 );
+
+--##################################################################### --
 
 -- Full game cloud saves. The game owns this JSON shape.
 CREATE TABLE IF NOT EXISTS saves (

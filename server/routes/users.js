@@ -4,9 +4,9 @@ const db = require('../config/database');
 const jwt = require('jsonwebtoken');
 const {verifyToken} = require('../middleware/auth');
 
-const PUBLIC_GAME_ID = 'case-clicker';
+const PUBLIC_GAME_ID = 'case-clicker'; // konstant för att identifiera spelet när vi hämtar användarens spardata
 
-function serializePrivateUser(row) {
+function serializePrivateUser(row) { // serialiserar användardata för att skicka till klienten, inkluderar mer information än public versionen
     return {
         id: row.id,
         username: row.username,
@@ -16,7 +16,7 @@ function serializePrivateUser(row) {
     };
 }
 
-function serializePublicUser(row) {
+function serializePublicUser(row) { // serialiserar användardata för att skicka till klienten, inkluderar mindre information än private versionen
     return {
         id: row.id,
         username: row.username,
@@ -31,7 +31,7 @@ function serializePublicUser(row) {
     };
 }
 
-function tryParseUserIdFromToken(req) {
+function tryParseUserIdFromToken(req) { // försöker hämta ut användarid från token, används för att avgöra om den som gör requesten är ägaren av kontot eller inte
     try {
         const auth = req.headers.authorization;
         if (!auth) return null;
@@ -44,7 +44,7 @@ function tryParseUserIdFromToken(req) {
     }
 }
 
-router.get('/me', verifyToken, async (req, res) => {
+router.get('/me', verifyToken, async (req, res) => { // route för att hämta information om det inloggade kontot, kräver autentisering
     try {
         const result = await db.query(
             `SELECT id, username, email, is_admin, created_at
@@ -64,7 +64,7 @@ router.get('/me', verifyToken, async (req, res) => {
     }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res) => { // route för att hämta information om ett konto baserat på id, kräver inte autent
     try {
         const userId = Number(req.params.id);
 
@@ -105,7 +105,7 @@ router.get('/:id', async (req, res) => {
 });
 
 
-router.put('/update', verifyToken, async (req, res) => {
+router.put('/update', verifyToken, async (req, res) => { // route för att uppdatera information om det inloggade kontot, kräver autentisering
     try{
         const {username, email} = req.body;
         const userId = req.userId;
@@ -152,4 +152,4 @@ router.put('/update', verifyToken, async (req, res) => {
     }
 });
 
-module.exports = router; 
+module.exports = router;  // exporterar routern så att den kan användas i server.js

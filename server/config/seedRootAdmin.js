@@ -1,13 +1,13 @@
 const bcrypt = require(`bcryptjs`);
 const db = require(`./database`);
-const {
+const { // hämtar root admin uppgifter från config
     ROOT_ADMIN_EMAIL,
     ROOT_ADMIN_USERNAME,
     ROOT_ADMIN_PASSWORD
-} = require(`./rootAdmin`);
+} = require(`./rootAdmin`); // hämtar root admin uppgifter från config
 
 const seedRootAdmin = async () => {
-    const existing = await db.query(`SELECT id, is_admin FROM users WHERE LOWER(email) = $1`, [ROOT_ADMIN_EMAIL]);
+    const existing = await db.query(`SELECT id, is_admin FROM users WHERE LOWER(email) = $1`, [ROOT_ADMIN_EMAIL]); // hämtar existerande root admin
 
     if (existing.rows.length > 0) {
         if (!existing.rows[0].is_admin) {
@@ -16,10 +16,10 @@ const seedRootAdmin = async () => {
         return;
     }
 
-    const hashedPassword = await bcrypt.hash(ROOT_ADMIN_PASSWORD, 10);
+    const hashedPassword = await bcrypt.hash(ROOT_ADMIN_PASSWORD, 10); // crypterrar root admin lösenord
     const client = await db.connect();
 
-    try {
+    try { // kollar så att allt skapas korekt, om något går fel så rullas det tillbaka och inget skapas i databasen
         await client.query(`BEGIN`);
 
         const result = await client.query(
@@ -42,8 +42,8 @@ const seedRootAdmin = async () => {
         await client.query(`ROLLBACK`);
         throw error;
     } finally {
-        client.release();
+        client.release(); // släpper databaskopplingen så att den kan användas av andra delar av applikationen
     }
 };
 
-module.exports = seedRootAdmin;
+module.exports = seedRootAdmin; // exporterar funktionen så att den kan användas i server.js för att seed root admin när servern startar

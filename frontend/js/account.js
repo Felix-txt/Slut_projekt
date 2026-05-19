@@ -408,18 +408,53 @@ function inventoryLabel(item, index) {
     ]) || `Item ${index + 1}`;
 }
 
+function normalizeImageUrl(value) {
+    if (!value) return "";
+
+    let image = String(value).trim().replace(/\\/g, "/");
+    if (!image) return "";
+
+    if (/^(https?:)?\/\//i.test(image) || image.startsWith("data:")) {
+        return image;
+    }
+
+    image = image.replace(/^\.?\//, "");
+
+    if (image.startsWith("assets/skins_png/")) {
+        return `/${encodeURI(image)}`;
+    }
+
+    if (image.startsWith("skins_png/")) {
+        return `/assets/${encodeURI(image)}`;
+    }
+
+    if (image.startsWith("case_and_key/") || image.startsWith("bymykel/")) {
+        return `/assets/skins_png/${encodeURI(image)}`;
+    }
+
+    if (image.startsWith("assets/")) {
+        return `/${encodeURI(image)}`;
+    }
+
+    return encodeURI(image);
+}
+
 function inventoryImage(item) {
-    return pickFirst(item, [
+    return normalizeImageUrl(pickFirst(item, [
         "image",
         "imageUrl",
         "image_url",
+        "imagePath",
+        "image_path",
         "icon",
         "iconUrl",
         "icon_url",
+        "iconPath",
+        "icon_path",
         "thumbnail",
         "thumbnailUrl",
         "thumbnail_url"
-    ]);
+    ]));
 }
 
 function inventoryMeta(item) {
@@ -486,8 +521,9 @@ function showItemDetails(index, slot) {
 
     els.itemDetails.innerHTML = `
         <div class="item-details-top">
-            <div class="item-details-icon">
-                ${image ? `<img src="${escapeHtml(image)}" alt="">` : escapeHtml(itemInitials(label))}
+            <div class="item-details-icon ${image ? "has-image" : ""}">
+                ${image ? `<img src="${escapeHtml(image)}" alt="">` : ""}
+                <span class="image-fallback">${escapeHtml(itemInitials(label))}</span>
             </div>
             <div class="item-details-lines">
                 <div class="detail-line" title="${escapeHtml(label)}">${escapeHtml(label)}</div>
@@ -501,6 +537,7 @@ function showItemDetails(index, slot) {
         <div class="detail-line wide">Amount: ${escapeHtml(String(count))}</div>
     `;
     els.itemDetails.classList.add("show");
+    attachImageFallbackHandlers();
 }
 
 function attachSlotHandlers() {
@@ -510,6 +547,16 @@ function attachSlotHandlers() {
                 showItemDetails(Number(slot.dataset.index), slot);
             }
         };
+    });
+}
+
+function attachImageFallbackHandlers() {
+    document.querySelectorAll(".slot-image, .item-details-icon img").forEach(function(image) {
+        image.addEventListener("error", function() {
+            const parent = image.closest(".slot, .item-details-icon");
+            if (parent) parent.classList.add("image-missing");
+            image.remove();
+        }, {once: true});
     });
 }
 
@@ -567,16 +614,18 @@ function renderInventory(items, options = {}) {
         const label = inventoryLabel(item, index);
         const image = inventoryImage(item);
         const initials = itemInitials(label);
+        const imageClass = image ? " has-image" : "";
 
         return `
-            <div class="slot" data-index="${index}" data-type="${escapeHtml(type)}" title="${escapeHtml(label)}">
+            <div class="slot${imageClass}" data-index="${index}" data-type="${escapeHtml(type)}" title="${escapeHtml(label)}">
                 ${image ? `<img class="slot-image" src="${escapeHtml(image)}" alt="">` : ""}
-                ${image ? "" : `<div class="slot-name">${escapeHtml(initials)}</div>`}
+                <div class="slot-name">${escapeHtml(initials)}</div>
             </div>
         `;
     }).join("");
 
     attachSlotHandlers();
+    attachImageFallbackHandlers();
 }
 
 async function loadInventory() {

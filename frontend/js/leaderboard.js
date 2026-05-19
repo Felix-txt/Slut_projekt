@@ -1,14 +1,11 @@
 const API = "/api";
 let currentSort = "money";
 
-async function apiFetch(path, options = {}) {
-    const res = await fetch(`${API}${path}`, options);
-    const text = await res.text();
-    return text ? JSON.parse(text) : {};
-
-
-    throw lastError || new Error("Could not connect to server");
-}
+    async function apiFetch(path, options = {}) {
+        const res = await fetch(`${API}${path}`, options);
+        const text = await res.text();
+        return text ? JSON.parse(text) : {};
+    }
 
 document.getElementById("burger").addEventListener("click", function() {
     document.getElementById("menu").classList.toggle("show");

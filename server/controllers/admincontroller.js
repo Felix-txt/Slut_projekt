@@ -1,8 +1,62 @@
+const fs = require(`fs`);
+const path = require(`path`);
+const multer = require(`multer`);
 const db = require(`../config/database`);
 const {ROOT_ADMIN_EMAIL} = require(`../config/rootAdmin`);
 const PUBLIC_GAME_ID = `case-clicker`;
+const downloadsDir = process.env.DOWNLOADS_DIR || path.resolve(__dirname, `../../frontend/downloads`);
+const allowedUploadExtensions = new Set([`.zip`, `.love`, `.exe`]);
 
-const getUsers = async (req, res) => {
+fs.mkdirSync(downloadsDir, {recursive: true});
+
+const sanitizeNamePart = (value) => {
+    return String(value || `game-build`)
+        .replace(/\.[^/.]+$/, ``)
+        .replace(/[^a-zA-Z0-9._-]+/g, `-`)
+        .replace(/^-+|-+$/g, ``)
+        .slice(0, 80) || `game-build`;
+};
+
+const uploadStorage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, downloadsDir),
+    filename: (req, file, cb) => {
+        const extension = path.extname(file.originalname || ``).toLowerCase();
+        const baseName = sanitizeNamePart(path.basename(file.originalname || `game-build`, extension));
+        const stamp = new Date().toISOString().replace(/[:.]/g, `-`);
+        cb(null, `${baseName}-${stamp}${extension || `.zip`}`);
+    }
+});
+
+const gameUpload = multer({
+    storage: uploadStorage,
+    limits: {
+        fileSize: Number(process.env.MAX_GAME_UPLOAD_BYTES || 300 * 1024 * 1024)
+    },
+    fileFilter: (req, file, cb) => {
+        const extension = path.extname(file.originalname || ``).toLowerCase();
+        if (!allowedUploadExtensions.has(extension)) {
+            return cb(new Error(`Only .zip, .love and .exe uploads are allowed`));
+        }
+        cb(null, true);
+    }
+}).single(`file`);
+
+const uploadGameFileMiddleware = (req, res, next) => {
+    gameUpload(req, res, (error) => {
+        if (!error) {
+            return next();
+        }
+
+        const status = error instanceof multer.MulterError ? 400 : 415;
+        return res.status(status).json({
+            ok: false,
+            errorType: `upload`,
+            errorMessage: error.message
+        });
+    });
+};
+
+const getUsers = async (req, res) => { // hämtar alla användare
     try {
         const result = await db.query(
             `SELECT
@@ -40,7 +94,7 @@ const getUsers = async (req, res) => {
     }
 };
 
-const updateUserAdminStatus = async (req, res) => {
+const updateUserAdminStatus = async (req, res) => { // uppdaterar en användares admin status, används för att ge eller ta bort admin rättigheter
     try {
         const userId = Number(req.params.id);
         const {isAdmin} = req.body;
@@ -61,7 +115,7 @@ const updateUserAdminStatus = async (req, res) => {
             });
         }
 
-        const protectedUser = await db.query(`SELECT email FROM users WHERE id = $1`, [userId]);
+        const protectedUser = await db.query(`SELECT email FROM users WHERE id = $1`, [userId]); //hämtar användade för att veta om den finns och för att skydda root admin så att den inte kan ändras
         if (protectedUser.rows.length === 0) {
             return res.status(404).json({
                 ok: false,
@@ -70,7 +124,7 @@ const updateUserAdminStatus = async (req, res) => {
             });
         }
 
-        if (protectedUser.rows[0].email.toLowerCase() === ROOT_ADMIN_EMAIL) {
+        if (protectedUser.rows[0].email.toLowerCase() === ROOT_ADMIN_EMAIL) { // root admin skyddas så att den inte kan ändras eller tas bort
             return res.status(403).json({
                 ok: false,
                 errorType: `auth`,
@@ -78,7 +132,7 @@ const updateUserAdminStatus = async (req, res) => {
             });
         }
 
-        if (userId === req.userId && !isAdmin) {
+        if (userId === req.userId && !isAdmin) { // skyddar så att admin inte kan ta bort sig själv från admin
             return res.status(400).json({
                 ok: false,
                 errorType: `validation`,
@@ -86,7 +140,7 @@ const updateUserAdminStatus = async (req, res) => {
             });
         }
 
-        const result = await db.query(
+        const result = await db.query( // uppdaterar admin status för användaren
             `UPDATE users
              SET is_admin = $1
              WHERE id = $2
@@ -94,7 +148,7 @@ const updateUserAdminStatus = async (req, res) => {
             [isAdmin, userId]
         );
 
-        const user = result.rows[0];
+        const user = result.rows[0]; // returnerar den uppdaterade användaren
         res.json({
             ok: true,
             user: {
@@ -104,7 +158,7 @@ const updateUserAdminStatus = async (req, res) => {
                 isAdmin: user.is_admin
             }
         });
-    } catch (error) {
+    } catch (error) { // tar hand om fel och skickar server error om något är fel
         console.error(error);
         res.status(500).json({
             ok: false,
@@ -114,7 +168,7 @@ const updateUserAdminStatus = async (req, res) => {
     }
 };
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res) => { // tar bort en användare
     try {
         const userId = Number(req.params.id);
 
@@ -126,7 +180,7 @@ const deleteUser = async (req, res) => {
             });
         }
 
-        if (userId === req.userId) {
+        if (userId === req.userId) { // skyddar så att admin inte kan ta bort sig själv
             return res.status(400).json({
                 ok: false,
                 errorType: `validation`,
@@ -134,7 +188,7 @@ const deleteUser = async (req, res) => {
             });
         }
 
-        const protectedUser = await db.query(`SELECT email FROM users WHERE id = $1`, [userId]);
+        const protectedUser = await db.query(`SELECT email FROM users WHERE id = $1`, [userId]); // hämtar användade för att veta om den finns och för att skydda root admin så att den inte kan ändras eller tas bort
         if (protectedUser.rows.length === 0) {
             return res.status(404).json({
                 ok: false,
@@ -143,7 +197,7 @@ const deleteUser = async (req, res) => {
             });
         }
 
-        if (protectedUser.rows[0].email.toLowerCase() === ROOT_ADMIN_EMAIL) {
+        if (protectedUser.rows[0].email.toLowerCase() === ROOT_ADMIN_EMAIL) { // root admin skyddas så att den inte kan ändras eller tas bort
             return res.status(403).json({
                 ok: false,
                 errorType: `auth`,
@@ -151,18 +205,18 @@ const deleteUser = async (req, res) => {
             });
         }
 
-        const result = await db.query(
+        const result = await db.query( // tar bort användaren och returnerar den borttagna användaren
             `DELETE FROM users
              WHERE id = $1
              RETURNING id, username, email`,
             [userId]
         );
 
-        res.json({
+        res.json({ // returnerar den borttagna användaren
             ok: true,
             deletedUser: result.rows[0]
         });
-    } catch (error) {
+    } catch (error) { // tar hand om fel och skickar server error om något är fel
         console.error(error);
         res.status(500).json({
             ok: false,
@@ -172,4 +226,31 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = {getUsers, updateUserAdminStatus, deleteUser};
+const uploadGameFile = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                ok: false,
+                errorType: `upload`,
+                errorMessage: `no file uploaded`
+            });
+        }
+
+        res.status(201).json({
+            ok: true,
+            message: `file uploaded`,
+            fileName: req.file.filename,
+            downloadUrl: `/downloads/${req.file.filename}`,
+            versionedDownloadUrl: `/downloads/${req.file.filename}`
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            ok: false,
+            errorType: `upload`,
+            errorMessage: `server error`
+        });
+    }
+};
+
+module.exports = {getUsers, updateUserAdminStatus, deleteUser, uploadGameFileMiddleware, uploadGameFile}; // exporterar funktionerna så att de kan användas i routes

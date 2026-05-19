@@ -3,6 +3,7 @@ services:
     image: postgres:15-alpine
     container_name: csgo-clicker-db
     restart: unless-stopped
+    env_file: ./server/.env
     environment:
       POSTGRES_USER: ${DB_USER:-gameuser}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-your_secure_password}
@@ -21,11 +22,16 @@ services:
     env_file: ./server/.env
     container_name: csgo-clicker-api
     restart: unless-stopped
+    ports:
+      - "5000:5000"
     depends_on:
       postgres:
         condition: service_healthy
     environment:
       DB_HOST: postgres
+      DOWNLOADS_DIR: /app/uploads/downloads
+    volumes:
+      - ./frontend/downloads:/app/uploads/downloads
 
   nginx:
     image: nginx:alpine

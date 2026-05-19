@@ -3,7 +3,10 @@ const db = require(`../config/database`);
 const getAllGames = async (req, res) => {
     try {
         const result = await db.query(
-            `SELECT id, title, description, download_url, version FROM games WHERE published = true`
+            `SELECT id, title, description, download_url, version, created_at
+             FROM games
+             WHERE published = true
+             ORDER BY created_at DESC, id DESC`
         );
         res.json(result.rows);
     } catch (err) {
@@ -33,10 +36,12 @@ const createGame = async (req, res) => {
     try {
         const {title, description, download_url, version} = req.body;
         const result = await db.query(
-            `INSERT INTO games (title, description, download_url, version) VALUES ($1, $2, $3, $4) RETURNING id`,
+            `INSERT INTO games (title, description, download_url, version, published)
+             VALUES ($1, $2, $3, $4, true)
+             RETURNING id`,
             [title, description, download_url, version]
         );
-        res.status(201).json({message: `game created`, gameId: result.rows[0].id});
+        res.status(201).json({ok: true, message: `game created`, gameId: result.rows[0].id});
     } catch (err) {
         console.error(err);
         res.status(500).json({message: `server error`});

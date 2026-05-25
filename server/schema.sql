@@ -1,12 +1,12 @@
 
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    is_admin BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id SERIAL PRIMARY KEY, -- ett unikt nummer för vajre spalare
+    username VARCHAR(255) NOT NULL, -- för deras username
+    email VARCHAR(255) NOT NULL UNIQUE, -- för deras mail
+    password VARCHAR(255) NOT NULL, -- för passworkd
+    is_admin BOOLEAN DEFAULT FALSE, -- om dom är admin eller inte
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- när usern skapades
 );
 
 
@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS games ( -- skapar en tabell som heter games
     published BOOLEAN DEFAULT FALSE, -- om spelet är publicerat eller inte, boolean betyder att det kan vara sant eller falskt
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- när spelet skapades, timestamp betyder att det är ett datum och tid, default current_timestamp betyder att det automatiskt sätts till den tidpunkt då raden skapas
 );
+
+--############################################################# 
 
 -- Skins table (all available weapon skins)
 CREATE TABLE IF NOT EXISTS skins ( -- skapar en tabell som heter skins

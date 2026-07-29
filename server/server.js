@@ -13,6 +13,7 @@ app.use(`/downloads`, express.static(process.env.DOWNLOADS_DIR || path.resolve(_
 
 // för api routes 
 app.use(`/api/auth`, require(`./routes/auth`));
+app.use(`/api/case-battles`, require(`./routes/casebattles`));
 app.use(`/api/games`, require(`./routes/games`));
 app.use(`/api/saves`, require(`./routes/saves`));
 app.use(`/api/skins`, require(`./routes/skins`));
